@@ -13,8 +13,6 @@ public:
 	Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath = "");
 	~Shader();
 
-	void Create();
-
 	void Bind() const;
 	void Unbind() const;
 
@@ -38,14 +36,15 @@ public:
 
 // private functions
 private:
-	GLuint Compile(GLint shaderType);
+	void Create();
+	GLuint Compile(GLenum shaderType);
 	std::string ReadFromFile(const std::string& filePath);
 	GLint GetUniformLocation(const std::string& name);
 
 // private variables
 private:
-	GLuint ID;
-	std::unordered_map<GLuint, std::string> shaderSourcePaths{};
+	GLuint ID{};
+	std::unordered_map<GLenum, std::string> shaderSourcePaths{};
 	std::unordered_map<std::string, GLint> uniformLocations{};
 };
 

@@ -6,7 +6,7 @@
 Window::Window(int width, int height, std::string name)
 	: width(width), height(height), name(name)
 {
-
+	Init();
 }
 
 Window::~Window()

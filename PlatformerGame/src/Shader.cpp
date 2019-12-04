@@ -14,6 +14,7 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, c
 
 Shader::~Shader()
 {
+	glDeleteProgram(ID);
 }
 
 void Shader::Create()
@@ -30,13 +31,15 @@ void Shader::Create()
 		gShader = Compile(GL_GEOMETRY_SHADER);
 		glAttachShader(ID, gShader);
 	}
+
 	glAttachShader(ID, vShader);
 	glAttachShader(ID, fShader);
-
 	glLinkProgram(ID);
+	glValidateProgram(ID);
 
 	int result{};
 	char log[1024]{};
+
 	glGetProgramiv(ID, GL_LINK_STATUS, &result);
 	if (result != GL_TRUE)
 	{
@@ -44,17 +47,26 @@ void Shader::Create()
 		std::cerr << "Error linking shader program:\n" << log << std::endl;
 	}
 
+	glGetProgramiv(ID, GL_VALIDATE_STATUS, &result);
+	if (result != GL_TRUE)
+	{
+		glGetProgramInfoLog(ID, 1024, nullptr, log);
+		std::cerr << "Error validating shader program:\n" << log << std::endl;
+	}
+
 	glDeleteShader(vShader);
 	glDeleteShader(fShader);
-	glDeleteShader(gShader);
+
+	if(!shaderSourcePaths[GL_GEOMETRY_SHADER].empty())
+		glDeleteShader(gShader);
 }
 
-GLuint Shader::Compile(GLint shaderType)
+GLuint Shader::Compile(GLenum shaderType)
 {
 	GLuint shaderID = glCreateShader(shaderType);
-	const char* shaderCode{};
 
-	shaderCode = ReadFromFile(shaderSourcePaths[shaderType]).c_str();
+	std::string shaderCodeString = ReadFromFile(shaderSourcePaths[shaderType]);
+	const char* shaderCode = shaderCodeString.c_str();
 
 	glShaderSource(shaderID, 1, &shaderCode, nullptr);
 	glCompileShader(shaderID);
@@ -72,7 +84,6 @@ GLuint Shader::Compile(GLint shaderType)
 		else if(shaderType == GL_GEOMETRY_SHADER)
 			std::cerr << "Error compiling geometry shader:\n" << log << std::endl;
 
-		glDeleteShader(shaderID);
 		return -1;
 	}
 	return shaderID;

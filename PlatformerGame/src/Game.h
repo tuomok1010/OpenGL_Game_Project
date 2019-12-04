@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Shader.h"
 
 class Game
 {
@@ -14,5 +15,6 @@ public:
 private:
 private:
 	Window mainWindow;
+	Shader tempShader;
 };
 
