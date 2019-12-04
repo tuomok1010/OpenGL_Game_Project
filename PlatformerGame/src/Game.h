@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "Window.h"
 #include "Shader.h"
+#include "VertexArray.h"
 
 class Game
 {
@@ -15,6 +18,6 @@ public:
 private:
 private:
 	Window mainWindow;
-	Shader tempShader;
+	std::vector<Shader*> shaders{};
 };
 

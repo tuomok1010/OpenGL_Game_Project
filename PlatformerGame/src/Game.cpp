@@ -2,12 +2,15 @@
 #include <iostream>
 
 Game::Game(int scrnWidth, int scrnHeight)
-	: mainWindow(scrnWidth, scrnHeight), tempShader("shaders/shader.vert", "shaders/shader.frag")
+	: mainWindow(scrnWidth, scrnHeight)
 {
+	shaders.emplace_back(new Shader("shaders/shader.vert", "shaders/shader.frag"));
 }
 
 Game::~Game()
 {
+	for (unsigned int i = 0; i < shaders.size(); ++i)
+		delete shaders[i];
 }
 
 void Game::Run()
@@ -16,22 +19,28 @@ void Game::Run()
 	{
 		-0.5f, -0.5f,
 		 0.5f, -0.5f,
-		 0.0f,  0.5f
+		-0.5f,  0.5f,
+		 0.5f,  0.5f,
 	};
 
-	GLuint VBO{}, VAO{};
+	unsigned int indices[]
+	{
+		0, 1, 2,
+		3, 2, 1,
+	};
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	VertexBuffer VBO(sizeof(vertices[0]) * 8, vertices);
+	IndexBuffer IBO(sizeof(indices[0]) * 6, indices, 6);
 
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * 6, vertices, GL_STATIC_DRAW);
+	VertexArray VAO(VBO, IBO);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(vertices[0]), 0);
-	glEnableVertexAttribArray(0);
+	// OR use the second constructor to create the VBO and IBO in the heap.
+	//VertexArray VAO(vertices, indices, 8, 6);
 
-	tempShader.Bind();
+	VAO.SetVertexLayout(0, 2, GL_FLOAT, 2 * sizeof(GLfloat), 0);
+	VAO.Bind();
+
+	shaders[0]->Bind();
 
 	while (!mainWindow.GetShouldClose())
 	{
@@ -40,7 +49,7 @@ void Game::Run()
 		glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 		mainWindow.SwapBuffers();
 	}

@@ -142,16 +142,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\VertexBuffer.h" />
   </ItemGroup>
