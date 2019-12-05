@@ -50,6 +50,10 @@ int Window::Init()
 
 	glViewport(0, 0, bufferWidth, bufferHeight);
 
+	// These allow transparency in images (alpha value)
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// we need this for the callback functions
 	glfwSetWindowUserPointer(window, this);
 

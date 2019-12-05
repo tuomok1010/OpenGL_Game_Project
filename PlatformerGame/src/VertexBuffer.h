@@ -5,7 +5,7 @@
 class VertexBuffer
 {
 public:
-	VertexBuffer(GLsizeiptr sizeInBytes, GLfloat* data, GLsizei numBuffers = 1, GLenum usage = GL_STATIC_DRAW);
+	VertexBuffer(GLsizeiptr sizeInBytes, GLfloat* data, GLenum usage = GL_STATIC_DRAW);
 	~VertexBuffer();
 
 	GLuint GetID() const { return ID; }

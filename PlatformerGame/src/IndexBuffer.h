@@ -5,7 +5,7 @@
 class IndexBuffer
 {
 public:
-	IndexBuffer(GLsizeiptr sizeInBytes, GLuint* data, GLsizei numIndices, GLsizei numBuffers = 1, GLenum usage = GL_STATIC_DRAW);
+	IndexBuffer(GLsizeiptr sizeInBytes, GLuint* data, GLsizei numIndices, GLenum usage = GL_STATIC_DRAW);
 	~IndexBuffer();
 
 	GLuint GetID() const { return ID; }

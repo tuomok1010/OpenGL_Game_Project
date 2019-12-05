@@ -16,11 +16,12 @@ Game::~Game()
 void Game::Run()
 {
 	GLfloat vertices[]
-	{
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		-0.5f,  0.5f,
-		 0.5f,  0.5f,
+	{	
+		// Pos			// Tex coords
+		-0.5f, -0.5f,	0.0f, 0.0f,
+		 0.5f, -0.5f,	1.0f, 0.0f,
+		-0.5f,  0.5f,	0.0f, 1.0f,
+		 0.5f,  0.5f,	1.0f, 1.0f
 	};
 
 	unsigned int indices[]
@@ -29,18 +30,25 @@ void Game::Run()
 		3, 2, 1,
 	};
 
-	VertexBuffer VBO(sizeof(vertices[0]) * 8, vertices);
+	VertexBuffer VBO(sizeof(vertices[0]) * 8 * 2, vertices);
 	IndexBuffer IBO(sizeof(indices[0]) * 6, indices, 6);
-
 	VertexArray VAO(VBO, IBO);
 
-	// OR use the second constructor to create the VBO and IBO in the heap.
-	//VertexArray VAO(vertices, indices, 8, 6);
+	Texture2D smiley("../textures/smiley03b.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+	smiley.Bind(0);
 
-	VAO.SetVertexLayout(0, 2, GL_FLOAT, 2 * sizeof(GLfloat), 0);
+	// Set up the vertex positions
+	VAO.SetVertexLayout(0, 2, GL_FLOAT, 4 * sizeof(GLfloat), 0);
+
+	// Set up the texture coordinates
+	VAO.SetVertexLayout(1, 2, GL_FLOAT, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat));
+
+	// Set up texture coordinates
+
 	VAO.Bind();
 
 	shaders[0]->Bind();
+	shaders[0]->SetUniformi("ourTexture", 0);
 
 	while (!mainWindow.GetShouldClose())
 	{

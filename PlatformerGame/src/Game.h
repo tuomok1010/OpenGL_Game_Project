@@ -5,6 +5,7 @@
 #include "Window.h"
 #include "Shader.h"
 #include "VertexArray.h"
+#include "Texture2D.h"
 
 class Game
 {
