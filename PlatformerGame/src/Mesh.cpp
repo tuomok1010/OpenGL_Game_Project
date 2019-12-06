@@ -6,7 +6,7 @@ Mesh::Mesh(GLfloat* vertices, GLuint* indices, GLsizei vertexValueCount, GLsizei
 	shouldCleanMemory = true;
 }
 
-Mesh::Mesh(const VertexBuffer& VBO, const IndexBuffer& IBO)
+Mesh::Mesh(VertexBuffer& VBO, IndexBuffer& IBO)
 {
 	VAO = new VertexArray(VBO, IBO);
 	shouldCleanMemory = true;
@@ -19,6 +19,8 @@ Mesh::Mesh(VertexArray& VAO)
 
 Mesh::~Mesh()
 {
+	Clear();
+
 	if (shouldCleanMemory)
 		delete VAO;
 }
@@ -32,6 +34,7 @@ void Mesh::Render()
 
 void Mesh::Clear()
 {
+	VAO->Clear();
 }
 
 void Mesh::SetLayout(GLuint shaderLocationindex, GLint numValuesPerVertex, GLenum type, GLsizei stride, GLuint offset, GLboolean normalised)

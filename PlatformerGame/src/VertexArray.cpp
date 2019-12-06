@@ -9,7 +9,7 @@ VertexArray::VertexArray(GLfloat* vertices, GLuint* indices, GLsizei vertexValue
 	shouldCleanMemory = true;
 }
 
-VertexArray::VertexArray(const VertexBuffer& VBO, const IndexBuffer& IBO)
+VertexArray::VertexArray(VertexBuffer& VBO, IndexBuffer& IBO)
 	: VBO(&VBO), IBO(&IBO)
 {
 	glGenVertexArrays(1, &ID);
@@ -20,6 +20,7 @@ VertexArray::~VertexArray()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	Clear();
 
 	if (shouldCleanMemory)
 	{
@@ -54,4 +55,11 @@ void VertexArray::SetVertexLayout(GLuint shaderLocationindex, GLint numValuesPer
 	Unbind();
 	VBO->Unbind();
 	IBO->Unbind();
+}
+
+void VertexArray::Clear()
+{
+	VBO->Clear();
+	IBO->Clear();
+	glDeleteVertexArrays(1, &ID);
 }

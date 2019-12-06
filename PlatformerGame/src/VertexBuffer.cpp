@@ -11,7 +11,7 @@ VertexBuffer::VertexBuffer(GLfloat* data, GLsizei numElements, GLenum usage)
 VertexBuffer::~VertexBuffer()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &ID);
+	Clear();
 }
 
 void VertexBuffer::Bind() const
@@ -22,4 +22,9 @@ void VertexBuffer::Bind() const
 void VertexBuffer::Unbind() const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void VertexBuffer::Clear()
+{
+	glDeleteBuffers(1, &ID);
 }

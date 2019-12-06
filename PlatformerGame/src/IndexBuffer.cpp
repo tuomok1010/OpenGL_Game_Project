@@ -12,7 +12,7 @@ IndexBuffer::IndexBuffer(GLuint* data, GLsizei numIndices, GLenum usage)
 IndexBuffer::~IndexBuffer()
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &ID);
+	Clear();
 }
 
 void IndexBuffer::Bind() const
@@ -23,4 +23,9 @@ void IndexBuffer::Bind() const
 void IndexBuffer::Unbind() const
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void IndexBuffer::Clear()
+{
+	glDeleteBuffers(1, &ID);
 }

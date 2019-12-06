@@ -7,7 +7,7 @@ class VertexArray
 {
 public:
 	VertexArray(GLfloat* vertices, GLuint* indices, GLsizei vertexValueCount, GLsizei indexCount, GLenum usage = GL_STATIC_DRAW);
-	VertexArray(const VertexBuffer& VBO, const IndexBuffer& IBO);
+	VertexArray(VertexBuffer& VBO, IndexBuffer& IBO);
 	~VertexArray();
 
 	void Bind() const;
@@ -17,10 +17,12 @@ public:
 
 	GLsizei GetIndexCount() const { return IBO->GetCount(); }
 
+	void Clear();
+
 private:
 	GLuint ID{};
-	const VertexBuffer* VBO{};
-	const IndexBuffer* IBO{};
+	VertexBuffer* VBO{};
+	IndexBuffer* IBO{};
 
 	bool shouldCleanMemory{ false };
 };

@@ -8,7 +8,7 @@ class Mesh
 {
 public:
 	Mesh(GLfloat* vertices, GLuint* indices, GLsizei vertexValueCount, GLsizei indexCount, GLenum usage = GL_STATIC_DRAW);
-	Mesh(const VertexBuffer& VBO, const IndexBuffer& IBO);
+	Mesh(VertexBuffer& VBO, IndexBuffer& IBO);
 	Mesh(VertexArray& VAO);
 	~Mesh();
 

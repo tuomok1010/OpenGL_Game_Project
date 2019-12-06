@@ -10,10 +10,10 @@ public:
 	VertexBuffer(GLfloat* data, GLsizei numElements, GLenum usage = GL_STATIC_DRAW);
 	~VertexBuffer();
 
-	GLuint GetID() const { return ID; }
-
 	void Bind() const;
 	void Unbind() const;
+
+	void Clear();
 private:
 	GLuint ID{};
 };
