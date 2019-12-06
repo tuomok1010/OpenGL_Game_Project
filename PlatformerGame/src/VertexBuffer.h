@@ -1,11 +1,13 @@
 #pragma once
 
+#include <vector>
+
 #include <glad/glad.h>
 
 class VertexBuffer
 {
 public:
-	VertexBuffer(GLsizeiptr sizeInBytes, GLfloat* data, GLenum usage = GL_STATIC_DRAW);
+	VertexBuffer(GLfloat* data, GLsizei numElements, GLenum usage = GL_STATIC_DRAW);
 	~VertexBuffer();
 
 	GLuint GetID() const { return ID; }

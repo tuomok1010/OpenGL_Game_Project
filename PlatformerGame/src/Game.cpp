@@ -17,11 +17,28 @@ void Game::Run()
 {
 	GLfloat vertices[]
 	{	
-		// Pos			// Tex coords
-		-0.5f, -0.5f,	0.0f, 0.0f,
-		 0.5f, -0.5f,	1.0f, 0.0f,
-		-0.5f,  0.5f,	0.0f, 1.0f,
-		 0.5f,  0.5f,	1.0f, 1.0f
+		// Pos				// Tex coords
+		-1.0f,  0.5f,		0.0f, 0.0f,
+		-0.5f,  0.5f,		1.0f, 0.0f,
+		-1.0f,  1.0f,		0.0f, 1.0f,
+		-0.5f,  1.0f,		1.0f, 1.0f
+	};
+
+	GLfloat vertices2[]
+	{
+		// Pos				// Tex coords
+		 0.5f,  0.5f,		0.0f, 0.0f,
+		 1.0f,  0.5f,		1.0f, 0.0f,
+		 0.5f,  1.0f,		0.0f, 1.0f,
+		 1.0f,  1.0f,		1.0f, 1.0f
+	};
+
+	GLfloat vertices3[]
+	{	// Pos				// Tex coords
+		-0.25f, -0.25f,		0.0f, 0.0f,
+		 0.25f, -0.25f,		1.0f, 0.0f,
+		-0.25f,  0.25f,		0.0f, 1.0f,
+		 0.25f,  0.25f,		1.0f, 1.0f
 	};
 
 	unsigned int indices[]
@@ -30,22 +47,27 @@ void Game::Run()
 		3, 2, 1,
 	};
 
-	VertexBuffer VBO(sizeof(vertices[0]) * 8 * 2, vertices);
-	IndexBuffer IBO(sizeof(indices[0]) * 6, indices, 6);
-	VertexArray VAO(VBO, IBO);
-
 	Texture2D smiley("../textures/smiley03b.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 	smiley.Bind(0);
 
-	// Set up the vertex positions
-	VAO.SetVertexLayout(0, 2, GL_FLOAT, 4 * sizeof(GLfloat), 0);
+	// Using the first Mesh constructor
+	Mesh obj1(vertices, indices, 16, 6);
+	obj1.SetLayout(0, 2, GL_FLOAT, 4 * sizeof(GLfloat), 0);
+	obj1.SetLayout(1, 2, GL_FLOAT, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat));
 
-	// Set up the texture coordinates
-	VAO.SetVertexLayout(1, 2, GL_FLOAT, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat));
+	// Using the second Mesh constructor
+	VertexBuffer VBO(vertices2, 16);
+	IndexBuffer IBO(indices, 6);
+	Mesh obj2(VBO, IBO);
+	obj2.SetLayout(0, 2, GL_FLOAT, 4 * sizeof(GLfloat), 0);
+	obj2.SetLayout(1, 2, GL_FLOAT, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat));
 
-	// Set up texture coordinates
+	// Using the third Mesh constructor
+	VertexArray VAO(vertices3, indices, 16, 6);
+	Mesh obj3(VAO);
+	obj3.SetLayout(0, 2, GL_FLOAT, 4 * sizeof(GLfloat), 0);
+	obj3.SetLayout(1, 2, GL_FLOAT, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat));
 
-	VAO.Bind();
 
 	shaders[0]->Bind();
 	shaders[0]->SetUniformi("ourTexture", 0);
@@ -57,7 +79,9 @@ void Game::Run()
 		glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		obj1.Render();
+		obj2.Render();
+		obj3.Render();
 
 		mainWindow.SwapBuffers();
 	}

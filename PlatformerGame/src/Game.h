@@ -4,7 +4,7 @@
 
 #include "Window.h"
 #include "Shader.h"
-#include "VertexArray.h"
+#include "Mesh.h"
 #include "Texture2D.h"
 
 class Game

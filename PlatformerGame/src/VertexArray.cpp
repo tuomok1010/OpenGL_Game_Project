@@ -1,9 +1,9 @@
 #include "VertexArray.h"
 
-VertexArray::VertexArray(GLfloat* vertices, GLuint* indices, GLsizei vertexValueCount, GLsizei indexCount)
+VertexArray::VertexArray(GLfloat* vertices, GLuint* indices, GLsizei vertexValueCount, GLsizei indexCount, GLenum usage)
 {
-	VBO = new VertexBuffer(sizeof(vertices[0]) * vertexValueCount, vertices);
-	IBO = new IndexBuffer(sizeof(indices[0]) * indexCount, indices, indexCount);
+	VBO = new VertexBuffer(vertices, vertexValueCount, usage);
+	IBO = new IndexBuffer(indices, indexCount, usage);
 
 	glGenVertexArrays(1, &ID);
 	shouldCleanMemory = true;
@@ -31,11 +31,15 @@ VertexArray::~VertexArray()
 void VertexArray::Bind() const
 {
 	glBindVertexArray(ID);
+	VBO->Bind();
+	IBO->Bind();
 }
 
 void VertexArray::Unbind() const
 {
 	glBindVertexArray(0);
+	VBO->Unbind();
+	IBO->Unbind();
 }
 
 void VertexArray::SetVertexLayout(GLuint shaderLocationindex, GLint numValuesPerVertex, GLenum type, GLsizei stride, GLuint offset, GLboolean normalised)

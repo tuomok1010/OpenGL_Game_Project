@@ -1,11 +1,11 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(GLsizeiptr sizeInBytes, GLuint* data, GLsizei numIndices, GLenum usage)
+IndexBuffer::IndexBuffer(GLuint* data, GLsizei numIndices, GLenum usage)
 	: count(numIndices)
 {
 	glGenBuffers(1, &ID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeInBytes, data, usage);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data[0]) * numIndices, data, usage);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
