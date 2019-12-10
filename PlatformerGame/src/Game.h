@@ -9,6 +9,9 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Texture2D.h"
+#include "GameObject.h"
+#include "Level.h"
+#include "Camera.h"
 
 class Game
 {
@@ -17,6 +20,8 @@ public:
 	~Game();
 
 	void Run();
+	void ProcessInput();
+	void Draw();
 
 public:
 private:
@@ -26,10 +31,10 @@ private:
 	float lastFrame{};
 
 	glm::mat4 projection{};
-	glm::mat4 model{};
-	glm::mat4 view{};
+	Camera camera;
 
 	std::vector<Shader*> shaders{};
 	std::vector<Mesh*> meshList{};
+	std::vector<Texture2D*> textures{};
 };
 
