@@ -7,11 +7,12 @@
 #include <algorithm>
 
 #include "GameObject.h"
+#include "Player.h"
 
 class Level
 {
 public:
-	Level(Shader& shader, SpriteRenderer& renderer, Texture2D& blockTexture);
+	Level(SpriteRenderer& renderer);
 	~Level();
 
 	void Load(const std::string& filePath);
@@ -21,8 +22,8 @@ public:
 private:
 	std::vector<std::vector<GLchar>> levelData;
 	std::vector<GameObject> blocks;
+	std::vector<Texture2D*> textures{};
 
-	Shader& shader;
 	SpriteRenderer& renderer;
-	Texture2D& blockTexture;
+	Player player;
 };

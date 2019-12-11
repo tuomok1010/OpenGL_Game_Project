@@ -41,6 +41,9 @@ int Window::Init()
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
 
+	// Makes stuff run more smoothly.
+	glfwSwapInterval(2);
+
 	// init glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{

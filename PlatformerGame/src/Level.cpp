@@ -1,12 +1,12 @@
 #include "Level.h"
 
-Level::Level(Shader& shader, SpriteRenderer& renderer, Texture2D& blockTexture)
-	:
-	shader(shader),
-	renderer(renderer),
-	blockTexture(blockTexture)
-{
+#define TEXTURE_BLOCK_01 0
 
+Level::Level(SpriteRenderer& renderer)
+	:
+	renderer(renderer)
+{
+	textures.emplace_back(new Texture2D("../textures/TexturesCom_Brick_Rustic2_512_albedo.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 }
 
 Level::~Level()
@@ -28,14 +28,14 @@ void Level::Load(const std::string& filePath)
 
 	stream.seekp(0);
 	while (!stream.eof())
-	{	
+	{
 		std::vector<GLchar> levelRowVec;
 		std::string levelRowString{};
 		std::getline(stream, levelRowString);
 
-		for (int i = 0; i < levelRowString.size(); ++i)
+		for (unsigned int i = 0; i < levelRowString.size(); ++i)
 		{
-			if(levelRowString.at(i) != ' ')
+			if (levelRowString.at(i) != ' ')
 				levelRowVec.emplace_back(levelRowString.at(i));
 		}
 
@@ -53,15 +53,20 @@ void Level::ProcessLevelData()
 {
 	blocks.clear();
 
-	for (int i = 0; i < levelData.size(); ++i)
+	for (unsigned int i = 0; i < levelData.size(); ++i)
 	{
 		for (int j = 0; j < levelData.at(i).size(); ++j)
 		{
 			if (levelData.at(i).at(j) == '#')
 			{
 				// using a magic number 50 here, TODO fix!
-				GameObject blck(glm::vec2(j * 50, i * 50), glm::vec2(50.0f), blockTexture);
+				GameObject blck(glm::vec2(j * 50, i * 50), glm::vec2(50.0f), *textures[TEXTURE_BLOCK_01], glm::vec3(1.0f), glm::vec2(0.0f), 0.2f);
 				blocks.emplace_back(blck);
+			}
+
+			if (levelData.at(i).at(j) == 'P')
+			{
+				player.SetPosition(glm::vec2(j * 50, i * 50));
 			}
 		}
 	}
@@ -69,10 +74,12 @@ void Level::ProcessLevelData()
 
 void Level::Draw()
 {
-	for (int i = 0; i < blocks.size(); ++i)
+	// Render all blocks
+	for (unsigned int i = 0; i < blocks.size(); ++i)
 	{
-		blocks.at(i).Draw(renderer, 0);
+		blocks.at(i).Draw(renderer, 0, glm::vec3(0.0f));
 	}
+
+	// Render player
+	//player.Draw(renderer, DeltaTime);
 }
-
-

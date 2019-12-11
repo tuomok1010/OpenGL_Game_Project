@@ -12,6 +12,7 @@
 #include "GameObject.h"
 #include "Level.h"
 #include "Camera.h"
+#include "Player.h"
 
 class Game
 {
@@ -32,9 +33,8 @@ private:
 
 	glm::mat4 projection{};
 	Camera camera;
+	SpriteRenderer* renderer{};
 
 	std::vector<Shader*> shaders{};
-	std::vector<Mesh*> meshList{};
-	std::vector<Texture2D*> textures{};
 };
 
