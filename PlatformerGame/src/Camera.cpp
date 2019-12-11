@@ -9,6 +9,15 @@ Camera::Camera()
 {
 }
 
+Camera::Camera(glm::vec3 position)
+	:
+	position(position),
+	front(glm::vec3(0.0f, 0.0f, -1.0f)),
+	up(glm::vec3(0.0f, 1.0f, 0.0f)),
+	right(glm::vec3(1.0f, 0.0f, 0.0f))
+{
+}
+
 Camera::~Camera()
 {
 
@@ -19,7 +28,7 @@ glm::mat4 Camera::GetViewMatrix()
 	return glm::lookAt(position, position + front, up);
 }
 
-void Camera::Move(CameraDirection direction, float deltaTime)
+void Camera::Move(CameraDirection direction)
 {
 	if (direction == CameraDirection::RIGHT)
 		position += right;
@@ -32,4 +41,9 @@ void Camera::Move(CameraDirection direction, float deltaTime)
 
 	if (direction == CameraDirection::DOWN)
 		position -= up;
+}
+
+void Camera::SetPosition(glm::vec3 position)
+{
+	this->position = position;
 }

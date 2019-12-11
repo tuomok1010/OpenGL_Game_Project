@@ -32,7 +32,6 @@ private:
 	float lastFrame{};
 
 	glm::mat4 projection{};
-	Camera camera;
 	SpriteRenderer* renderer{};
 
 	std::vector<Shader*> shaders{};

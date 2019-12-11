@@ -2,9 +2,10 @@
 
 #define TEXTURE_BLOCK_01 0
 
-Level::Level(SpriteRenderer& renderer)
+Level::Level(SpriteRenderer& renderer, Player& player)
 	:
-	renderer(renderer)
+	renderer(renderer),
+	player(player)
 {
 	textures.emplace_back(new Texture2D("../textures/TexturesCom_Brick_Rustic2_512_albedo.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 }
@@ -60,13 +61,13 @@ void Level::ProcessLevelData()
 			if (levelData.at(i).at(j) == '#')
 			{
 				// using a magic number 50 here, TODO fix!
-				GameObject blck(glm::vec2(j * 50, i * 50), glm::vec2(50.0f), *textures[TEXTURE_BLOCK_01], glm::vec3(1.0f), glm::vec2(0.0f), 0.2f);
+				GameObject blck(glm::vec2(j * 50, i * 50), glm::vec2(50.0f), *textures[TEXTURE_BLOCK_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.2f, 0.2f));
 				blocks.emplace_back(blck);
 			}
 
 			if (levelData.at(i).at(j) == 'P')
 			{
-				player.SetPosition(glm::vec2(j * 50, i * 50));
+				player.SetPosition(glm::vec3(j * 50, i * 50, 0.0f));
 			}
 		}
 	}
@@ -81,5 +82,5 @@ void Level::Draw()
 	}
 
 	// Render player
-	//player.Draw(renderer, DeltaTime);
+	player.Draw(renderer);
 }

@@ -30,12 +30,12 @@ Game::~Game()
 
 void Game::Run()
 {
-	Level lvl(*renderer);
+	Player player;
+	Level lvl(*renderer, player);
 	lvl.Load("../levels/OpenGLGame_Level1.txt");
 
 	Texture2D tex("../textures/smiley03b.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 
-	Player player;
 
 	while (!mainWindow.GetShouldClose())
 	{
@@ -44,13 +44,18 @@ void Game::Run()
 		lastFrame = currentFrame;
 
 		if (mainWindow.IsKeyPressed(GLFW_KEY_D))
-			camera.Move(CameraDirection::RIGHT, deltaTime);
+		{
+			player.SetOrientation(PlayerOrientation::RIGHT);
+			player.SetState(PlayerState::RUN);
+			player.Move();
+		}
+
 		if (mainWindow.IsKeyPressed(GLFW_KEY_A))
-			camera.Move(CameraDirection::LEFT, deltaTime);
-		if (mainWindow.IsKeyPressed(GLFW_KEY_W))
-			camera.Move(CameraDirection::UP, deltaTime);
-		if (mainWindow.IsKeyPressed(GLFW_KEY_S))
-			camera.Move(CameraDirection::DOWN, deltaTime);
+		{
+			player.SetOrientation(PlayerOrientation::LEFT);
+			player.SetState(PlayerState::RUN);
+			player.Move();
+		}
 
 		mainWindow.PollEvents();
 
@@ -60,11 +65,10 @@ void Game::Run()
 		shaders[SHADER_SPRITE]->SetUniformMat4("projection", &projection);
 
 		glm::mat4 view = glm::mat4(1.0f);
-		view = camera.GetViewMatrix();
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
-		//lvl.Draw();
-		player.Draw(*renderer);
+		lvl.Draw();
+		player.SetState(PlayerState::IDLE);
 
 		mainWindow.SwapBuffers();
 	}

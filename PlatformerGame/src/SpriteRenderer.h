@@ -13,7 +13,7 @@ public:
 	SpriteRenderer(Shader& shader);
 	virtual ~SpriteRenderer();
 
-	void Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 color, glm::vec2 position, glm::vec2 sizeInPixels, GLfloat rotationInDegrees, GLfloat textureZoom, glm::vec3 rotationAxises = glm::vec3(0.0f, 0.0f, 1.0f));
+	void Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 color, glm::vec2 position, glm::vec2 sizeInPixels, GLfloat rotationInDegrees, glm::vec2 textureZoom, glm::vec3 rotationAxises = glm::vec3(0.0f, 0.0f, 1.0f));
 
 private:
 	void InitMeshData();

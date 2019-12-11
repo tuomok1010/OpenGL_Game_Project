@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color, glm::vec2 velocity, GLfloat textureZoom)
+GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color, glm::vec2 velocity, glm::vec2 textureZoom)
 	:
 	position(position),
 	size(size),

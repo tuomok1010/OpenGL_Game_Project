@@ -4,8 +4,8 @@ Player::Player()
 	:
 	state(PlayerState::IDLE),
 	color(glm::vec3(1.0f)),
-	position(glm::vec2(0.0f)),
-	size(glm::vec2(150.0f, 120.0f)),
+	position(glm::vec3(0.0f)),
+	size(glm::vec2(50.0f, 100.0f)),
 	rotation(0.0f)
 {
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -48,6 +48,8 @@ Player::Player()
 	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+
+	textureFall = new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Fall/jump_fall_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 }
 
 Player::~Player()
@@ -63,10 +65,21 @@ Player::~Player()
 		texturesRun.at(i)->Unbind();
 		delete texturesRun.at(i);
 	}
+
+	for (int i = 0; i < texturesJump.size(); ++i)
+	{
+		texturesIdle.at(i)->Unbind();
+		delete texturesJump.at(i);
+	}
 }
 
 void Player::Draw(SpriteRenderer& renderer)
 {
+	// If the player is facing right, we do not need to rotate the sprite, if the sprite is facing left we set the axis of rotation to be the Y axis.
+	glm::vec3 rotationAxiis = (orientation == PlayerOrientation::RIGHT) ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(0.0f, 1.0f, 0.0f);
+
+	// If the player is facing right, set rotation to 0.0f, if the sprite is facing left set rotation to 180.0f.
+	rotation = (orientation == PlayerOrientation::RIGHT) ? 0.0f : 180.0f;
 
 	if (state == PlayerState::IDLE)
 	{
@@ -75,11 +88,56 @@ void Player::Draw(SpriteRenderer& renderer)
 		if (textureIterator >= texturesIdle.size())
 			textureIterator = 0;
 
-		renderer.Draw(*texturesIdle.at(textureIterator), 0, color, position, size, rotation, 1.0f);
+		renderer.Draw(*texturesIdle.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), rotationAxiis);
+	}
+	else if (state == PlayerState::RUN)
+	{
+		++textureIterator;
+
+		if (textureIterator >= texturesRun.size())
+			textureIterator = 0;
+
+		renderer.Draw(*texturesRun.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), rotationAxiis);
+	}
+	else if (state == PlayerState::JUMP)
+	{
+		++textureIterator;
+
+		if (textureIterator >= texturesJump.size())
+			textureIterator = 0;
+
+		renderer.Draw(*texturesJump.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), rotationAxiis);
+	}
+	else if (state == PlayerState::FALL)
+	{
+		renderer.Draw(*textureFall, 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), rotationAxiis);
 	}
 }
 
-void Player::SetPosition(glm::vec2 newPosition)
+void Player::Move()
+{
+	switch (orientation)
+	{
+	case PlayerOrientation::RIGHT:
+		position += glm::vec3(1.0f, 0.0f, 0.0f);
+		break;
+	case PlayerOrientation::LEFT:
+		position -= glm::vec3(1.0f, 0.0f, 0.0f);
+		break;
+	}
+}
+
+void Player::SetPosition(glm::vec3 newPosition)
 {
 	position = newPosition;
+}
+
+void Player::SetOrientation(PlayerOrientation newOrientation)
+{
+	orientation = newOrientation;
+}
+
+void Player::SetState(PlayerState newState)
+{
+	state = newState;
 }

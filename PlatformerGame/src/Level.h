@@ -12,7 +12,7 @@
 class Level
 {
 public:
-	Level(SpriteRenderer& renderer);
+	Level(SpriteRenderer& renderer, Player& player);
 	~Level();
 
 	void Load(const std::string& filePath);
@@ -25,5 +25,5 @@ private:
 	std::vector<Texture2D*> textures{};
 
 	SpriteRenderer& renderer;
-	Player player;
+	Player& player;
 };
