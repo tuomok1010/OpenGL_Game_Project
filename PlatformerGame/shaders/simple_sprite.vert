@@ -10,9 +10,10 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform vec2 textureZoom;
+uniform vec2 textureOffset;
 
 void main()
 {
 	gl_Position = projection * view * model * vec4(vPos, 0.0f, 1.0f);
-	TexCoord = texCoord * textureZoom;
+	TexCoord = vec2(texCoord.x + textureOffset.x, texCoord.y + textureOffset.y) * textureZoom;
 }

@@ -27,7 +27,7 @@ public:
 	~Player();
 
 	void Draw(SpriteRenderer& renderer);
-	void Move();
+	void Move(float deltaTime);
 	void Jump();
 
 	void SetPosition(glm::vec3 newPosition);
@@ -40,6 +40,8 @@ private:
 	std::vector<Texture2D*> texturesJump;
 	Texture2D* textureFall;
 
+	glm::vec2 textureOffset{};
+
 	PlayerState state{};
 	PlayerOrientation orientation{};
 
@@ -47,7 +49,7 @@ private:
 
 	glm::vec3 position{};
 	glm::vec2 size{};
-	glm::vec2 velocity{};
 	glm::vec3 color{};
 	GLfloat rotation{};
+	GLfloat speed{};
 };

@@ -22,7 +22,7 @@ public:
 
 	void Run();
 	void ProcessInput();
-	void Draw();
+	void Draw(Level& level);
 
 public:
 private:
@@ -35,5 +35,7 @@ private:
 	SpriteRenderer* renderer{};
 
 	std::vector<Shader*> shaders{};
+
+	Player player;
 };
 

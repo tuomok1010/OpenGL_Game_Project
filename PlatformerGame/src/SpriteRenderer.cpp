@@ -37,7 +37,7 @@ void SpriteRenderer::InitMeshData()
 	mesh->SetLayout(1, 2, GL_FLOAT, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat));
 }
 
-void SpriteRenderer::Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 color, glm::vec2 position, glm::vec2 sizeInPixels, GLfloat rotationInDegrees, glm::vec2 textureZoom, glm::vec3 rotationAxises)
+void SpriteRenderer::Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 color, glm::vec2 position, glm::vec2 sizeInPixels, GLfloat rotationInDegrees, glm::vec2 textureZoom, glm::vec2 textureOffset, glm::vec3 rotationAxises)
 {
 	// setup texture
 	texture.Bind(textureUnit);
@@ -60,6 +60,7 @@ void SpriteRenderer::Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 colo
 	shader.SetUniformMat4("model", &model);
 	shader.SetUniform3f("spriteColor", color);
 	shader.SetUniform2f("textureZoom", textureZoom);
+	shader.SetUniform2f("textureOffset", textureOffset);
 
 	mesh->Render();
 
