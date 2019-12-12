@@ -52,6 +52,8 @@ Player::Player()
 	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
 	textureFall = new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Fall/jump_fall_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+
+	camera = Camera(position);
 }
 
 Player::~Player()
@@ -124,9 +126,11 @@ void Player::Move(float deltaTime)
 	{
 	case PlayerOrientation::RIGHT:
 		position += glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
+		camera.SetPosition(position + cameraOffset);
 		break;
 	case PlayerOrientation::LEFT:
 		position -= glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
+		camera.SetPosition(position + cameraOffset);
 		break;
 	}
 }
@@ -134,6 +138,7 @@ void Player::Move(float deltaTime)
 void Player::SetPosition(glm::vec3 newPosition)
 {
 	position = newPosition;
+	camera.SetPosition(position + cameraOffset);
 }
 
 void Player::SetOrientation(PlayerOrientation newOrientation)

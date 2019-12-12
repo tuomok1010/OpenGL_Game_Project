@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "SpriteRenderer.h"
+#include "Camera.h"
 
 enum class PlayerState
 {
@@ -34,6 +35,8 @@ public:
 	void SetOrientation(PlayerOrientation newOrientation);
 	void SetState(PlayerState newState);
 
+	glm::mat4 GetCameraViewMatrix() { return camera.GetViewMatrix(); }
+
 private:
 	std::vector<Texture2D*> texturesIdle;
 	std::vector<Texture2D*> texturesRun;
@@ -52,4 +55,8 @@ private:
 	glm::vec3 color{};
 	GLfloat rotation{};
 	GLfloat speed{};
+
+	Camera camera;
+	// centers the camera so that the player character is in the niddle of the screen
+	glm::vec3 cameraOffset{ -400, -300, 0 };
 };

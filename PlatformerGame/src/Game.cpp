@@ -74,6 +74,7 @@ void Game::Draw(Level& level)
 	shaders[SHADER_SPRITE]->SetUniformMat4("projection", &projection);
 
 	glm::mat4 view = glm::mat4(1.0f);
+	view = player.GetCameraViewMatrix();
 	shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
 	level.Draw();
