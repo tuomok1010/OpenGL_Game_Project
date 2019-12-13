@@ -21,4 +21,4 @@ P = player
 . = nothing
 
 
-Each block is 50x50 pixels.
+Each block is 50x50 in size

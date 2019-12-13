@@ -14,6 +14,8 @@ public:
 	void SetPosition(glm::vec2 newPosition);
 
 	glm::vec2 GetSize() const { return size; }
+	glm::vec2 GetPosition()const { return position; }
+	GLboolean isCollisionEnabled() const { return collisionEnabled; }
 
 private:
 	glm::vec2 position{};
@@ -21,7 +23,7 @@ private:
 	glm::vec2 velocity{};
 	glm::vec3 color{};
 	GLfloat rotation{};
-	GLboolean isSolid{};
+	GLboolean collisionEnabled{};
 	GLboolean isDestroyed{};
 	Texture2D& texture;
 	glm::vec2 textureZoom{};

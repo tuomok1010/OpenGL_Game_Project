@@ -7,7 +7,7 @@ GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, g
 	texture(texture),
 	color(color),
 	rotation(0.0f),
-	isSolid(false),
+	collisionEnabled(true),
 	isDestroyed(false),
 	textureZoom(textureZoom),
 	textureOffset(textureOffset)

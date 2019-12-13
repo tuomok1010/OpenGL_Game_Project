@@ -39,7 +39,7 @@ void Game::Run()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		ProcessInput();
+		ProcessInput(lvl);
 
 		Draw(lvl);
 	}
@@ -47,13 +47,16 @@ void Game::Run()
 	glfwTerminate();
 }
 
-void Game::ProcessInput()
+void Game::ProcessInput(Level& level)
 {
 	if (mainWindow.IsKeyPressed(GLFW_KEY_D))
 	{
 		player.SetOrientation(PlayerOrientation::RIGHT);
 		player.SetState(PlayerState::RUN);
 		player.Move(deltaTime);
+
+		if (level.isPlayerCollidingWithBlocks())
+			player.SetPosition(player.GetPreviousPosition());
 	}
 
 	if (mainWindow.IsKeyPressed(GLFW_KEY_A))
@@ -61,6 +64,18 @@ void Game::ProcessInput()
 		player.SetOrientation(PlayerOrientation::LEFT);
 		player.SetState(PlayerState::RUN);
 		player.Move(deltaTime);
+
+		if(level.isPlayerCollidingWithBlocks())
+			player.SetPosition(player.GetPreviousPosition());
+	}
+
+	// For testing only
+	if (mainWindow.IsKeyPressed(GLFW_KEY_S))
+	{
+		player.MoveDown(deltaTime);
+
+		if (level.isPlayerCollidingWithBlocks())
+			player.SetPosition(player.GetPreviousPosition());
 	}
 }
 

@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <unordered_map>
 
 #include "GameObject.h"
 #include "Player.h"
@@ -19,7 +18,11 @@ public:
 	void Load(const std::string& filePath);
 	void ProcessLevelData();
 	void Draw();
+	GLboolean isPlayerCollidingWithBlocks();
 
+private:
+	GLboolean CollisionCheck(Player& player, GameObject& obj);
+	GLboolean CollisionCheck(GameObject& obj1, GameObject& obj2);
 private:
 	std::vector<std::vector<GLchar>> levelData;
 	std::vector<GameObject> blocks;

@@ -3,10 +3,10 @@
 Player::Player()
 	:
 	state(PlayerState::IDLE),
-	textureOffset(glm::vec2(0.0f, 0.1f)),
+	textureOffset(glm::vec2(0.2f, 0.1f)),
 	color(glm::vec3(1.0f)),
 	position(glm::vec3(0.0f)),
-	size(glm::vec2(75.0f, 100.0f)),
+	size(glm::vec2(49.0f, 79.0f)),
 	rotation(0.0f),
 	speed(250.0f)
 {
@@ -92,7 +92,7 @@ void Player::Draw(SpriteRenderer& renderer)
 		if (textureIterator >= texturesIdle.size())
 			textureIterator = 0;
 
-		renderer.Draw(*texturesIdle.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesIdle.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
 	}
 	else if (state == PlayerState::RUN)
 	{
@@ -101,7 +101,7 @@ void Player::Draw(SpriteRenderer& renderer)
 		if (textureIterator >= texturesRun.size())
 			textureIterator = 0;
 
-		renderer.Draw(*texturesRun.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesRun.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
 	}
 	else if (state == PlayerState::JUMP)
 	{
@@ -110,7 +110,7 @@ void Player::Draw(SpriteRenderer& renderer)
 		if (textureIterator >= texturesJump.size())
 			textureIterator = 0;
 
-		renderer.Draw(*texturesJump.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesJump.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
 	}
 	else if (state == PlayerState::FALL)
 	{
@@ -125,18 +125,29 @@ void Player::Move(float deltaTime)
 	switch (orientation)
 	{
 	case PlayerOrientation::RIGHT:
+		previousPosition = position;
 		position += glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
 		camera.SetPosition(position + cameraOffset);
 		break;
 	case PlayerOrientation::LEFT:
+		previousPosition = position;
 		position -= glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
 		camera.SetPosition(position + cameraOffset);
 		break;
 	}
 }
 
+void Player::MoveDown(float deltaTime)
+{
+	GLfloat velocity = speed * deltaTime;
+	previousPosition = position;
+	position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+	camera.SetPosition(position + cameraOffset);
+}
+
 void Player::SetPosition(glm::vec3 newPosition)
 {
+	previousPosition = position;
 	position = newPosition;
 	camera.SetPosition(position + cameraOffset);
 }

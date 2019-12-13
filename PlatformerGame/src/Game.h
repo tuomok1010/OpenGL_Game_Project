@@ -21,7 +21,7 @@ public:
 	~Game();
 
 	void Run();
-	void ProcessInput();
+	void ProcessInput(Level& level);
 	void Draw(Level& level);
 
 public:

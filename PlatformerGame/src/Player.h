@@ -30,12 +30,16 @@ public:
 	void Draw(SpriteRenderer& renderer);
 	void Move(float deltaTime);
 	void Jump();
+	void MoveDown(float deltaTime);
 
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
 	void SetState(PlayerState newState);
 
 	glm::mat4 GetCameraViewMatrix() { return camera.GetViewMatrix(); }
+	glm::vec3 GetPosition()const { return position; }
+	glm::vec2 GetSize()const { return size; }
+	glm::vec3 GetPreviousPosition()const { return previousPosition; }
 
 private:
 	std::vector<Texture2D*> texturesIdle;
@@ -49,6 +53,7 @@ private:
 	PlayerOrientation orientation{};
 
 	int textureIterator{};
+	glm::vec3 previousPosition{};
 
 	glm::vec3 position{};
 	glm::vec2 size{};
