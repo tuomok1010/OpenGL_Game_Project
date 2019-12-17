@@ -30,8 +30,6 @@ public:
 	void Draw(SpriteRenderer& renderer);
 	void Move(float deltaTime);
 
-	// returns false once the max height of the jump has been reached. This value(with collision testing) is then used in game.cpp 
-	// to check when the player can jump again. TODO: think of a cleaner way to do it
 	GLboolean Jump(float deltaTime, GLboolean& gravityEnabled);
 	void ResetHeightJumped() { heightJumped = 0.0f; }
 
