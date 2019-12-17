@@ -5,6 +5,7 @@
 
 player/
 textures/
+assets/
 
 # User-specific files
 *.rsuser
