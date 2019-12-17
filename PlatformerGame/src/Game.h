@@ -14,6 +14,13 @@
 #include "Camera.h"
 #include "Player.h"
 
+enum class GameState
+{
+	MENU,
+	RUN,
+	QUIT
+};
+
 class Game
 {
 public:
@@ -30,6 +37,9 @@ private:
 	Window mainWindow;
 	float deltaTime{};
 	float lastFrame{};
+	GameState gameState;
+
+	GLint previusKeyPressed{};
 
 	glm::mat4 projection{};
 	SpriteRenderer* renderer{};
@@ -37,5 +47,7 @@ private:
 	std::vector<Shader*> shaders{};
 
 	Player player;
+	bool canJumpAgain{ true };
+	GLfloat jumpCooldown{};
 };
 

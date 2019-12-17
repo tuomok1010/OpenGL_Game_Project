@@ -29,17 +29,27 @@ public:
 
 	void Draw(SpriteRenderer& renderer);
 	void Move(float deltaTime);
-	void Jump();
+
+	// returns false once the max height of the jump has been reached. This value(with collision testing) is then used in game.cpp 
+	// to check when the player can jump again. TODO: think of a cleaner way to do it
+	GLboolean Jump(float deltaTime, GLboolean& gravityEnabled);
+	void ResetHeightJumped() { heightJumped = 0.0f; }
+
+	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
 	void MoveDown(float deltaTime);
 
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
 	void SetState(PlayerState newState);
+	void SetHasCollided(GLboolean hasCollided);
+
+	void ResetAnimation(PlayerState animationToReset);
 
 	glm::mat4 GetCameraViewMatrix() { return camera.GetViewMatrix(); }
 	glm::vec3 GetPosition()const { return position; }
 	glm::vec2 GetSize()const { return size; }
 	glm::vec3 GetPreviousPosition()const { return previousPosition; }
+	GLboolean GetHasCollided()const { return hasCollided; }
 
 private:
 	std::vector<Texture2D*> texturesIdle;
@@ -52,7 +62,10 @@ private:
 	PlayerState state{};
 	PlayerOrientation orientation{};
 
-	int textureIterator{};
+	unsigned int idleTexIterator{};
+	unsigned int runTexIterator{};
+	unsigned int jumpTexIterator{};
+
 	glm::vec3 previousPosition{};
 
 	glm::vec3 position{};
@@ -60,6 +73,12 @@ private:
 	glm::vec3 color{};
 	GLfloat rotation{};
 	GLfloat speed{};
+
+	GLfloat maxJumpHeight{};
+	GLfloat heightJumped{};
+
+	// TODO consider removing as it is not used anywhere(i think...)
+	GLboolean hasCollided{ false };
 
 	Camera camera;
 	// centers the camera so that the player character is in the niddle of the screen

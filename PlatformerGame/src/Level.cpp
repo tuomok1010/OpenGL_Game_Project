@@ -59,7 +59,7 @@ void Level::ProcessLevelData()
 
 	for (unsigned int i = 0; i < levelData.size(); ++i)
 	{
-		for (int j = 0; j < levelData.at(i).size(); ++j)
+		for (unsigned int j = 0; j < levelData.at(i).size(); ++j)
 		{
 			if (levelData.at(i).at(j) == '#')
 			{
@@ -100,10 +100,16 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 		// Check if overlapping
 		bool collisionX = playerPos.x + playerSize.x > objPos.x && objPos.x + objSize.x > playerPos.x;
 		bool collisionY = playerPos.y + playerSize.y > objPos.y && objPos.y + objSize.y > playerPos.y;
-		return collisionX && collisionY;
+
+		if (collisionX && collisionY)
+		{
+			player.SetHasCollided(true);
+			return collisionX && collisionY;
+		}
 	}
 	else
 	{
+		player.SetHasCollided(false);
 		return false;
 	}
 }

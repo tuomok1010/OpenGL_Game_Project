@@ -8,7 +8,9 @@ Player::Player()
 	position(glm::vec3(0.0f)),
 	size(glm::vec2(49.0f, 79.0f)),
 	rotation(0.0f),
-	speed(250.0f)
+	speed(250.0f),
+	maxJumpHeight(75.0f),
+	heightJumped(0.0f)
 {
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -58,19 +60,19 @@ Player::Player()
 
 Player::~Player()
 {
-	for (int i = 0; i < texturesIdle.size(); ++i)
+	for (unsigned int i = 0; i < texturesIdle.size(); ++i)
 	{
 		texturesIdle.at(i)->Unbind();
 		delete texturesIdle.at(i);
 	}
 
-	for (int i = 0; i < texturesRun.size(); ++i)
+	for (unsigned int i = 0; i < texturesRun.size(); ++i)
 	{
 		texturesRun.at(i)->Unbind();
 		delete texturesRun.at(i);
 	}
 
-	for (int i = 0; i < texturesJump.size(); ++i)
+	for (unsigned int i = 0; i < texturesJump.size(); ++i)
 	{
 		texturesIdle.at(i)->Unbind();
 		delete texturesJump.at(i);
@@ -87,40 +89,43 @@ void Player::Draw(SpriteRenderer& renderer)
 
 	if (state == PlayerState::IDLE)
 	{
-		++textureIterator;
+		++idleTexIterator;
 
-		if (textureIterator >= texturesIdle.size())
-			textureIterator = 0;
+		if (idleTexIterator >= texturesIdle.size())
+			idleTexIterator = 0;
 
-		renderer.Draw(*texturesIdle.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesIdle.at(idleTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
 	}
 	else if (state == PlayerState::RUN)
 	{
-		++textureIterator;
+		++runTexIterator;
 
-		if (textureIterator >= texturesRun.size())
-			textureIterator = 0;
+		if (runTexIterator >= texturesRun.size())
+			runTexIterator = 0;
 
-		renderer.Draw(*texturesRun.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesRun.at(runTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
 	}
 	else if (state == PlayerState::JUMP)
 	{
-		++textureIterator;
+		++jumpTexIterator;
 
-		if (textureIterator >= texturesJump.size())
-			textureIterator = 0;
-
-		renderer.Draw(*texturesJump.at(textureIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		if (jumpTexIterator >= texturesJump.size())
+		{
+			jumpTexIterator = texturesJump.size() - 1;
+		}
+		
+		renderer.Draw(*texturesJump.at(jumpTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
 	}
 	else if (state == PlayerState::FALL)
 	{
-		renderer.Draw(*textureFall, 0, color, position, size, rotation, glm::vec2(0.7f, 0.8f), textureOffset, rotationAxiis);
+		renderer.Draw(*textureFall, 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
 	}
 }
 
 void Player::Move(float deltaTime)
 {
 	GLfloat velocity = speed * deltaTime;
+	state = PlayerState::RUN;
 
 	switch (orientation)
 	{
@@ -135,6 +140,29 @@ void Player::Move(float deltaTime)
 		camera.SetPosition(position + cameraOffset);
 		break;
 	}
+}
+
+GLboolean Player::Jump(float deltaTime, GLboolean& gravityEnabled)
+{
+	GLfloat velocity = speed * deltaTime;
+	state = PlayerState::JUMP;
+	previousPosition = position;
+	gravityEnabled = false;
+
+	if (heightJumped >= maxJumpHeight)
+	{
+		heightJumped = 0.0f;
+		gravityEnabled = true;
+		return false;
+	}
+	else
+	{
+		position += glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+		camera.SetPosition(position + cameraOffset);
+
+		heightJumped += position.y - previousPosition.y;
+	}
+	return true;
 }
 
 void Player::MoveDown(float deltaTime)
@@ -160,4 +188,25 @@ void Player::SetOrientation(PlayerOrientation newOrientation)
 void Player::SetState(PlayerState newState)
 {
 	state = newState;
+}
+
+void Player::SetHasCollided(GLboolean hasCollided)
+{
+	this->hasCollided = hasCollided;
+}
+
+void Player::ResetAnimation(PlayerState animationToReset)
+{
+	switch (animationToReset)
+	{
+	case PlayerState::IDLE:
+		idleTexIterator = 0;
+		break;
+	case PlayerState::RUN:
+		runTexIterator = 0;
+		break;
+	case PlayerState::JUMP:
+		jumpTexIterator = 0;
+		break;
+	}
 }

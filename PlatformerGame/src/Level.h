@@ -20,6 +20,8 @@ public:
 	void Draw();
 	GLboolean isPlayerCollidingWithBlocks();
 
+	GLboolean gravityEnabled{ true };
+
 private:
 	GLboolean CollisionCheck(Player& player, GameObject& obj);
 	GLboolean CollisionCheck(GameObject& obj1, GameObject& obj2);
