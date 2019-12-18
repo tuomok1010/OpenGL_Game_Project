@@ -1,3 +1,6 @@
 # OpenGL_Game_Project
 
-Does not work as it is because the "player" folder of the project is not included in this repo. 
+My first openGL game project. A simple platformer game.
+
+This was made with visual studio 2019 and as far as I am aware does not work right off the bat with previous versions.
+Also the solution platform must be x86.
