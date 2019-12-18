@@ -10,7 +10,8 @@ Player::Player()
 	rotation(0.0f),
 	speed(250.0f),
 	maxJumpHeight(75.0f),
-	heightJumped(0.0f)
+	heightJumped(0.0f),
+	health(100.0f)
 {
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -142,6 +143,7 @@ void Player::Move(float deltaTime)
 	}
 }
 
+// TODO fix: there is a bug when player jumps and hits a block above him. This will cause the player to freeze in place and other weird behaviour
 GLboolean Player::Jump(float deltaTime, GLboolean& gravityEnabled)
 {
 	GLfloat velocity = speed * deltaTime;
@@ -193,6 +195,11 @@ void Player::SetState(PlayerState newState)
 void Player::SetHasCollided(GLboolean hasCollided)
 {
 	this->hasCollided = hasCollided;
+}
+
+void Player::SetHealth(GLfloat newHealth)
+{
+	health = newHealth;
 }
 
 void Player::ResetAnimation(PlayerState animationToReset)

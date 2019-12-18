@@ -40,6 +40,7 @@ public:
 	void SetOrientation(PlayerOrientation newOrientation);
 	void SetState(PlayerState newState);
 	void SetHasCollided(GLboolean hasCollided);
+	void SetHealth(GLfloat newHealth);
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -48,6 +49,7 @@ public:
 	glm::vec2 GetSize()const { return size; }
 	glm::vec3 GetPreviousPosition()const { return previousPosition; }
 	GLboolean GetHasCollided()const { return hasCollided; }
+	GLfloat GetHealth()const { return health; }
 
 private:
 	std::vector<Texture2D*> texturesIdle;
@@ -74,6 +76,9 @@ private:
 
 	GLfloat maxJumpHeight{};
 	GLfloat heightJumped{};
+
+	GLfloat health{};
+	GLboolean isDead{ false };
 
 	// TODO consider removing as it is not used anywhere(i think...)
 	GLboolean hasCollided{ false };

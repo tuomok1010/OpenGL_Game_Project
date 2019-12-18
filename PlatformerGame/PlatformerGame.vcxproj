@@ -152,6 +152,7 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\SpikeTrap.cpp" />
     <ClCompile Include="src\SpriteRenderer.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\SpikeTrap.h" />
     <ClInclude Include="src\SpriteRenderer.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\VertexArray.h" />

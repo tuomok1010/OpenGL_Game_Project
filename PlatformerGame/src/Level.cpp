@@ -1,6 +1,19 @@
 #include "Level.h"
 
-#define TEXTURE_BLOCK_01 0
+// these are the indices used to access the textures vector(check the constructor)
+#define TEXTURE_BLOCK_00 0
+#define TEXTURE_BLOCK_01 1
+#define TEXTURE_BLOCK_02 2
+#define TEXTURE_BLOCK_03 3
+#define TEXTURE_BLOCK_04 4
+#define TEXTURE_BLOCK_05 5
+#define TEXTURE_BLOCK_06 6
+#define TEXTURE_BLOCK_07 7
+#define TEXTURE_BLOCK_08 8
+#define TEXTURE_BLOCK_09 9
+
+
+#define TEXTURE_TRAP_01 10
 
 #define BLOCK_SIZE 50
 
@@ -9,13 +22,30 @@ Level::Level(SpriteRenderer& renderer, Player& player)
 	renderer(renderer),
 	player(player)
 {
-	textures.emplace_back(new Texture2D("../textures/TexturesCom_Brick_Rustic2_512_albedo.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground0.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_00
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground1.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_01
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground2.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_02
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground3.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_03
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground4.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_04
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground5.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_05
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground6.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_06
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground7.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_07
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground8.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_08
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground9.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_09
+
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/spike.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_TRAP_01
 }
 
 Level::~Level()
 {
+	for (unsigned int i = 0; i < assetTextures.size(); ++i)
+		delete assetTextures.at(i);
 
+	for (unsigned int i = 0; i < blocks.size(); ++i)
+		delete blocks.at(i);
+
+	for (unsigned int i = 0; i < assets.size(); ++i)
+		delete assets.at(i);
 }
 
 void Level::Load(const std::string& filePath)
@@ -61,16 +91,92 @@ void Level::ProcessLevelData()
 	{
 		for (unsigned int j = 0; j < levelData.at(i).size(); ++j)
 		{
-			if (levelData.at(i).at(j) == '#')
+			GLchar symbol{ levelData.at(i).at(j) };
+			switch (symbol)
 			{
-				GameObject blck(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *textures[TEXTURE_BLOCK_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f), glm::vec2(0.2f, 0.2f));
-				blck.SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
-				blocks.emplace_back(blck);
-			}
-
-			if (levelData.at(i).at(j) == 'P')
-			{
-				player.SetPosition(glm::vec3((j + 0.2f) * BLOCK_SIZE, (i + 0.2f) * BLOCK_SIZE, 0.0f));
+				case 'P':
+				{
+					player.SetPosition(glm::vec3((j + 0.2f) * BLOCK_SIZE, (i + 0.2f) * BLOCK_SIZE, 0.0f));
+					break;
+				}
+				case '^':
+				{
+					SpikeTrap* trap = new SpikeTrap(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_TRAP_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f), glm::vec2(1.0f, 0.2f));
+					trap->SetIsCollisionEnabled(false);
+					trap->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					assets.emplace_back(trap);
+					break;
+				}
+				case '0':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_00], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '1':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '2':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_02], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '3':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_03], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '4':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_04], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '5':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_05], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '6':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_06], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '7':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_07], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '8':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_08], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
+				case '9':
+				{
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_09], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					blocks.emplace_back(block);
+					break;
+				}
 			}
 		}
 	}
@@ -81,7 +187,13 @@ void Level::Draw()
 	// Render all blocks
 	for (unsigned int i = 0; i < blocks.size(); ++i)
 	{
-		blocks.at(i).Draw(renderer, 0);
+		blocks.at(i)->Draw(renderer, 0);
+	}
+
+	// Render all assets(chests, traps, ladders etc)
+	for (unsigned int i = 0; i < assets.size(); ++i)
+	{
+		assets.at(i)->Draw(renderer, 0);
 	}
 
 	// Render player
@@ -137,7 +249,7 @@ GLboolean Level::isPlayerCollidingWithBlocks()
 {
 	for (auto& block : blocks)
 	{
-		if (CollisionCheck(player, block))
+		if (CollisionCheck(player, *block))
 		{
 			return true;
 		}

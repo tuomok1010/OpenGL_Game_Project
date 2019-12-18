@@ -6,7 +6,7 @@
 #include <fstream>
 #include <algorithm>
 
-#include "GameObject.h"
+#include "SpikeTrap.h"
 #include "Player.h"
 
 class Level
@@ -27,8 +27,9 @@ private:
 	GLboolean CollisionCheck(GameObject& obj1, GameObject& obj2);
 private:
 	std::vector<std::vector<GLchar>> levelData;
-	std::vector<GameObject> blocks;
-	std::vector<Texture2D*> textures{};
+	std::vector<GameObject*> blocks;
+	std::vector<GameObject*> assets;
+	std::vector<Texture2D*> assetTextures{};
 
 	SpriteRenderer& renderer;
 	Player& player;

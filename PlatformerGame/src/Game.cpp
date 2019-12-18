@@ -6,6 +6,9 @@
 #define SHADER_BASIC	0
 #define SHADER_SPRITE	1
 
+// used in the ProcessInput function to reset the jumpCooldown variable
+#define JUMP_COOLDOWN 1
+
 Game::Game(int scrnWidth, int scrnHeight)
 	: 
 	mainWindow(scrnWidth, scrnHeight), 
@@ -51,6 +54,12 @@ void Game::Run()
 
 void Game::ProcessInput(Level& level)
 {
+	/*
+		TODO fix: The SetPosition and GetPrevious position is used with the collision detection. However, 
+		sometimes when the player jumps and falls back to the ground, instead of falling completely to the ground and touching it,
+		he remains slightly in the air. 
+	*/
+
 	// Starts the game
 	if (mainWindow.IsKeyPressed(GLFW_KEY_ENTER) && gameState == GameState::MENU)
 		gameState = GameState::RUN;
@@ -97,7 +106,7 @@ void Game::ProcessInput(Level& level)
 			if (jumpCooldown <= 0.0f)
 			{
 				canJumpAgain = false;
-				jumpCooldown = 1.0f;
+				jumpCooldown = JUMP_COOLDOWN;
 			}
 		}
 
@@ -120,17 +129,20 @@ void Game::Draw(Level& level)
 
 	shaders[SHADER_SPRITE]->SetUniformMat4("projection", &projection);
 
-	glm::mat4 view = glm::mat4(1.0f);
-	view = player.GetCameraViewMatrix();
-	shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
-
 	if (gameState == GameState::MENU)
 	{
+		glm::mat4 view = glm::mat4(1.0f);
+		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
+
 		Texture2D* menu = new Texture2D("../textures/menu.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-		renderer->Draw(*menu, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(410, 410.0f), glm::vec2(800.0f, 600.0f), 0.0f);
+		renderer->Draw(*menu, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec2(800.0f, 600.0f), 0.0f);
 	}
 	else if(gameState == GameState::RUN)
 	{
+		glm::mat4 view = glm::mat4(1.0f);
+		view = player.GetCameraViewMatrix();
+		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
+
 		level.Draw();
 		player.SetState(PlayerState::IDLE);
 	}
