@@ -12,6 +12,9 @@ public:
 
 	void DamagePlayer(Player& player);
 
+	Type GetType()const override { return type; }
+
 private:
 	GLfloat damage{};
+	Type type;
 };

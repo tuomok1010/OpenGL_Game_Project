@@ -102,7 +102,6 @@ void Level::ProcessLevelData()
 				case '^':
 				{
 					SpikeTrap* trap = new SpikeTrap(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_TRAP_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f), glm::vec2(1.0f, 0.2f));
-					trap->SetIsCollisionEnabled(false);
 					trap->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					assets.emplace_back(trap);
 					break;
@@ -255,5 +254,21 @@ GLboolean Level::isPlayerCollidingWithBlocks()
 		}
 	}
 	return false;
+}
+
+void Level::handleTrapDamage()
+{
+	for (auto& obj : assets)
+	{
+		if (CollisionCheck(player, *obj))
+		{
+			if (obj->GetType() == Type::SPIKETRAP)
+			{
+				dynamic_cast<SpikeTrap*>(obj)->DamagePlayer(player);
+				if (player.GetHealth() <= 0.0f)
+					player.SetIsDead(true);
+			}
+		}
+	}
 }
 

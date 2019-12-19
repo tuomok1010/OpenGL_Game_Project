@@ -12,7 +12,8 @@ enum class PlayerState
 	IDLE,
 	RUN,
 	JUMP,
-	FALL
+	FALL,
+	DEATH
 };
 
 enum class PlayerOrientation
@@ -41,6 +42,7 @@ public:
 	void SetState(PlayerState newState);
 	void SetHasCollided(GLboolean hasCollided);
 	void SetHealth(GLfloat newHealth);
+	void SetIsDead(GLboolean isDead);
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -50,11 +52,13 @@ public:
 	glm::vec3 GetPreviousPosition()const { return previousPosition; }
 	GLboolean GetHasCollided()const { return hasCollided; }
 	GLfloat GetHealth()const { return health; }
+	GLboolean GetIsDead()const { return isDead; }
 
 private:
-	std::vector<Texture2D*> texturesIdle;
-	std::vector<Texture2D*> texturesRun;
-	std::vector<Texture2D*> texturesJump;
+	std::vector<Texture2D*> texturesIdle{};
+	std::vector<Texture2D*> texturesRun{};
+	std::vector<Texture2D*> texturesJump{};
+	std::vector<Texture2D*> texturesDeath{};
 	Texture2D* textureFall;
 
 	glm::vec2 textureOffset{};
@@ -65,6 +69,7 @@ private:
 	unsigned int idleTexIterator{};
 	unsigned int runTexIterator{};
 	unsigned int jumpTexIterator{};
+	unsigned int deathTexIterator{};
 
 	glm::vec3 previousPosition{};
 

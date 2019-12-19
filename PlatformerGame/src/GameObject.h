@@ -3,6 +3,12 @@
 #include "Texture2D.h"
 #include "SpriteRenderer.h"
 
+enum class Type
+{
+	BLOCK,
+	SPIKETRAP
+};
+
 class GameObject
 {
 public:
@@ -16,6 +22,8 @@ public:
 	glm::vec2 GetSize() const { return size; }
 	glm::vec2 GetPosition()const { return position; }
 	GLboolean isCollisionEnabled() const { return collisionEnabled; }
+	virtual Type GetType()const { return type; }
+
 	void SetIsCollisionEnabled(GLboolean newValue) { collisionEnabled = newValue; }
 
 protected:
@@ -29,4 +37,5 @@ protected:
 	Texture2D& texture;
 	glm::vec2 textureZoom{};
 	glm::vec2 textureOffset{};
+	Type type;
 };

@@ -10,7 +10,8 @@ GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, g
 	collisionEnabled(true),
 	isDestroyed(false),
 	textureZoom(textureZoom),
-	textureOffset(textureOffset)
+	textureOffset(textureOffset),
+	type(Type::BLOCK)
 {
 }
 

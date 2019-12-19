@@ -54,7 +54,23 @@ Player::Player()
 	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
-	textureFall = new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Fall/jump_fall_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_003.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_004.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_005.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_006.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_010.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_011.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_012.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_013.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_014.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+
+	textureFall = new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Fall/jump_fall_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE); 
 
 	camera = Camera(position);
 }
@@ -75,9 +91,18 @@ Player::~Player()
 
 	for (unsigned int i = 0; i < texturesJump.size(); ++i)
 	{
-		texturesIdle.at(i)->Unbind();
+		texturesJump.at(i)->Unbind();
 		delete texturesJump.at(i);
 	}
+
+	for (unsigned int i = 0; i < texturesDeath.size(); ++i)
+	{
+		texturesDeath.at(i)->Unbind();
+		delete texturesDeath.at(i);
+	}
+
+	textureFall->Unbind();
+	delete textureFall;
 }
 
 void Player::Draw(SpriteRenderer& renderer)
@@ -90,36 +115,39 @@ void Player::Draw(SpriteRenderer& renderer)
 
 	if (state == PlayerState::IDLE)
 	{
-		++idleTexIterator;
-
 		if (idleTexIterator >= texturesIdle.size())
 			idleTexIterator = 0;
 
 		renderer.Draw(*texturesIdle.at(idleTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		++idleTexIterator;
 	}
 	else if (state == PlayerState::RUN)
 	{
-		++runTexIterator;
-
 		if (runTexIterator >= texturesRun.size())
 			runTexIterator = 0;
 
 		renderer.Draw(*texturesRun.at(runTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		++runTexIterator;
 	}
 	else if (state == PlayerState::JUMP)
 	{
-		++jumpTexIterator;
-
 		if (jumpTexIterator >= texturesJump.size())
-		{
 			jumpTexIterator = texturesJump.size() - 1;
-		}
 		
 		renderer.Draw(*texturesJump.at(jumpTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		++jumpTexIterator;
 	}
 	else if (state == PlayerState::FALL)
 	{
 		renderer.Draw(*textureFall, 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+	}
+	else if (state == PlayerState::DEATH)
+	{
+		if (deathTexIterator >= texturesDeath.size())
+			deathTexIterator = texturesDeath.size() - 1;
+
+		renderer.Draw(*texturesDeath.at(deathTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		++deathTexIterator;
 	}
 }
 
@@ -200,6 +228,11 @@ void Player::SetHasCollided(GLboolean hasCollided)
 void Player::SetHealth(GLfloat newHealth)
 {
 	health = newHealth;
+}
+
+void Player::SetIsDead(GLboolean isDead)
+{
+	this->isDead = isDead;
 }
 
 void Player::ResetAnimation(PlayerState animationToReset)

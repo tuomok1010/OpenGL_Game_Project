@@ -66,6 +66,11 @@ void Game::ProcessInput(Level& level)
 
 	if (gameState == GameState::RUN)
 	{
+		// checks if player is colliding with any traps and if so, damages the player
+		level.handleTrapDamage();
+		if (player.GetIsDead())
+			player.SetState(PlayerState::DEATH);
+
 		// The MoveDown function basically acts as gravity
 		if (level.gravityEnabled)
 		{
@@ -74,49 +79,50 @@ void Game::ProcessInput(Level& level)
 				player.SetPosition(player.GetPreviousPosition());
 		}
 
-		if (mainWindow.IsKeyPressed(GLFW_KEY_D))
+		if (!player.GetIsDead())
 		{
-			if (previusKeyPressed != GLFW_KEY_D)
-				player.ResetAnimation(PlayerState::RUN);
-
-			previusKeyPressed = GLFW_KEY_D;
-			player.SetOrientation(PlayerOrientation::RIGHT);
-			player.Move(deltaTime);
-
-			if (level.isPlayerCollidingWithBlocks())
-				player.SetPosition(player.GetPreviousPosition());
-		}
-
-		if (mainWindow.IsKeyPressed(GLFW_KEY_A))
-		{
-			if (previusKeyPressed != GLFW_KEY_A)
-				player.ResetAnimation(PlayerState::RUN);
-
-			previusKeyPressed = GLFW_KEY_A;
-			player.SetOrientation(PlayerOrientation::LEFT);
-			player.Move(deltaTime);
-
-			if (level.isPlayerCollidingWithBlocks())
-				player.SetPosition(player.GetPreviousPosition());
-		}
-
-
-		if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && canJumpAgain == true)
-		{
-			if (jumpCooldown <= 0.0f)
+			if (mainWindow.IsKeyPressed(GLFW_KEY_D))
 			{
-				canJumpAgain = false;
-				jumpCooldown = JUMP_COOLDOWN;
+				if (previusKeyPressed != GLFW_KEY_D)
+					player.ResetAnimation(PlayerState::RUN);
+
+				previusKeyPressed = GLFW_KEY_D;
+				player.SetOrientation(PlayerOrientation::RIGHT);
+				player.Move(deltaTime);
+
+				if (level.isPlayerCollidingWithBlocks())
+					player.SetPosition(player.GetPreviousPosition());
 			}
-		}
 
+			if (mainWindow.IsKeyPressed(GLFW_KEY_A))
+			{
+				if (previusKeyPressed != GLFW_KEY_A)
+					player.ResetAnimation(PlayerState::RUN);
 
-		if (!canJumpAgain)
-		{
-			if (!player.Jump(deltaTime, level.gravityEnabled))
-				canJumpAgain = true;
+				previusKeyPressed = GLFW_KEY_A;
+				player.SetOrientation(PlayerOrientation::LEFT);
+				player.Move(deltaTime);
+
+				if (level.isPlayerCollidingWithBlocks())
+					player.SetPosition(player.GetPreviousPosition());
+			}
+
+			if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && canJumpAgain == true)
+			{
+				if (jumpCooldown <= 0.0f)
+				{
+					canJumpAgain = false;
+					jumpCooldown = JUMP_COOLDOWN;
+				}
+			}
+
+			if (!canJumpAgain)
+			{
+				if (!player.Jump(deltaTime, level.gravityEnabled))
+					canJumpAgain = true;
+			}
+			jumpCooldown -= deltaTime;
 		}
-		jumpCooldown -= deltaTime;
 	}
 }
 
@@ -144,7 +150,9 @@ void Game::Draw(Level& level)
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
 		level.Draw();
-		player.SetState(PlayerState::IDLE);
+
+		if(!player.GetIsDead())
+			player.SetState(PlayerState::IDLE);
 	}
 	else
 	{

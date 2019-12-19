@@ -19,6 +19,7 @@ public:
 	void ProcessLevelData();
 	void Draw();
 	GLboolean isPlayerCollidingWithBlocks();
+	void handleTrapDamage();
 
 	GLboolean gravityEnabled{ true };
 
