@@ -30,6 +30,7 @@ public:
 	void Run();
 	void ProcessInput(Level& level);
 	void Draw(Level& level);
+	void DrawRetryMenu();
 
 public:
 private:
@@ -38,6 +39,8 @@ private:
 	float deltaTime{};
 	float lastFrame{};
 	GameState gameState;
+	GLuint levelNumber{};
+	GLboolean advanceLevel{ true };
 
 	GLint previusKeyPressed{};
 
@@ -45,6 +48,7 @@ private:
 	SpriteRenderer* renderer{};
 
 	std::vector<Shader*> shaders{};
+	Level* level{};
 
 	Player player;
 	bool canJumpAgain{ true };

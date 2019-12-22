@@ -1,6 +1,8 @@
 #include "Level.h"
 
-// these are the indices used to access the textures vector(check the constructor)
+//*********** these are the indices used to access the asset textures vector(check the constructor)
+
+// blocks
 #define TEXTURE_BLOCK_00 0
 #define TEXTURE_BLOCK_01 1
 #define TEXTURE_BLOCK_02 2
@@ -12,15 +14,20 @@
 #define TEXTURE_BLOCK_08 8
 #define TEXTURE_BLOCK_09 9
 
-
+// objects
 #define TEXTURE_TRAP_01 10
+#define TEXTURE_MENU_SIGN_START 11
+#define TEXTURE_MENU_SIGN_QUIT 12
+
+//************
 
 #define BLOCK_SIZE 50
 
 Level::Level(SpriteRenderer& renderer, Player& player)
 	:
 	renderer(renderer),
-	player(player)
+	player(player),
+	rng(rd())
 {
 	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground0.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_00
 	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground1.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_01
@@ -33,7 +40,13 @@ Level::Level(SpriteRenderer& renderer, Player& player)
 	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground8.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_08
 	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground9.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_09
 
-	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/spike.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_TRAP_01
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/spike.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_TRAP_01
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignstart.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_START
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignquit.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_QUIT
+
+	clouds.emplace_back(new Texture2D("../textures/TexturesCom_Skies0380_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		
+	clouds.emplace_back(new Texture2D("../textures/TexturesCom_Skies0370_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+
 }
 
 Level::~Level()
@@ -46,11 +59,17 @@ Level::~Level()
 
 	for (unsigned int i = 0; i < assets.size(); ++i)
 		delete assets.at(i);
+
+	for (unsigned int i = 0; i < clouds.size(); ++i)
+		delete clouds.at(i);
 }
 
-void Level::Load(const std::string& filePath)
+void Level::Load(const std::string& filePath, const std::string& backGroundPath)
 {
 	levelData.clear();
+
+	if (backGroundPath != "")
+		backGround = new Texture2D(backGroundPath, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
 
 	std::fstream stream;
 
@@ -86,6 +105,8 @@ void Level::Load(const std::string& filePath)
 void Level::ProcessLevelData()
 {
 	blocks.clear();
+	assets.clear();
+	cloudPositions.clear();
 
 	for (unsigned int i = 0; i < levelData.size(); ++i)
 	{
@@ -94,9 +115,19 @@ void Level::ProcessLevelData()
 			GLchar symbol{ levelData.at(i).at(j) };
 			switch (symbol)
 			{
+				case 'C':
+				{
+					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
+					if (cloudPositions.size() < clouds.size())
+					{
+						cloudPositions.emplace_back(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+						hasClouds = true;
+					}
+					break;
+				}
 				case 'P':
 				{
-					player.SetPosition(glm::vec3((j + 0.2f) * BLOCK_SIZE, (i + 0.2f) * BLOCK_SIZE, 0.0f));
+					player.SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
 					break;
 				}
 				case '^':
@@ -104,6 +135,21 @@ void Level::ProcessLevelData()
 					SpikeTrap* trap = new SpikeTrap(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_TRAP_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f), glm::vec2(1.0f, 0.2f));
 					trap->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					assets.emplace_back(trap);
+					break;
+				}
+				case 'S':
+				{
+					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_MENU_SIGN_START], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					sign->SetType(Type::SIGNSTART);
+					assets.emplace_back(sign);
+					break;
+				}
+				case 'Q':
+				{
+					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_MENU_SIGN_QUIT], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					assets.emplace_back(sign);
 					break;
 				}
 				case '0':
@@ -181,21 +227,52 @@ void Level::ProcessLevelData()
 	}
 }
 
-void Level::Draw()
+void Level::Draw(Window& window)
 {
-	// Render all blocks
+	//TODO consider refactoring the background and clouds rendering parts because there is more than just drawing happening there.
+	// also the cloud rendering is a bit complicated, try to make it more simple, Perhaps make cloud a Gameobject?
+
+	// render background
+	if (backGround != nullptr)
+	{
+		glm::vec2 backGroundPos = player.GetPosition() - glm::vec3(window.GetBufferWidth() / 2, window.GetBufferHeight() / 2, 0);
+		renderer.Draw(*backGround, 0, glm::vec3(1.0f), backGroundPos, glm::vec2(window.GetBufferWidth(), window.GetBufferHeight()), 0.0f);
+	}
+
+	// render clouds if there are any in level, also adjusts their position. TODO
+	if (hasClouds)
+	{
+		for (unsigned int i = 0; i < cloudPositions.size(); ++i)
+		{
+			renderer.Draw(*clouds.at(i), 0, glm::vec3(1.0f), cloudPositions.at(i), glm::vec2(clouds.at(i)->GetWidth(), clouds.at(i)->GetHeight()), 0.0f, glm::vec2(1.0f));
+			cloudPositions.at(i).x -= 0.1f;
+
+			// if the clouds have moved beyond the screen + 300.0f, the clouds position gets reset and and appears again from the right
+			if (cloudPositions.at(i).x + clouds.at(i)->GetWidth() < (player.GetPosition().x - window.GetBufferWidth() / 2) - 300.0f)
+			{
+				cloudPositions.at(i).x = (player.GetPosition().x + window.GetBufferWidth() / 2) + 300.0f;
+
+				// shuffles the positions of the clouds so that if there are multiple different clouds in the level, they will appear more randomized
+				std::shuffle(cloudPositions.begin(), cloudPositions.end(), rng);
+			}
+		}
+
+	}
+
+
+	// render all blocks
 	for (unsigned int i = 0; i < blocks.size(); ++i)
 	{
 		blocks.at(i)->Draw(renderer, 0);
 	}
 
-	// Render all assets(chests, traps, ladders etc)
+	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
 	{
 		assets.at(i)->Draw(renderer, 0);
 	}
 
-	// Render player
+	// render player
 	player.Draw(renderer);
 }
 
@@ -256,7 +333,7 @@ GLboolean Level::isPlayerCollidingWithBlocks()
 	return false;
 }
 
-void Level::handleTrapDamage()
+void Level::handlePlayerCollisionWithAssets()
 {
 	for (auto& obj : assets)
 	{
@@ -268,7 +345,10 @@ void Level::handleTrapDamage()
 				if (player.GetHealth() <= 0.0f)
 					player.SetIsDead(true);
 			}
+			else if (obj->GetType() == Type::SIGNSTART)
+			{
+				levelComplete = true;
+			}
 		}
 	}
 }
-

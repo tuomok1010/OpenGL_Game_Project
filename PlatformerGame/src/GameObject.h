@@ -6,7 +6,9 @@
 enum class Type
 {
 	BLOCK,
-	SPIKETRAP
+	SPIKETRAP,
+	SIGNSTART,		// this is only used in the "menu" level. Will start the game if the player moves to it
+	SIGNQUIT		// this is only used in the "menu" level. Will quit the game if the player moves to it
 };
 
 class GameObject
@@ -25,6 +27,7 @@ public:
 	virtual Type GetType()const { return type; }
 
 	void SetIsCollisionEnabled(GLboolean newValue) { collisionEnabled = newValue; }
+	void SetType(Type newType) { type = newType; }
 
 protected:
 	glm::vec2 position{};

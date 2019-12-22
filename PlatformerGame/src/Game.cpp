@@ -28,25 +28,39 @@ Game::Game(int scrnWidth, int scrnHeight)
 Game::~Game()
 {
 	for (unsigned int i = 0; i < shaders.size(); ++i)
-		delete shaders[i];
+		delete shaders.at(i);
 
 	delete renderer;
 }
 
 void Game::Run()
 {
-	Level lvl(*renderer, player);
-	lvl.Load("../levels/OpenGLGame_Level1.txt");
-
 	while (!mainWindow.GetShouldClose())
 	{
+
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-	
-		ProcessInput(lvl);
 
-		Draw(lvl);
+		if (advanceLevel)
+		{
+			if (level != nullptr)
+				delete level;
+			
+			level = new Level(*renderer, player);
+
+			std::string levelNumberString = std::to_string(levelNumber);
+			std::string levelPath = "../levels/OpenGLGame_Level" + levelNumberString + ".txt";
+			std::string backGroundPath = "../textures/backGround" + levelNumberString + ".jpg"; // the backGround image must be in jpg format with no alpha channel
+			
+			level->Load(levelPath, backGroundPath);
+			advanceLevel = false;
+		}
+
+		ProcessInput(*level);
+
+		Draw(*level);
+
 	}
 
 	glfwTerminate();
@@ -66,8 +80,8 @@ void Game::ProcessInput(Level& level)
 
 	if (gameState == GameState::RUN)
 	{
-		// checks if player is colliding with any traps and if so, damages the player
-		level.handleTrapDamage();
+		// checks if player is colliding with any objects in game such as traps and if so, damages the player if necessary
+		level.handlePlayerCollisionWithAssets();
 		if (player.GetIsDead())
 			player.SetState(PlayerState::DEATH);
 
@@ -124,6 +138,11 @@ void Game::ProcessInput(Level& level)
 			jumpCooldown -= deltaTime;
 		}
 	}
+	if (level.levelComplete)
+	{
+		advanceLevel = true;
+		++levelNumber;
+	}
 }
 
 void Game::Draw(Level& level)
@@ -149,16 +168,24 @@ void Game::Draw(Level& level)
 		view = player.GetCameraViewMatrix();
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
-		level.Draw();
+		level.Draw(mainWindow);
 
-		if(!player.GetIsDead())
+		if (!player.GetIsDead())
 			player.SetState(PlayerState::IDLE);
+		else
+		{
+			//while(!mainWindow.IsKeyPressed(GLFW_KEY_ENTER) && !mainWindow.IsKeyPressed(GLFW_KEY_ESCAPE))
+			//	DrawRetryMenu();
+		}
 	}
 	else
 	{
 		// process quitting
 	}
-
-
 	mainWindow.SwapBuffers();
+}
+
+void Game::DrawRetryMenu()
+{
+
 }
