@@ -3,21 +3,21 @@
 //*********** these are the indices used to access the asset textures vector(check the constructor)
 
 // blocks
-#define TEXTURE_BLOCK_00 0
-#define TEXTURE_BLOCK_01 1
-#define TEXTURE_BLOCK_02 2
-#define TEXTURE_BLOCK_03 3
-#define TEXTURE_BLOCK_04 4
-#define TEXTURE_BLOCK_05 5
-#define TEXTURE_BLOCK_06 6
-#define TEXTURE_BLOCK_07 7
-#define TEXTURE_BLOCK_08 8
-#define TEXTURE_BLOCK_09 9
+#define TEXTURE_BLOCK_00		0
+#define TEXTURE_BLOCK_01		1
+#define TEXTURE_BLOCK_02		2
+#define TEXTURE_BLOCK_03		3
+#define TEXTURE_BLOCK_04		4
+#define TEXTURE_BLOCK_05		5
+#define TEXTURE_BLOCK_06		6
+#define TEXTURE_BLOCK_07		7
+#define TEXTURE_BLOCK_08		8
+#define TEXTURE_BLOCK_09		9
 
 // objects
-#define TEXTURE_TRAP_01 10
-#define TEXTURE_MENU_SIGN_START 11
-#define TEXTURE_MENU_SIGN_QUIT 12
+#define TEXTURE_TRAP_01			10
+#define TEXTURE_MENU_SIGN_START	11
+#define TEXTURE_MENU_SIGN_QUIT	12
 
 //************
 
@@ -44,9 +44,8 @@ Level::Level(SpriteRenderer& renderer, Player& player)
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignstart.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_START
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignquit.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_QUIT
 
-	clouds.emplace_back(new Texture2D("../textures/TexturesCom_Skies0380_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		
-	clouds.emplace_back(new Texture2D("../textures/TexturesCom_Skies0370_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-
+	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0380_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0370_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 }
 
 Level::~Level()
@@ -60,8 +59,8 @@ Level::~Level()
 	for (unsigned int i = 0; i < assets.size(); ++i)
 		delete assets.at(i);
 
-	for (unsigned int i = 0; i < clouds.size(); ++i)
-		delete clouds.at(i);
+	for (unsigned int i = 0; i < cloudTextures.size(); ++i)
+		delete cloudTextures.at(i);
 }
 
 void Level::Load(const std::string& filePath, const std::string& backGroundPath)
@@ -106,7 +105,6 @@ void Level::ProcessLevelData()
 {
 	blocks.clear();
 	assets.clear();
-	cloudPositions.clear();
 
 	for (unsigned int i = 0; i < levelData.size(); ++i)
 	{
@@ -117,12 +115,12 @@ void Level::ProcessLevelData()
 			{
 				case 'C':
 				{
+					std::uniform_int_distribution<int> randRange(0, cloudTextures.size() - 1);
+
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
-					if (cloudPositions.size() < clouds.size())
-					{
-						cloudPositions.emplace_back(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
-						hasClouds = true;
-					}
+					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					clouds.emplace_back(cloud);
+					hasClouds = true;
 					break;
 				}
 				case 'P':
@@ -149,6 +147,7 @@ void Level::ProcessLevelData()
 				{
 					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_MENU_SIGN_QUIT], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
 					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					sign->SetType(Type::SIGNQUIT);
 					assets.emplace_back(sign);
 					break;
 				}
@@ -227,10 +226,9 @@ void Level::ProcessLevelData()
 	}
 }
 
-void Level::Draw(Window& window)
+void Level::Draw(Window& window, float deltaTime)
 {
 	//TODO consider refactoring the background and clouds rendering parts because there is more than just drawing happening there.
-	// also the cloud rendering is a bit complicated, try to make it more simple, Perhaps make cloud a Gameobject?
 
 	// render background
 	if (backGround != nullptr)
@@ -239,26 +237,24 @@ void Level::Draw(Window& window)
 		renderer.Draw(*backGround, 0, glm::vec3(1.0f), backGroundPos, glm::vec2(window.GetBufferWidth(), window.GetBufferHeight()), 0.0f);
 	}
 
-	// render clouds if there are any in level, also adjusts their position. TODO
+	// render clouds if there are any in level, also adjusts their position.
 	if (hasClouds)
 	{
-		for (unsigned int i = 0; i < cloudPositions.size(); ++i)
+		std::uniform_int_distribution<int> randRange(0, cloudTextures.size() - 1);
+
+		for (unsigned int i = 0; i < clouds.size(); ++i)
 		{
-			renderer.Draw(*clouds.at(i), 0, glm::vec3(1.0f), cloudPositions.at(i), glm::vec2(clouds.at(i)->GetWidth(), clouds.at(i)->GetHeight()), 0.0f, glm::vec2(1.0f));
-			cloudPositions.at(i).x -= 0.1f;
+			renderer.Draw(clouds.at(i)->texture, 0, glm::vec3(1.0f), clouds.at(i)->position, glm::vec2(clouds.at(i)->texture.GetWidth(), clouds.at(i)->texture.GetHeight()), 0.0f);
+			clouds.at(i)->position.x -= 5.0f * deltaTime;
 
 			// if the clouds have moved beyond the screen + 300.0f, the clouds position gets reset and and appears again from the right
-			if (cloudPositions.at(i).x + clouds.at(i)->GetWidth() < (player.GetPosition().x - window.GetBufferWidth() / 2) - 300.0f)
+			if (clouds.at(i)->position.x + clouds.at(i)->texture.GetWidth() < (player.GetPosition().x - window.GetBufferWidth() / 2) - 300.0f)
 			{
-				cloudPositions.at(i).x = (player.GetPosition().x + window.GetBufferWidth() / 2) + 300.0f;
-
-				// shuffles the positions of the clouds so that if there are multiple different clouds in the level, they will appear more randomized
-				std::shuffle(cloudPositions.begin(), cloudPositions.end(), rng);
+				clouds.at(i)->position.x = (player.GetPosition().x + window.GetBufferWidth() / 2) + 300.0f;
+				clouds.at(i)->texture = *cloudTextures.at(randRange(rng));
 			}
 		}
-
 	}
-
 
 	// render all blocks
 	for (unsigned int i = 0; i < blocks.size(); ++i)
@@ -348,6 +344,10 @@ void Level::handlePlayerCollisionWithAssets()
 			else if (obj->GetType() == Type::SIGNSTART)
 			{
 				levelComplete = true;
+			}
+			else if (obj->GetType() == Type::SIGNQUIT)
+			{
+				quitGame = true;
 			}
 		}
 	}

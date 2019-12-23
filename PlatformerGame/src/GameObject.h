@@ -8,7 +8,9 @@ enum class Type
 	BLOCK,
 	SPIKETRAP,
 	SIGNSTART,		// this is only used in the "menu" level. Will start the game if the player moves to it
-	SIGNQUIT		// this is only used in the "menu" level. Will quit the game if the player moves to it
+	SIGNQUIT,		// this is only used in the "menu" level. Will quit the game if the player moves to it
+	CLOUD
+
 };
 
 class GameObject

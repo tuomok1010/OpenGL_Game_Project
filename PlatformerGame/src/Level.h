@@ -19,12 +19,13 @@ public:
 
 	void Load(const std::string& filePath, const std::string& backGroundPath = "");
 	void ProcessLevelData();
-	void Draw(Window& window);
+	void Draw(Window& window, float deltaTime);
 	GLboolean isPlayerCollidingWithBlocks();
 	void handlePlayerCollisionWithAssets();
 
 	GLboolean gravityEnabled{ true };
 	GLboolean levelComplete{ false };
+	GLboolean quitGame{ false };
 
 private:
 	GLboolean CollisionCheck(Player& player, GameObject& obj);
@@ -37,10 +38,19 @@ private:
 
 	Texture2D* backGround{};
 	GLboolean hasClouds{ false };
-	std::vector<Texture2D*> clouds{};
+	std::vector<Texture2D*> cloudTextures{};
 	std::vector<glm::vec2> cloudPositions{};
 	std::random_device rd;
 	std::mt19937 rng;
+
+	struct Cloud
+	{
+		Cloud(Texture2D& tex, glm::vec2 pos) : texture(tex), position(pos) {}
+		Texture2D& texture;
+		glm::vec2 position;
+	};
+
+	std::vector<Cloud*> clouds{};
 
 	SpriteRenderer& renderer;
 	Player& player;

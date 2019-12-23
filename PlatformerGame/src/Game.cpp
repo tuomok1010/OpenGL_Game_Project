@@ -56,6 +56,11 @@ void Game::Run()
 			level->Load(levelPath, backGroundPath);
 			advanceLevel = false;
 		}
+		if (level->quitGame)
+			gameState = GameState::QUIT;
+
+		if (gameState == GameState::QUIT)
+			mainWindow.SetShouldClose(true);
 
 		ProcessInput(*level);
 
@@ -75,8 +80,11 @@ void Game::ProcessInput(Level& level)
 	*/
 
 	// Starts the game
-	if (mainWindow.IsKeyPressed(GLFW_KEY_ENTER) && gameState == GameState::MENU)
+	if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && gameState == GameState::MENU)
 		gameState = GameState::RUN;
+	// exits the game
+	else if (mainWindow.IsKeyPressed(GLFW_KEY_ESCAPE) && gameState == GameState::MENU)
+		mainWindow.SetShouldClose(true);
 
 	if (gameState == GameState::RUN)
 	{
@@ -159,8 +167,8 @@ void Game::Draw(Level& level)
 		glm::mat4 view = glm::mat4(1.0f);
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
-		Texture2D* menu = new Texture2D("../textures/menu.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-		renderer->Draw(*menu, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec2(800.0f, 600.0f), 0.0f);
+		Texture2D* menu = new Texture2D("../textures/menu.jpg", GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+		renderer->Draw(*menu, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec2(mainWindow.GetBufferWidth(), mainWindow.GetBufferHeight()), 0.0f);
 	}
 	else if(gameState == GameState::RUN)
 	{
@@ -168,7 +176,7 @@ void Game::Draw(Level& level)
 		view = player.GetCameraViewMatrix();
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
-		level.Draw(mainWindow);
+		level.Draw(mainWindow, deltaTime);
 
 		if (!player.GetIsDead())
 			player.SetState(PlayerState::IDLE);
