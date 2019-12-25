@@ -216,9 +216,14 @@ GLboolean Player::Jump(float deltaTime, GLboolean& gravityEnabled)
 	return true;
 }
 
-void Player::MeleeAttack()
+GLboolean Player::MeleeAttack()
 {
 	state = PlayerState::ATTACK;
+
+	if (meleeAttackIterator == texturesMeleeAttack.size() - 1)
+		return false;
+	else
+		return true;
 }
 
 void Player::MoveDown(float deltaTime)

@@ -34,7 +34,7 @@ public:
 
 	GLboolean Jump(float deltaTime, GLboolean& gravityEnabled);
 	//void ResetHeightJumped() { heightJumped = 0.0f; } // not used anywhere
-	void MeleeAttack();
+	GLboolean MeleeAttack();
 
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
 	void MoveDown(float deltaTime);

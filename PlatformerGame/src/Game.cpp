@@ -6,8 +6,9 @@
 #define SHADER_BASIC	0
 #define SHADER_SPRITE	1
 
-// used in the ProcessInput function to reset the jumpCooldown variable
+// used in the ProcessInput function to reset the jumpCooldown and attackCooldown variables
 #define JUMP_COOLDOWN 1
+#define ATTACK_COOLDOWN 1
 
 Game::Game(int scrnWidth, int scrnHeight)
 	: 
@@ -129,8 +130,15 @@ void Game::ProcessInput(Level& level)
 					player.SetPosition(player.GetPreviousPosition());
 			}
 
-			if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && canJumpAgain == true)
+			// Jump logic **********************************
+
+			if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && canJumpAgain)
 			{
+				if (previusKeyPressed != GLFW_KEY_SPACE)
+					player.ResetAnimation(PlayerState::JUMP);
+
+				previusKeyPressed = GLFW_KEY_SPACE;
+
 				if (jumpCooldown <= 0.0f)
 				{
 					canJumpAgain = false;
@@ -145,14 +153,28 @@ void Game::ProcessInput(Level& level)
 			}
 			jumpCooldown -= deltaTime;
 
-			if (mainWindow.IsKeyPressed(GLFW_KEY_E))
+			// ***********************************************
+
+			if (mainWindow.IsKeyPressed(GLFW_KEY_E) && canAttackAgain)
 			{
 				if (previusKeyPressed != GLFW_KEY_E)
 					player.ResetAnimation(PlayerState::ATTACK);
 
 				previusKeyPressed = GLFW_KEY_E;
-				player.MeleeAttack();
+
+				if (attackCooldown <= 0.0f)
+				{
+					canAttackAgain = false;
+					attackCooldown = ATTACK_COOLDOWN;
+				}
 			}
+
+			if (!canAttackAgain)
+			{
+				if (!player.MeleeAttack())
+					canAttackAgain = true;
+			}
+			attackCooldown -= deltaTime;
 		}
 	}
 	if (level.levelComplete)

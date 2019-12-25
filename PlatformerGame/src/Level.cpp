@@ -120,7 +120,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					//hasClouds = true;
+					hasClouds = true;
 					break;
 				}
 				case 'P':

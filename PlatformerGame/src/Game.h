@@ -51,7 +51,10 @@ private:
 	Level* level{};
 
 	Player player;
+
 	bool canJumpAgain{ true };
 	GLfloat jumpCooldown{};
+	bool canAttackAgain{ true };
+	GLfloat attackCooldown{};
 };
 
