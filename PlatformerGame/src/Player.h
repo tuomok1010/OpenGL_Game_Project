@@ -13,7 +13,8 @@ enum class PlayerState
 	RUN,
 	JUMP,
 	FALL,
-	DEATH
+	DEATH,
+	ATTACK
 };
 
 enum class PlayerOrientation
@@ -32,7 +33,8 @@ public:
 	void Move(float deltaTime);
 
 	GLboolean Jump(float deltaTime, GLboolean& gravityEnabled);
-	void ResetHeightJumped() { heightJumped = 0.0f; }
+	//void ResetHeightJumped() { heightJumped = 0.0f; } // not used anywhere
+	void MeleeAttack();
 
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
 	void MoveDown(float deltaTime);
@@ -53,15 +55,18 @@ public:
 	GLboolean GetHasCollided()const { return hasCollided; }
 	GLfloat GetHealth()const { return health; }
 	GLboolean GetIsDead()const { return isDead; }
+	PlayerState GetState()const { return state; }
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
 	std::vector<Texture2D*> texturesRun{};
 	std::vector<Texture2D*> texturesJump{};
 	std::vector<Texture2D*> texturesDeath{};
+	std::vector<Texture2D*> texturesMeleeAttack{};
 	Texture2D* textureFall;
 
 	glm::vec2 textureOffset{};
+	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions
 
 	PlayerState state{};
 	PlayerOrientation orientation{};
@@ -70,6 +75,7 @@ private:
 	unsigned int runTexIterator{};
 	unsigned int jumpTexIterator{};
 	unsigned int deathTexIterator{};
+	unsigned int meleeAttackIterator{};
 
 	glm::vec3 previousPosition{};
 

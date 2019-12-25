@@ -3,16 +3,18 @@
 Player::Player()
 	:
 	state(PlayerState::IDLE),
-	textureOffset(glm::vec2(0.2f, 0.1f)),
+	textureOffset(glm::vec2(-0.2f, 0.07f)),
+	textureScale(glm::vec2(1.25f, 0.9f)),
 	color(glm::vec3(1.0f)),
 	position(glm::vec3(0.0f)),
-	size(glm::vec2(49.0f, 79.0f)),
+	size(glm::vec2(160.0f, 100.0f)),
 	rotation(0.0f),
 	speed(250.0f),
 	maxJumpHeight(75.0f),
 	heightJumped(0.0f),
 	health(100.0f)
 {
+	// TODO put these in loops
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -70,7 +72,18 @@ Player::Player()
 	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_013.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_014.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
-	textureFall = new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Fall/jump_fall_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE); 
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_003.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_004.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_005.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_006.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+
+	textureFall = new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Fall/jump_fall_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 
 	camera = Camera(position);
 }
@@ -118,7 +131,7 @@ void Player::Draw(SpriteRenderer& renderer)
 		if (idleTexIterator >= texturesIdle.size())
 			idleTexIterator = 0;
 
-		renderer.Draw(*texturesIdle.at(idleTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesIdle.at(idleTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++idleTexIterator;
 	}
 	else if (state == PlayerState::RUN)
@@ -126,7 +139,7 @@ void Player::Draw(SpriteRenderer& renderer)
 		if (runTexIterator >= texturesRun.size())
 			runTexIterator = 0;
 
-		renderer.Draw(*texturesRun.at(runTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesRun.at(runTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++runTexIterator;
 	}
 	else if (state == PlayerState::JUMP)
@@ -134,20 +147,28 @@ void Player::Draw(SpriteRenderer& renderer)
 		if (jumpTexIterator >= texturesJump.size())
 			jumpTexIterator = texturesJump.size() - 1;
 		
-		renderer.Draw(*texturesJump.at(jumpTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesJump.at(jumpTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++jumpTexIterator;
 	}
 	else if (state == PlayerState::FALL)
 	{
-		renderer.Draw(*textureFall, 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		renderer.Draw(*textureFall, 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 	}
 	else if (state == PlayerState::DEATH)
 	{
 		if (deathTexIterator >= texturesDeath.size())
 			deathTexIterator = texturesDeath.size() - 1;
 
-		renderer.Draw(*texturesDeath.at(deathTexIterator), 0, color, position, size, rotation, glm::vec2(0.5f, 0.75f), textureOffset, rotationAxiis);
+		renderer.Draw(*texturesDeath.at(deathTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++deathTexIterator;
+	}
+	else if (state == PlayerState::ATTACK)
+	{
+		if (meleeAttackIterator >= texturesMeleeAttack.size())
+			meleeAttackIterator = 0;
+
+		renderer.Draw(*texturesMeleeAttack.at(meleeAttackIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
+		++meleeAttackIterator;
 	}
 }
 
@@ -193,6 +214,11 @@ GLboolean Player::Jump(float deltaTime, GLboolean& gravityEnabled)
 		heightJumped += position.y - previousPosition.y;
 	}
 	return true;
+}
+
+void Player::MeleeAttack()
+{
+	state = PlayerState::ATTACK;
 }
 
 void Player::MoveDown(float deltaTime)
@@ -247,6 +273,12 @@ void Player::ResetAnimation(PlayerState animationToReset)
 		break;
 	case PlayerState::JUMP:
 		jumpTexIterator = 0;
+		break;
+	case PlayerState::DEATH:
+		deathTexIterator = 0;
+		break;
+	case PlayerState::ATTACK:
+		meleeAttackIterator = 0;
 		break;
 	}
 }

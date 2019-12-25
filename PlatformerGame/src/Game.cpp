@@ -38,7 +38,7 @@ void Game::Run()
 	while (!mainWindow.GetShouldClose())
 	{
 
-		float currentFrame = glfwGetTime();
+		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
@@ -144,6 +144,15 @@ void Game::ProcessInput(Level& level)
 					canJumpAgain = true;
 			}
 			jumpCooldown -= deltaTime;
+
+			if (mainWindow.IsKeyPressed(GLFW_KEY_E))
+			{
+				if (previusKeyPressed != GLFW_KEY_E)
+					player.ResetAnimation(PlayerState::ATTACK);
+
+				previusKeyPressed = GLFW_KEY_E;
+				player.MeleeAttack();
+			}
 		}
 	}
 	if (level.levelComplete)

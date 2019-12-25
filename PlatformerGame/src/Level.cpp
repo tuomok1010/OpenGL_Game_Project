@@ -120,7 +120,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					hasClouds = true;
+					//hasClouds = true;
 					break;
 				}
 				case 'P':
@@ -281,8 +281,10 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 		glm::vec2 objPos = obj.GetPosition();
 		glm::vec2 objSize = obj.GetSize();
 
-		// Check if overlapping
-		bool collisionX = playerPos.x + playerSize.x > objPos.x && objPos.x + objSize.x > playerPos.x;
+		// check if overlapping, we need to subtract/add the value "val" to/from the player because the mesh is significantly larger than the 
+		// player when he is idle(this is because the attacking animation needs the extra mesh space to be completely visible)
+		int val = 50.0f;
+		bool collisionX = playerPos.x + (playerSize.x - val) > objPos.x && objPos.x + objSize.x > (playerPos.x + val);
 		bool collisionY = playerPos.y + playerSize.y > objPos.y && objPos.y + objSize.y > playerPos.y;
 
 		if (collisionX && collisionY)
