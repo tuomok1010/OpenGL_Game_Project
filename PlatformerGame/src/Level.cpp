@@ -113,6 +113,13 @@ void Level::ProcessLevelData()
 			GLchar symbol{ levelData.at(i).at(j) };
 			switch (symbol)
 			{
+				case 's':
+				{
+					Spearman* spearman = new Spearman();
+					spearman->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					enemies.emplace_back(spearman);
+					break;
+				}
 				case 'C':
 				{
 					std::uniform_int_distribution<int> randRange(0, cloudTextures.size() - 1);
@@ -224,6 +231,15 @@ void Level::ProcessLevelData()
 			}
 		}
 	}
+
+	// initializes the enemy orientation so that at the start of the level they face the player
+	for (auto& enemy : enemies)
+	{
+		if (enemy->GetPosition().x > player.GetPosition().x)
+			enemy->SetOrientation(EnemyOrientation::LEFT);
+		else
+			enemy->SetOrientation(EnemyOrientation::RIGHT);
+	}
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -258,15 +274,15 @@ void Level::Draw(Window& window, float deltaTime)
 
 	// render all blocks
 	for (unsigned int i = 0; i < blocks.size(); ++i)
-	{
 		blocks.at(i)->Draw(renderer, 0);
-	}
 
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
-	{
 		assets.at(i)->Draw(renderer, 0);
-	}
+
+	// render all enemies
+	for (unsigned int i = 0; i < enemies.size(); ++i)
+		enemies.at(i)->Draw(renderer);
 
 	// render player
 	player.Draw(renderer);

@@ -63,5 +63,5 @@ void SpriteRenderer::Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 colo
 	shader.SetUniform2f("textureOffset", textureOffset);
 
 	mesh->Render();
-
+	texture.Unbind();
 }

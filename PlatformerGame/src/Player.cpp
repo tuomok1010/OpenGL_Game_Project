@@ -14,74 +14,20 @@ Player::Player()
 	heightJumped(0.0f),
 	health(100.0f)
 {
-	// TODO put these in loops
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_003.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_004.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_005.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_006.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_010.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_011.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	for (unsigned int i = 0; i < 12; ++i)
+		texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_003.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_004.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_005.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_006.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_010.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_011.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_012.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_013.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_014.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_015.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	for(unsigned int i = 0; i < 16; ++i)
+		texturesRun.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Run/run_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_003.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_004.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_005.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_006.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	for(unsigned int i = 0; i < 10; ++i)
+		texturesJump.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Start/jump_start_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_003.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_004.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_005.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_006.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_010.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_011.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_012.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_013.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
-	texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_014.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	for(unsigned int i = 0; i < 15; ++i)
+		texturesDeath.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Death/death_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_001.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_002.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_003.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_004.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_005.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_006.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_007.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_008.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
-	texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_009.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
+	for(unsigned int i = 0; i < 10; ++i)
+		texturesMeleeAttack.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Attack Sword/sword_attack_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
 
 	textureFall = new Texture2D("../player/The Black Thief Slim Version/Animations/Jump Fall/jump_fall_000.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 

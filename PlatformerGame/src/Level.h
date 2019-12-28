@@ -10,6 +10,7 @@
 #include "SpikeTrap.h"
 #include "Player.h"
 #include "Window.h"
+#include "Spearman.h"
 
 class Level
 {
@@ -35,6 +36,8 @@ private:
 	std::vector<GameObject*> blocks;
 	std::vector<GameObject*> assets;
 	std::vector<Texture2D*> assetTextures{};
+
+	std::vector<Enemy*> enemies{};
 
 	Texture2D* backGround{};
 	GLboolean hasClouds{ false };

@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\Level.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Spearman.cpp" />
     <ClCompile Include="src\SpikeTrap.cpp" />
     <ClCompile Include="src\SpriteRenderer.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
@@ -162,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Level.h" />
     <ClInclude Include="src\Mesh.h" />
@@ -169,6 +172,7 @@
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Spearman.h" />
     <ClInclude Include="src\SpikeTrap.h" />
     <ClInclude Include="src\SpriteRenderer.h" />
     <ClInclude Include="src\stb_image.h" />
