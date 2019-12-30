@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "SpriteRenderer.h"
+#include "Player.h"
 
 #include <vector>
 
@@ -34,6 +35,8 @@ public:
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
 	void MoveDown(float deltaTime);
 
+	GLboolean CheckIfHasSeenPlayer(const Player& player);
+
 	void SetPosition(glm::vec3 newPosition) { position = newPosition; }
 	void SetOrientation(EnemyOrientation newOrientation) { orientation = newOrientation; }
 	void SetState(EnemyState newState) { state = newState; }
@@ -44,12 +47,14 @@ public:
 	void ResetAnimation(EnemyState animationToReset);
 
 	glm::vec3 GetPosition()const { return position; }
+	EnemyOrientation GetOrientation()const { return orientation; }
 	glm::vec2 GetSize()const { return size; }
 	glm::vec3 GetPreviousPosition()const { return previousPosition; }
 	GLboolean GetHasCollided()const { return hasCollided; }
 	GLfloat GetHealth()const { return health; }
 	GLboolean GetIsDead()const { return isDead; }
 	EnemyState GetState()const { return state; }
+	GLfloat GetLineOfSightX()const { return lineOfSightX; }
 
 protected:
 	std::vector<Texture2D*> texturesIdle{};
@@ -85,4 +90,6 @@ protected:
 	GLboolean isDead{ false };
 
 	GLboolean hasCollided{ false };
+
+	GLfloat lineOfSightX{};
 };      

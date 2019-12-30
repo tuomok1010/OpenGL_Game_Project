@@ -61,6 +61,9 @@ Level::~Level()
 
 	for (unsigned int i = 0; i < cloudTextures.size(); ++i)
 		delete cloudTextures.at(i);
+
+	for (unsigned int i = 0; i < enemies.size(); ++i)
+		delete enemies.at(i);
 }
 
 void Level::Load(const std::string& filePath, const std::string& backGroundPath)
@@ -233,13 +236,15 @@ void Level::ProcessLevelData()
 	}
 
 	// initializes the enemy orientation so that at the start of the level they face the player
+	/*
 	for (auto& enemy : enemies)
 	{
 		if (enemy->GetPosition().x > player.GetPosition().x)
 			enemy->SetOrientation(EnemyOrientation::LEFT);
-		else
+		else if(enemy->GetPosition().x < player.GetPosition().x)
 			enemy->SetOrientation(EnemyOrientation::RIGHT);
 	}
+	*/
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -369,4 +374,16 @@ void Level::handlePlayerCollisionWithAssets()
 			}
 		}
 	}
+}
+
+GLboolean Level::isPlayerSpottedByEnemies()
+{
+	GLboolean hasBeenSpotted{ false };
+
+	for (auto& enemy : enemies)
+	{
+		if (enemy->CheckIfHasSeenPlayer(player))
+			hasBeenSpotted = true;
+	}
+	return hasBeenSpotted;
 }

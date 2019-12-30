@@ -1,5 +1,7 @@
 #include "Enemy.h"
 
+#include <iostream>
+
 Enemy::Enemy()
 {
 }
@@ -111,6 +113,46 @@ void Enemy::MoveDown(float deltaTime)
 	GLfloat velocity = speed * deltaTime;
 	previousPosition = position;
 	position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+}
+
+GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
+{
+	GLboolean hasBeenSpotted{ false };
+
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
+
+	// we need to subtract/add the value "val" to/from the player because the mesh is significantly larger than the 
+	// player when he is idle(this is because the attacking animation needs the extra mesh space to be completely visible)
+	// TODO may need to do similar to the enemies
+	int val = 50.0f;
+
+	// check if the enemy if facing the player, thus would he be able to spot the player in the first place
+	// && if the player is (about )in the same height on the y axiis as the enemy
+	if (((position.x > playerPos.x && orientation == EnemyOrientation::LEFT) ||
+		(position.x < playerPos.x && orientation == EnemyOrientation::RIGHT)) &&
+		(playerPos.y + playerSize.y > position.y && position.y + size.y > playerPos.y))
+	{
+		if (orientation == EnemyOrientation::LEFT)
+		{
+			bool spotted = (playerPos.x + (playerSize.x - val)) >= (position.x - lineOfSightX);
+			if (spotted)
+			{
+				std::cout << "Player was spotted by an enemy!" << std::endl;
+				hasBeenSpotted = true;
+			}
+		}
+		else if (orientation == EnemyOrientation::RIGHT)
+		{
+			bool spotted = (playerPos.x + val) <= ((position.x + size.x) + lineOfSightX);
+			if (spotted)
+			{
+				std::cout << "Player was spotted by an enemy!" << std::endl;
+				hasBeenSpotted = true;
+			}
+		}
+	}
+	return hasBeenSpotted;
 }
 
 void Enemy::ResetAnimation(EnemyState animationToReset)

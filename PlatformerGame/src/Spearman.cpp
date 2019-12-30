@@ -14,6 +14,7 @@ Spearman::Spearman()
 	maxJumpHeight = 75.0f;
 	heightJumped = 0.0f;
 	health = 100.0f;
+	lineOfSightX = 150.0f;
 
 	for(unsigned int i = 0; i < 26; ++i)
 		texturesIdle.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Idle/Idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
@@ -30,27 +31,14 @@ Spearman::Spearman()
 
 Spearman::~Spearman()
 {
-	for (unsigned int i = 0; i < texturesIdle.size(); ++i)
-	{
-		texturesIdle.at(i)->Unbind();
-		delete texturesIdle.at(i);
-	}
+}
 
-	for (unsigned int i = 0; i < texturesRun.size(); ++i)
-	{
-		texturesRun.at(i)->Unbind();
-		delete texturesRun.at(i);
-	}
+GLboolean Spearman::MeleeAttack()
+{
+	state = EnemyState::ATTACK;
 
-	for (unsigned int i = 0; i < texturesJump.size(); ++i)
-	{
-		texturesJump.at(i)->Unbind();
-		delete texturesJump.at(i);
-	}
-
-	for (unsigned int i = 0; i < texturesDeath.size(); ++i)
-	{
-		texturesDeath.at(i)->Unbind();
-		delete texturesDeath.at(i);
-	}
+	if (meleeAttackIterator == texturesMeleeAttack.size() - 1)
+		return false;
+	else
+		return true;
 }

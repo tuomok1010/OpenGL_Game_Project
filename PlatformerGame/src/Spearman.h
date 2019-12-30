@@ -8,6 +8,7 @@ public:
 	Spearman();
 	~Spearman();
 
-private:
+	GLboolean MeleeAttack();
 
+private:
 };

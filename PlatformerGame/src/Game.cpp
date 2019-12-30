@@ -94,6 +94,8 @@ void Game::ProcessInput(Level& level)
 		if (player.GetIsDead())
 			player.SetState(PlayerState::DEATH);
 
+		level.isPlayerSpottedByEnemies();
+
 		// The MoveDown function basically acts as gravity
 		if (level.gravityEnabled)
 		{
