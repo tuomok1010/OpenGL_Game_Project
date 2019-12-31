@@ -23,7 +23,8 @@ public:
 	void Draw(Window& window, float deltaTime);
 	GLboolean isPlayerCollidingWithBlocks();
 	void handlePlayerCollisionWithAssets();
-	GLboolean isPlayerSpottedByEnemies(float deltaTime);
+	GLboolean isPlayerSpottedByEnemies();
+	void RunEnemyBehaviour(float deltaTime);
 
 	GLboolean gravityEnabled{ true };
 	GLboolean levelComplete{ false };

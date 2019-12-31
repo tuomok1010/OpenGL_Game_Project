@@ -120,6 +120,10 @@ void Level::ProcessLevelData()
 				{
 					Spearman* spearman = new Spearman();
 					spearman->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					glm::vec3 patrolPoint1(glm::vec3(j * BLOCK_SIZE + 300.0f, i * BLOCK_SIZE + 300.0f, 0.0f));
+					glm::vec3 patrolPoint2(glm::vec3(j * BLOCK_SIZE - 300.0f, i * BLOCK_SIZE - 300.0f, 0.0f));
+					spearman->AddPatrolPoint(patrolPoint1);
+					spearman->AddPatrolPoint(patrolPoint2);
 					enemies.emplace_back(spearman);
 					break;
 				}
@@ -376,7 +380,7 @@ void Level::handlePlayerCollisionWithAssets()
 	}
 }
 
-GLboolean Level::isPlayerSpottedByEnemies(float deltaTime)
+GLboolean Level::isPlayerSpottedByEnemies()
 {
 	GLboolean hasBeenSpotted{ false };
 
@@ -384,9 +388,30 @@ GLboolean Level::isPlayerSpottedByEnemies(float deltaTime)
 	{
 		if (enemy->CheckIfHasSeenPlayer(player))
 			hasBeenSpotted = true;
-
-		enemy->MoveTowardsPlayer(player, deltaTime);
 	}
 
 	return hasBeenSpotted;
+}
+
+void Level::RunEnemyBehaviour(float deltaTime)
+{
+	for (auto& enemy : enemies)
+	{
+		switch (enemy->GetEnemyType())
+		{
+			case EnemyType::SPEARMAN:
+			{
+				if (!enemy->CheckIfHasSeenPlayer(player))
+					enemy->MoveTowardsNextPatrolPoint(deltaTime);
+				else
+				{
+					if (enemy->MoveTowardsPlayer(player, deltaTime))
+					{
+						std::cout << "an enemy is attacking the player" << std::endl;
+						dynamic_cast<Spearman*>(enemy)->MeleeAttack();
+					}
+				}
+			}
+		}
+	}
 }

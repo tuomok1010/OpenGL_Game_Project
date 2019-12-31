@@ -23,11 +23,9 @@ enum class EnemyOrientation
 	LEFT
 };
 
-enum class EnemyAction
+enum class EnemyType
 {
-	PATROL,
-	CHASE,
-	FIGHT
+	SPEARMAN
 };
 
 class Enemy
@@ -68,6 +66,7 @@ public:
 	GLboolean GetIsDead()const { return isDead; }
 	EnemyState GetState()const { return state; }
 	GLfloat GetLineOfSightX()const { return lineOfSightX; }
+	EnemyType GetEnemyType()const { return enemyType; }
 
 protected:
 	std::vector<Texture2D*> texturesIdle{};
@@ -113,4 +112,6 @@ protected:
 	GLfloat meleeRange{};
 	GLboolean isInRange{ false };
 	GLboolean hasSpottedPlayer{ false };
+
+	EnemyType enemyType{};
 };

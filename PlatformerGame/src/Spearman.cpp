@@ -10,11 +10,12 @@ Spearman::Spearman()
 	position = glm::vec3(0.0f);
 	size = glm::vec2(160.0f, 100.0f);
 	rotation = 0.0f;
-	speed = 250.0f;
+	speed = 100.0f;
 	maxJumpHeight = 75.0f;
 	heightJumped = 0.0f;
 	health = 100.0f;
 	lineOfSightX = 150.0f;
+	enemyType = EnemyType::SPEARMAN;
 
 	for(unsigned int i = 0; i < 26; ++i)
 		texturesIdle.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Idle/Idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));

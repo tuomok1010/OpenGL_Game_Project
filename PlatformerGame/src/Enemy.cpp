@@ -129,8 +129,8 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 
 	// check if the enemy if facing the player, thus would he be able to spot the player in the first place
 	// && if the player is (about )in the same height on the y axiis as the enemy
-	if (((position.x > playerPos.x && orientation == EnemyOrientation::LEFT) ||
-		(position.x < playerPos.x && orientation == EnemyOrientation::RIGHT)) &&
+	if (((position.x + (size.x / 2.0f) > playerPos.x + (size.x / 2.0f) && orientation == EnemyOrientation::LEFT) ||
+		(position.x + (size.x / 2.0f) < playerPos.x + (size.x / 2.0f) && orientation == EnemyOrientation::RIGHT)) &&
 		(playerPos.y + playerSize.y > position.y && position.y + size.y > playerPos.y))
 	{
 		if (orientation == EnemyOrientation::LEFT)
@@ -163,24 +163,37 @@ void Enemy::AddPatrolPoint(glm::vec3 patrolPoint)
 void Enemy::MoveTowardsNextPatrolPoint(float deltaTime)
 {
 	GLfloat threshold{ 0.05f };
+	glm::vec3 nextPoint{};
+
+	if (nextPatrolPointIndex >= patrolPoints.size())
+		nextPatrolPointIndex = 0;
 
 	if (!patrolPoints.empty())
 	{
-		if (patrolPoints.at(nextPatrolPointIndex).x > position.x)
-			orientation = EnemyOrientation::RIGHT;
-		else if (patrolPoints.at(nextPatrolPointIndex).x < position.x)
-			orientation = EnemyOrientation::LEFT;
+		glm::vec3 nextPoint = patrolPoints.at(nextPatrolPointIndex);
 
-		// check if the enemy has reached the vicinity of the patrol point
-		if (abs(patrolPoints.at(nextPatrolPointIndex).x - position.x) <= threshold)
+		if (nextPoint.x > (position.x + (size.x / 2.0f)))
 		{
-			previousPatrolPointIndex = nextPatrolPointIndex;
-			++nextPatrolPointIndex;
-
-			if (nextPatrolPointIndex > patrolPoints.size() - 1)
-				nextPatrolPointIndex = 0;
+			orientation = EnemyOrientation::RIGHT;
+			if ((nextPoint.x - position.x) <= threshold)
+			{
+				std::cout << "Enemy has reached a patrol point" << std::endl;
+				previousPatrolPointIndex = nextPatrolPointIndex;
+				++nextPatrolPointIndex;
+				return;
+			}
 		}
-
+		else if (nextPoint.x < (position.x + (size.x / 2.0f)))
+		{
+			orientation = EnemyOrientation::LEFT;
+			if (position.x - nextPoint.x <= threshold)
+			{
+				std::cout << "Enemy has reached a patrol point" << std::endl;
+				previousPatrolPointIndex = nextPatrolPointIndex;
+				++nextPatrolPointIndex;
+				return;
+			}
+		}
 		Move(deltaTime);
 	}
 }
