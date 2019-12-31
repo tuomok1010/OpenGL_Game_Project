@@ -56,6 +56,7 @@ public:
 	GLfloat GetHealth()const { return health; }
 	GLboolean GetIsDead()const { return isDead; }
 	PlayerState GetState()const { return state; }
+	GLfloat GetTextureDistanceFromMeshBorder()const { return textureDistanceFromMeshBorder; }
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
@@ -93,6 +94,7 @@ private:
 
 	// TODO consider removing as it is not used anywhere(i think...)
 	GLboolean hasCollided{ false };
+	GLfloat textureDistanceFromMeshBorder{};
 
 	Camera camera;
 	// centers the camera so that the player character is in the niddle of the screen

@@ -23,6 +23,13 @@ enum class EnemyOrientation
 	LEFT
 };
 
+enum class EnemyAction
+{
+	PATROL,
+	CHASE,
+	FIGHT
+};
+
 class Enemy
 {
 public:
@@ -36,6 +43,12 @@ public:
 	void MoveDown(float deltaTime);
 
 	GLboolean CheckIfHasSeenPlayer(const Player& player);
+
+	void AddPatrolPoint(glm::vec3 patrolPoint);
+	void MoveTowardsNextPatrolPoint(float deltaTime);
+
+	// returns true when enemy has reached melee range to attack player
+	GLboolean MoveTowardsPlayer(const Player& player, float deltaTime);
 
 	void SetPosition(glm::vec3 newPosition) { position = newPosition; }
 	void SetOrientation(EnemyOrientation newOrientation) { orientation = newOrientation; }
@@ -65,7 +78,7 @@ protected:
 	Texture2D* textureFall;
 
 	glm::vec2 textureOffset{};
-	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions
+	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions. TODO consider renaming it to textureScale
 
 	EnemyState state{};
 	EnemyOrientation orientation{};
@@ -92,4 +105,12 @@ protected:
 	GLboolean hasCollided{ false };
 
 	GLfloat lineOfSightX{};
-};      
+
+	std::vector<glm::vec3> patrolPoints{};
+	GLuint previousPatrolPointIndex{};
+	GLuint nextPatrolPointIndex{};
+
+	GLfloat meleeRange{};
+	GLboolean isInRange{ false };
+	GLboolean hasSpottedPlayer{ false };
+};

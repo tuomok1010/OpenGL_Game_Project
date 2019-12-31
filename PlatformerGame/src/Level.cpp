@@ -304,7 +304,7 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 
 		// check if overlapping, we need to subtract/add the value "val" to/from the player because the mesh is significantly larger than the 
 		// player when he is idle(this is because the attacking animation needs the extra mesh space to be completely visible)
-		int val = 50.0f;
+		int val = player.GetTextureDistanceFromMeshBorder();
 		bool collisionX = playerPos.x + (playerSize.x - val) > objPos.x && objPos.x + objSize.x > (playerPos.x + val);
 		bool collisionY = playerPos.y + playerSize.y > objPos.y && objPos.y + objSize.y > playerPos.y;
 
@@ -376,7 +376,7 @@ void Level::handlePlayerCollisionWithAssets()
 	}
 }
 
-GLboolean Level::isPlayerSpottedByEnemies()
+GLboolean Level::isPlayerSpottedByEnemies(float deltaTime)
 {
 	GLboolean hasBeenSpotted{ false };
 
@@ -384,6 +384,9 @@ GLboolean Level::isPlayerSpottedByEnemies()
 	{
 		if (enemy->CheckIfHasSeenPlayer(player))
 			hasBeenSpotted = true;
+
+		enemy->MoveTowardsPlayer(player, deltaTime);
 	}
+
 	return hasBeenSpotted;
 }
