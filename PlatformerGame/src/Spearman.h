@@ -10,5 +10,8 @@ public:
 
 	GLboolean MeleeAttack();
 
+	void DamagePlayer(Player& player);
+
 private:
+	GLfloat meleeDamage{};
 };

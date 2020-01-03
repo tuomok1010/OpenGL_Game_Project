@@ -1,5 +1,7 @@
 #include "Spearman.h"
 
+#include <iostream>
+
 Spearman::Spearman()
 {
 	state = EnemyState::IDLE;
@@ -16,18 +18,19 @@ Spearman::Spearman()
 	health = 100.0f;
 	lineOfSightX = 150.0f;
 	enemyType = EnemyType::SPEARMAN;
+	meleeDamage = 25.0f;
 
 	for(unsigned int i = 0; i < 26; ++i)
 		texturesIdle.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Idle/Idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
 
 	for (unsigned int i = 0; i < 13; ++i)
-		texturesRun.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Run/Run_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+		texturesRun.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Run/Run_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
 
 	for(unsigned int i = 0; i < 18; ++i)
 		texturesDeath.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Die/Die_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
 	for(unsigned int i = 0; i < 11; ++i)
-		texturesMeleeAttack.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Attack/Attack_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+		texturesMeleeAttack.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Attack/Attack_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
 }
 
 Spearman::~Spearman()
@@ -42,4 +45,16 @@ GLboolean Spearman::MeleeAttack()
 		return false;
 	else
 		return true;
+}
+
+void Spearman::DamagePlayer(Player& player)
+{
+	if (meleeAttackIterator > texturesMeleeAttack.size() - 1)
+	{
+		if (!player.GetIsDead())
+		{
+			player.SetHealth(player.GetHealth() - meleeDamage);
+			std::cout << "Spearman damages player by " << meleeDamage << " points! Player health: " << player.GetHealth() << std::endl;
+		}
+	}
 }

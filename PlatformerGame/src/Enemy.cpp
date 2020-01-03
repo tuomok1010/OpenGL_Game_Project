@@ -38,10 +38,10 @@ Enemy::~Enemy()
 
 void Enemy::Draw(SpriteRenderer& renderer)
 {
-	// If the player is facing right, we do not need to rotate the sprite, if the sprite is facing left we set the axis of rotation to be the Y axis.
+	// If the enemy is facing right, we do not need to rotate the sprite, if the sprite is facing left we set the axis of rotation to be the Y axis.
 	glm::vec3 rotationAxiis = (orientation == EnemyOrientation::RIGHT) ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(0.0f, 1.0f, 0.0f);
 
-	// If the player is facing right, set rotation to 0.0f, if the sprite is facing left set rotation to 180.0f.
+	// If the enemy is facing right, set rotation to 0.0f, if the sprite is facing left set rotation to 180.0f.
 	rotation = (orientation == EnemyOrientation::RIGHT) ? 0.0f : 180.0f;
 
 	if (state == EnemyState::IDLE)

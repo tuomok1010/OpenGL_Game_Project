@@ -91,10 +91,14 @@ void Game::ProcessInput(Level& level)
 	{
 		// checks if player is colliding with any objects in game such as traps and if so, damages the player if necessary
 		level.handlePlayerCollisionWithAssets();
+
+		// handles enemy related stuff such as damage to player
+		level.RunEnemyBehaviour(deltaTime);
+
 		if (player.GetIsDead())
 			player.SetState(PlayerState::DEATH);
 
-		level.RunEnemyBehaviour(deltaTime);
+
 
 		// The MoveDown function basically acts as gravity
 		if (level.gravityEnabled)
@@ -210,6 +214,8 @@ void Game::Draw(Level& level)
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
 		level.Draw(mainWindow, deltaTime);
+
+		level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
 
 		if (!player.GetIsDead())
 			player.SetState(PlayerState::IDLE);

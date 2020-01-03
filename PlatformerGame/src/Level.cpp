@@ -120,10 +120,6 @@ void Level::ProcessLevelData()
 				{
 					Spearman* spearman = new Spearman();
 					spearman->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
-					glm::vec3 patrolPoint1(glm::vec3(j * BLOCK_SIZE + 300.0f, i * BLOCK_SIZE + 300.0f, 0.0f));
-					glm::vec3 patrolPoint2(glm::vec3(j * BLOCK_SIZE - 300.0f, i * BLOCK_SIZE - 300.0f, 0.0f));
-					spearman->AddPatrolPoint(patrolPoint1);
-					spearman->AddPatrolPoint(patrolPoint2);
 					enemies.emplace_back(spearman);
 					break;
 				}
@@ -240,15 +236,13 @@ void Level::ProcessLevelData()
 	}
 
 	// initializes the enemy orientation so that at the start of the level they face the player
-	/*
-	for (auto& enemy : enemies)
-	{
-		if (enemy->GetPosition().x > player.GetPosition().x)
-			enemy->SetOrientation(EnemyOrientation::LEFT);
-		else if(enemy->GetPosition().x < player.GetPosition().x)
-			enemy->SetOrientation(EnemyOrientation::RIGHT);
-	}
-	*/
+	//for (auto& enemy : enemies)
+	//{
+	//	if (enemy->GetPosition().x > player.GetPosition().x)
+	//		enemy->SetOrientation(EnemyOrientation::LEFT);
+	//	else if(enemy->GetPosition().x < player.GetPosition().x)
+	//		enemy->SetOrientation(EnemyOrientation::RIGHT);
+	//}
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -405,13 +399,27 @@ void Level::RunEnemyBehaviour(float deltaTime)
 					enemy->MoveTowardsNextPatrolPoint(deltaTime);
 				else
 				{
-					if (enemy->MoveTowardsPlayer(player, deltaTime))
+					if (enemy->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
 					{
 						std::cout << "an enemy is attacking the player" << std::endl;
 						dynamic_cast<Spearman*>(enemy)->MeleeAttack();
+						dynamic_cast<Spearman*>(enemy)->DamagePlayer(player);
+						if (player.GetHealth() <= 0.0f)
+							player.SetIsDead(true);
 					}
 				}
 			}
 		}
+		if(player.GetIsDead())
+			enemy->SetState(EnemyState::IDLE);
+	}
+}
+
+void Level::SetAnimationToAllAliveEnemies(EnemyState newState)
+{
+	for (auto& enemy : enemies)
+	{
+		if(!enemy->GetIsDead())
+			enemy->SetState(newState);
 	}
 }

@@ -14,8 +14,10 @@ SpikeTrap::~SpikeTrap()
 
 void SpikeTrap::DamagePlayer(Player& player)
 {
-	// making sure the spikes always kills the player
-	damage = player.GetHealth() + 1.0f;
-
-	player.SetHealth(player.GetHealth() - damage);
+	if (!player.GetIsDead())
+	{
+		// making sure the spikes always kills the player
+		damage = player.GetHealth() + 1.0f;
+		player.SetHealth(player.GetHealth() - damage);
+	}
 }

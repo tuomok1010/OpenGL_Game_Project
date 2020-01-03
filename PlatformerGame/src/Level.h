@@ -25,6 +25,7 @@ public:
 	void handlePlayerCollisionWithAssets();
 	GLboolean isPlayerSpottedByEnemies();
 	void RunEnemyBehaviour(float deltaTime);
+	void SetAnimationToAllAliveEnemies(EnemyState newState);
 
 	GLboolean gravityEnabled{ true };
 	GLboolean levelComplete{ false };
