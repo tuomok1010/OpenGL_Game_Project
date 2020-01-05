@@ -18,7 +18,7 @@ public:
 		glm::vec2 textureOffset = glm::vec2(0.0f), glm::vec2 textureZoom = glm::vec2(1.0f));
 	virtual ~GameObject();
 
-	void Draw(SpriteRenderer& renderer, GLuint textureUnit, glm::vec3 rotationAxises = glm::vec3(0.0f, 0.0f, 1.0f));
+	virtual void Draw(SpriteRenderer& renderer, GLuint textureUnit, glm::vec3 rotationAxises = glm::vec3(0.0f, 0.0f, 1.0f));
 	void SetPosition(glm::vec2 newPosition);
 
 	glm::vec2 GetSize() const { return size; }

@@ -34,7 +34,7 @@ public:
 	Enemy();
 	virtual ~Enemy();
 
-	void Draw(SpriteRenderer& renderer);
+	virtual void Draw(SpriteRenderer& renderer);
 	void Move(float deltaTime);
 
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
@@ -74,7 +74,7 @@ protected:
 	std::vector<Texture2D*> texturesJump{};
 	std::vector<Texture2D*> texturesDeath{};
 	std::vector<Texture2D*> texturesMeleeAttack{};
-	Texture2D* textureFall;
+	Texture2D* textureFall{};
 
 	glm::vec2 textureOffset{};
 	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions. TODO consider renaming it to textureScale

@@ -236,13 +236,13 @@ void Level::ProcessLevelData()
 	}
 
 	// initializes the enemy orientation so that at the start of the level they face the player
-	//for (auto& enemy : enemies)
-	//{
-	//	if (enemy->GetPosition().x > player.GetPosition().x)
-	//		enemy->SetOrientation(EnemyOrientation::LEFT);
-	//	else if(enemy->GetPosition().x < player.GetPosition().x)
-	//		enemy->SetOrientation(EnemyOrientation::RIGHT);
-	//}
+	for (auto& enemy : enemies)
+	{
+		if (enemy->GetPosition().x > player.GetPosition().x)
+			enemy->SetOrientation(EnemyOrientation::LEFT);
+		else if(enemy->GetPosition().x < player.GetPosition().x)
+			enemy->SetOrientation(EnemyOrientation::RIGHT);
+	}
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -289,6 +289,9 @@ void Level::Draw(Window& window, float deltaTime)
 
 	// render player
 	player.Draw(renderer);
+
+	// render blood effects
+	player.DrawBlood(renderer);
 }
 
 GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
@@ -300,10 +303,7 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 		glm::vec2 objPos = obj.GetPosition();
 		glm::vec2 objSize = obj.GetSize();
 
-		// check if overlapping, we need to subtract/add the value "val" to/from the player because the mesh is significantly larger than the 
-		// player when he is idle(this is because the attacking animation needs the extra mesh space to be completely visible)
-		int val = player.GetTextureDistanceFromMeshBorder();
-		bool collisionX = playerPos.x + (playerSize.x - val) > objPos.x && objPos.x + objSize.x > (playerPos.x + val);
+		bool collisionX = playerPos.x + (playerSize.x / 2.0f) > objPos.x && objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f);
 		bool collisionY = playerPos.y + playerSize.y > objPos.y && objPos.y + objSize.y > playerPos.y;
 
 		if (collisionX && collisionY)
@@ -403,7 +403,15 @@ void Level::RunEnemyBehaviour(float deltaTime)
 					{
 						std::cout << "an enemy is attacking the player" << std::endl;
 						dynamic_cast<Spearman*>(enemy)->MeleeAttack();
-						dynamic_cast<Spearman*>(enemy)->DamagePlayer(player);
+
+						if (dynamic_cast<Spearman*>(enemy)->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
+						{
+							player.SetShouldBleed(true);
+							if (enemy->GetPosition().x > player.GetPosition().x)
+								player.SetDamageDirection(DamageDirection::RIGHT);
+							else if (enemy->GetPosition().x < player.GetPosition().x)
+								player.SetDamageDirection(DamageDirection::LEFT);
+						}
 						if (player.GetHealth() <= 0.0f)
 							player.SetIsDead(true);
 					}

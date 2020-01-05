@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\BloodEffect.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="src\Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\BloodEffect.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\IndexBuffer.h" />

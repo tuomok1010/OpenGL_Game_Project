@@ -8,9 +8,11 @@ public:
 	Spearman();
 	~Spearman();
 
+	void Draw(SpriteRenderer& renderer) override;
+
 	GLboolean MeleeAttack();
 
-	void DamagePlayer(Player& player);
+	GLboolean DamagePlayer(Player& player);
 
 private:
 	GLfloat meleeDamage{};

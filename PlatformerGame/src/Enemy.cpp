@@ -122,11 +122,6 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 	glm::vec3 playerPos = player.GetPosition();
 	glm::vec2 playerSize = player.GetSize();
 
-	// we need to subtract/add the value "val" to/from the player because the mesh is significantly larger than the 
-	// player when he is idle(this is because the attacking animation needs the extra mesh space to be completely visible)
-	// TODO may need to do similar to the enemies
-	int val = player.GetTextureDistanceFromMeshBorder();
-
 	// check if the enemy if facing the player, thus would he be able to spot the player in the first place
 	// && if the player is (about )in the same height on the y axiis as the enemy
 	if (((position.x + (size.x / 2.0f) > playerPos.x + (size.x / 2.0f) && orientation == EnemyOrientation::LEFT) ||
@@ -135,7 +130,7 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 	{
 		if (orientation == EnemyOrientation::LEFT)
 		{
-			bool spotted = (playerPos.x + (playerSize.x - val)) >= (position.x - lineOfSightX);
+			bool spotted = (playerPos.x + (playerSize.x / 2.0f)) >= (position.x - lineOfSightX);
 			if (spotted)
 			{
 				std::cout << "Player was spotted by an enemy!" << std::endl;
@@ -144,7 +139,7 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 		}
 		else if (orientation == EnemyOrientation::RIGHT)
 		{
-			bool spotted = (playerPos.x + val) <= ((position.x + size.x) + lineOfSightX);
+			bool spotted = (playerPos.x + (playerSize.x / 2.0f)) <= ((position.x + size.x) + lineOfSightX);
 			if (spotted)
 			{
 				std::cout << "Player was spotted by an enemy!" << std::endl;
@@ -201,12 +196,13 @@ void Enemy::MoveTowardsNextPatrolPoint(float deltaTime)
 GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 {
 	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
 
 	if (playerPos.x > position.x)
 	{
 		orientation = EnemyOrientation::RIGHT;
 		// check if the enemy has reached the proper range in order to attack the player in melee
-		if ((playerPos.x + player.GetTextureDistanceFromMeshBorder()) - (position.x + size.x) <= meleeRange)
+		if ((playerPos.x + playerSize.x / 2.0f) - (position.x + size.x) <= meleeRange)
 		{
 			std::cout << "Enemy has reached melee range" << std::endl;
 			isInRange = true;
@@ -218,7 +214,7 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 	{
 		orientation = EnemyOrientation::LEFT;
 		// check if the enemy has reached the proper range in order to attack the player in melee
-		if (position.x - (playerPos.x + player.GetSize().x - player.GetTextureDistanceFromMeshBorder()) <= meleeRange)
+		if (position.x - (playerPos.x + playerSize.x / 2.0f) <= meleeRange)
 		{
 			std::cout << "Enemy has reached melee range" << std::endl;
 			isInRange = true;

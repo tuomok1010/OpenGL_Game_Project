@@ -3,7 +3,7 @@
 Player::Player()
 	:
 	state(PlayerState::IDLE),
-	textureOffset(glm::vec2(-0.2f, 0.07f)),
+	textureOffset(glm::vec2(-0.22f, 0.07f)), // old values -0.2f, 0.07f
 	textureScale(glm::vec2(1.25f, 0.9f)),
 	color(glm::vec3(1.0f)),
 	position(glm::vec3(0.0f)),
@@ -12,8 +12,7 @@ Player::Player()
 	speed(250.0f),
 	maxJumpHeight(75.0f),
 	heightJumped(0.0f),
-	health(100.0f),
-	textureDistanceFromMeshBorder(50.0f)
+	health(100000.0f)
 {
 	for (unsigned int i = 0; i < 12; ++i)
 		texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -181,6 +180,37 @@ void Player::MoveDown(float deltaTime)
 	camera.SetPosition(position + cameraOffset);
 }
 
+void Player::DrawBlood(SpriteRenderer& renderer)
+{
+	if (shouldBleed)
+	{
+		GLfloat offset = 10.0f;
+		switch (bloodEffect.damageDirection)
+		{
+			case DamageDirection::RIGHT:
+			{
+				bloodEffect.SetPosition(glm::vec3(position.x + (size.x / 2.0f) + offset, position.y + (size.y - 40.0f) / 2.0f, position.z));
+				bloodEffect.Rotate(-90.0f);
+				break;
+			}
+			case DamageDirection::LEFT:
+			{
+				bloodEffect.SetPosition(glm::vec3(position.x + (size.x / 2.0f) - bloodEffect.GetSize().x - offset, position.y + (size.y - 40.0f) / 2.0f, position.z));
+				bloodEffect.Rotate(90.0f);
+				break;
+			}
+		}
+
+		bloodEffect.Draw(renderer);
+		bloodEffect.Rotate(0.0f);
+
+		if (bloodEffect.GetShouldStop())
+			shouldBleed = false;
+		else
+			shouldBleed = true;
+	}
+}
+
 void Player::SetPosition(glm::vec3 newPosition)
 {
 	previousPosition = position;
@@ -211,6 +241,16 @@ void Player::SetHealth(GLfloat newHealth)
 void Player::SetIsDead(GLboolean isDead)
 {
 	this->isDead = isDead;
+}
+
+void Player::SetShouldBleed(GLboolean newShouldBleed)
+{
+	shouldBleed = newShouldBleed;
+}
+
+void Player::SetDamageDirection(DamageDirection newDirection)
+{
+	bloodEffect.SetDamageDirection(newDirection);
 }
 
 void Player::ResetAnimation(PlayerState animationToReset)
