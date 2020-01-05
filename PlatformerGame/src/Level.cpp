@@ -135,7 +135,7 @@ void Level::ProcessLevelData()
 				}
 				case 'P':
 				{
-					player.SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					player.SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE + 0.05f, 0.0f));
 					break;
 				}
 				case '^':
@@ -312,11 +312,8 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 			return collisionX && collisionY;
 		}
 	}
-	else
-	{
-		player.SetHasCollided(false);
-		return false;
-	}
+	player.SetHasCollided(false);
+	return false;	
 }
 
 GLboolean Level::CollisionCheck(GameObject& obj1, GameObject& obj2)
