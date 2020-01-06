@@ -90,7 +90,7 @@ void Game::ProcessInput(Level& level)
 	if (gameState == GameState::RUN)
 	{
 		// checks if player is colliding with any objects in game such as traps and if so, damages the player if necessary
-		level.handlePlayerCollisionWithAssets();
+		level.UpdateAssets(deltaTime);
 
 		// handles enemy related stuff such as damage to player
 		level.RunEnemyBehaviour(deltaTime);
@@ -102,7 +102,7 @@ void Game::ProcessInput(Level& level)
 		if (level.gravityEnabled)
 		{
 			player.MoveDown(deltaTime);
-			if (level.isPlayerCollidingWithBlocks())
+			if (level.IsPlayerCollidingWithBlocks())
 				player.SetPosition(player.GetPreviousPosition());
 		}
 
@@ -117,7 +117,7 @@ void Game::ProcessInput(Level& level)
 				player.SetOrientation(PlayerOrientation::RIGHT);
 				player.Move(deltaTime);
 
-				if (level.isPlayerCollidingWithBlocks())
+				if (level.IsPlayerCollidingWithBlocks())
 					player.SetPosition(player.GetPreviousPosition());
 			}
 
@@ -130,7 +130,7 @@ void Game::ProcessInput(Level& level)
 				player.SetOrientation(PlayerOrientation::LEFT);
 				player.Move(deltaTime);
 
-				if (level.isPlayerCollidingWithBlocks())
+				if (level.IsPlayerCollidingWithBlocks())
 					player.SetPosition(player.GetPreviousPosition());
 			}
 

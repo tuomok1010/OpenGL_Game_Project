@@ -19,6 +19,8 @@ public:
 	void Bind(GLuint textureUnit = 0) const;
 	void Unbind() const;
 
+	GLboolean loadFailed{ false };
+
 private:
 	GLuint ID{};
 	GLsizei width{};

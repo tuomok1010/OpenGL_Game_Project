@@ -23,10 +23,12 @@ Texture2D::Texture2D
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, dataType, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
+		loadFailed = false;
 	}
 	else
 	{
 		std::cout << "Error loading texture" << std::endl;
+		loadFailed = true;
 	}
 
 	stbi_image_free(data);

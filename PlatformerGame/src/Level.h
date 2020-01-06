@@ -21,9 +21,9 @@ public:
 	void Load(const std::string& filePath, const std::string& backGroundPath = "");
 	void ProcessLevelData();
 	void Draw(Window& window, float deltaTime);
-	GLboolean isPlayerCollidingWithBlocks();
-	void handlePlayerCollisionWithAssets();
-	GLboolean isPlayerSpottedByEnemies();
+	GLboolean IsPlayerCollidingWithBlocks();
+	void UpdateAssets(float deltaTime);
+	GLboolean IsPlayerSpottedByEnemies();
 	void RunEnemyBehaviour(float deltaTime);
 	void SetAnimationToAllAliveEnemies(EnemyState newState);
 

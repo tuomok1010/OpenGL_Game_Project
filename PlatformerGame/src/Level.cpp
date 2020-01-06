@@ -18,6 +18,7 @@
 #define TEXTURE_TRAP_01			10
 #define TEXTURE_MENU_SIGN_START	11
 #define TEXTURE_MENU_SIGN_QUIT	12
+#define TEXTURE_CHEST_GOLD		13
 
 //************
 
@@ -43,6 +44,7 @@ Level::Level(SpriteRenderer& renderer, Player& player)
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/spike.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_TRAP_01
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignstart.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_START
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignquit.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_QUIT
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/chest3.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_CHEST_GOLD
 
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0380_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0370_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -72,6 +74,13 @@ void Level::Load(const std::string& filePath, const std::string& backGroundPath)
 
 	if (backGroundPath != "")
 		backGround = new Texture2D(backGroundPath, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
+
+	if (backGround->loadFailed)
+	{
+		delete backGround;
+		// loads the level1 backGround if current level doesn't have a unique background
+		backGround = new Texture2D("../textures/backGround1.jpg", GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
+	}
 
 	std::fstream stream;
 
@@ -133,6 +142,11 @@ void Level::ProcessLevelData()
 					hasClouds = true;
 					break;
 				}
+				case 'c':
+				{
+					// spawn a coin
+					break;
+				}
 				case 'P':
 				{
 					player.SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE + 0.05f, 0.0f));
@@ -140,14 +154,14 @@ void Level::ProcessLevelData()
 				}
 				case '^':
 				{
-					SpikeTrap* trap = new SpikeTrap(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_TRAP_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f), glm::vec2(1.0f, 0.2f));
+					SpikeTrap* trap = new SpikeTrap(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_TRAP_01), glm::vec3(1.0f), 100.0f, glm::vec2(0.0f), glm::vec2(1.0f, 0.2f));
 					trap->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					assets.emplace_back(trap);
 					break;
 				}
 				case 'S':
 				{
-					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_MENU_SIGN_START], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_START));
 					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					sign->SetType(Type::SIGNSTART);
 					assets.emplace_back(sign);
@@ -155,78 +169,86 @@ void Level::ProcessLevelData()
 				}
 				case 'Q':
 				{
-					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_MENU_SIGN_QUIT], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_QUIT));
 					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					sign->SetType(Type::SIGNQUIT);
 					assets.emplace_back(sign);
 					break;
 				}
+				case 'T':
+				{
+					GameObject* chest = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_CHEST_GOLD));
+					chest->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					chest->SetType(Type::CHEST);
+					assets.emplace_back(chest);
+					break;
+				}
 				case '0':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_00], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_00));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '1':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_01], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_01));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '2':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_02], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_02));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '3':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_03], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_03));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '4':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_04], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_04));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '5':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_05], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_05));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '6':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_06], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_06));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '7':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_07], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_07));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '8':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_08], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_08));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '9':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures[TEXTURE_BLOCK_09], glm::vec3(1.0f), glm::vec2(0.0f), glm::vec2(0.0f));
+					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_09));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
@@ -277,11 +299,11 @@ void Level::Draw(Window& window, float deltaTime)
 
 	// render all blocks
 	for (unsigned int i = 0; i < blocks.size(); ++i)
-		blocks.at(i)->Draw(renderer, 0);
+		blocks.at(i)->Draw(renderer);
 
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
-		assets.at(i)->Draw(renderer, 0);
+		assets.at(i)->Draw(renderer);
 
 	// render all enemies
 	for (unsigned int i = 0; i < enemies.size(); ++i)
@@ -335,7 +357,7 @@ GLboolean Level::CollisionCheck(GameObject& obj1, GameObject& obj2)
 	}
 }
 
-GLboolean Level::isPlayerCollidingWithBlocks()
+GLboolean Level::IsPlayerCollidingWithBlocks()
 {
 	for (auto& block : blocks)
 	{
@@ -347,31 +369,59 @@ GLboolean Level::isPlayerCollidingWithBlocks()
 	return false;
 }
 
-void Level::handlePlayerCollisionWithAssets()
+void Level::UpdateAssets(float deltaTime)
 {
 	for (auto& obj : assets)
 	{
-		if (CollisionCheck(player, *obj))
+		switch (obj->GetType())
 		{
-			if (obj->GetType() == Type::SPIKETRAP)
+			case Type::SPIKETRAP:
 			{
-				dynamic_cast<SpikeTrap*>(obj)->DamagePlayer(player);
-				if (player.GetHealth() <= 0.0f)
-					player.SetIsDead(true);
+				if (CollisionCheck(player, *obj))
+				{
+					dynamic_cast<SpikeTrap*>(obj)->DamagePlayer(player);
+					if (player.GetHealth() <= 0.0f)
+						player.SetIsDead(true);
+				}
+				break;
 			}
-			else if (obj->GetType() == Type::SIGNSTART)
+			case Type::SIGNSTART:
 			{
-				levelComplete = true;
+				if (CollisionCheck(player, *obj))
+				{
+					levelComplete = true;
+				}
+				break;
 			}
-			else if (obj->GetType() == Type::SIGNQUIT)
+			case Type::SIGNQUIT:
 			{
-				quitGame = true;
+				if (CollisionCheck(player, *obj))
+				{
+					quitGame = true;
+				}
+				break;
+			}
+			case Type::CHEST:
+			{
+				if (CollisionCheck(player, *obj))
+				{
+					levelComplete = true;
+				}
+				break;
+			}
+			case Type::COIN:
+			{
+				if (CollisionCheck(player, *obj))
+				{
+					// collect the coin
+				}
+				break;
 			}
 		}
 	}
 }
 
-GLboolean Level::isPlayerSpottedByEnemies()
+GLboolean Level::IsPlayerSpottedByEnemies()
 {
 	GLboolean hasBeenSpotted{ false };
 
@@ -380,7 +430,6 @@ GLboolean Level::isPlayerSpottedByEnemies()
 		if (enemy->CheckIfHasSeenPlayer(player))
 			hasBeenSpotted = true;
 	}
-
 	return hasBeenSpotted;
 }
 
