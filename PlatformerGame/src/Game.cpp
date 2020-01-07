@@ -154,6 +154,9 @@ void Game::ProcessInput(Level& level)
 			{
 				if (!player.Jump(deltaTime, level.gravityEnabled))
 					canJumpAgain = true;
+
+				if (level.IsPlayerCollidingWithBlocks())
+					player.SetPosition(player.GetPreviousPosition());
 			}
 			jumpCooldown -= deltaTime;
 

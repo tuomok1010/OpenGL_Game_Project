@@ -326,10 +326,10 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 		glm::vec2 objSize = obj.GetSize();
 
 		GLfloat xOffset = 5.0f;
-		GLfloat yOffset = 10.0f;
+		GLfloat yOffset = 15.0f;
 
-		bool collisionX = playerPos.x + (playerSize.x / 2.0f) + xOffset > objPos.x && objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f) - xOffset;
-		bool collisionY = playerPos.y + playerSize.y - yOffset > objPos.y && objPos.y + objSize.y > playerPos.y;
+		bool collisionX = playerPos.x + playerSize.x / 2.0f + xOffset > objPos.x && objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f) - xOffset;
+		bool collisionY = playerPos.y + playerSize.y / 2.0f + yOffset > objPos.y && objPos.y + objSize.y > playerPos.y;
 
 		if (collisionX && collisionY)
 		{
