@@ -30,7 +30,6 @@ public:
 	void Run();
 	void ProcessInput(Level& level);
 	void Draw(Level& level);
-	void DrawRetryMenu();
 
 public:
 private:

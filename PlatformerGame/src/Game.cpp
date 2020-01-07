@@ -103,7 +103,18 @@ void Game::ProcessInput(Level& level)
 		{
 			player.MoveDown(deltaTime);
 			if (level.IsPlayerCollidingWithBlocks())
+			{
+				// if player is jumping, this will reset the animation to idle when he collides with the ground again
+				if(!player.GetIsDead())
+					player.SetState(PlayerState::IDLE);
+
 				player.SetPosition(player.GetPreviousPosition());
+			}
+			else
+			{
+				// if player falls downwards without the player having pressed the jump button(falling off a ledge for example), this will make sure that the jump animation is used when he falls
+				player.SetState(PlayerState::JUMP);
+			}
 		}
 
 		if (!player.GetIsDead())
@@ -218,22 +229,12 @@ void Game::Draw(Level& level)
 
 		level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
 
-		if (!player.GetIsDead())
-			player.SetState(PlayerState::IDLE);
-		else
-		{
-			//while(!mainWindow.IsKeyPressed(GLFW_KEY_ENTER) && !mainWindow.IsKeyPressed(GLFW_KEY_ESCAPE))
-			//	DrawRetryMenu();
-		}
+		//if (!player.GetIsDead())
+		//	player.SetState(PlayerState::IDLE);
 	}
 	else
 	{
 		// process quitting
 	}
 	mainWindow.SwapBuffers();
-}
-
-void Game::DrawRetryMenu()
-{
-
 }
