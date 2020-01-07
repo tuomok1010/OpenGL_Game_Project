@@ -139,7 +139,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					hasClouds = true;
+					//hasClouds = true;
 					break;
 				}
 				case 'c':
@@ -325,8 +325,11 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 		glm::vec2 objPos = obj.GetPosition();
 		glm::vec2 objSize = obj.GetSize();
 
-		bool collisionX = playerPos.x + (playerSize.x / 2.0f) > objPos.x && objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f);
-		bool collisionY = playerPos.y + playerSize.y > objPos.y && objPos.y + objSize.y > playerPos.y;
+		GLfloat xOffset = 5.0f;
+		GLfloat yOffset = 10.0f;
+
+		bool collisionX = playerPos.x + (playerSize.x / 2.0f) + xOffset > objPos.x && objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f) - xOffset;
+		bool collisionY = playerPos.y + playerSize.y - yOffset > objPos.y && objPos.y + objSize.y > playerPos.y;
 
 		if (collisionX && collisionY)
 		{
