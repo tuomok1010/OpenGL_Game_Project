@@ -121,7 +121,9 @@ void Player::Draw(SpriteRenderer& renderer)
 void Player::Move(float deltaTime)
 {
 	GLfloat velocity = speed * deltaTime;
-	state = PlayerState::RUN;
+
+	if(state != PlayerState::JUMP)
+		state = PlayerState::RUN;
 
 	switch (orientation)
 	{

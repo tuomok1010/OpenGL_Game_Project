@@ -77,7 +77,8 @@ void Game::ProcessInput(Level& level)
 	/*
 		TODO fix: The SetPosition and GetPrevious position is used with the collision detection. However, 
 		sometimes when the player jumps and falls back to the ground, instead of falling completely to the ground and touching it,
-		he remains slightly in the air. 
+		he remains slightly in the air. <-- this is most likely because of lost frames. Running the game in release mode minimizes this issue.
+		Should still look for a proper solution for it. 
 	*/
 
 	// Starts the game
@@ -131,8 +132,7 @@ void Game::ProcessInput(Level& level)
 				if (level.IsPlayerCollidingWithBlocks())
 					player.SetPosition(player.GetPreviousPosition());
 			}
-
-			if (mainWindow.IsKeyPressed(GLFW_KEY_A))
+			else if (mainWindow.IsKeyPressed(GLFW_KEY_A))
 			{
 				if (previusKeyPressed != GLFW_KEY_A)
 					player.ResetAnimation(PlayerState::RUN);
@@ -144,9 +144,7 @@ void Game::ProcessInput(Level& level)
 				if (level.IsPlayerCollidingWithBlocks())
 					player.SetPosition(player.GetPreviousPosition());
 			}
-
 			// Jump logic **********************************
-
 			if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && canJumpAgain)
 			{
 				if (previusKeyPressed != GLFW_KEY_SPACE)
@@ -228,9 +226,6 @@ void Game::Draw(Level& level)
 		level.Draw(mainWindow, deltaTime);
 
 		level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
-
-		//if (!player.GetIsDead())
-		//	player.SetState(PlayerState::IDLE);
 	}
 	else
 	{
