@@ -125,7 +125,7 @@ void Level::ProcessLevelData()
 			GLchar symbol{ levelData.at(i).at(j) };
 			switch (symbol)
 			{
-				case 's':
+				case '!':
 				{
 					Spearman* spearman = new Spearman();
 					spearman->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
@@ -144,7 +144,23 @@ void Level::ProcessLevelData()
 				}
 				case 'c':
 				{
-					// spawn a coin
+					Coin* coin = new Coin(CoinType::COPPER);
+					coin->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					coins.emplace_back(coin);
+					break;
+				}
+				case 's':
+				{
+					Coin* coin = new Coin(CoinType::SILVER);
+					coin->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					coins.emplace_back(coin);
+					break;
+				}
+				case 'g':
+				{
+					Coin* coin = new Coin(CoinType::GOLD);
+					coin->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					coins.emplace_back(coin);
 					break;
 				}
 				case 'P':
@@ -304,6 +320,9 @@ void Level::Draw(Window& window, float deltaTime)
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
 		assets.at(i)->Draw(renderer);
+
+	for (unsigned int i = 0; i < coins.size(); ++i)
+		coins.at(i)->Draw(renderer);
 
 	// render player
 	player.Draw(renderer);

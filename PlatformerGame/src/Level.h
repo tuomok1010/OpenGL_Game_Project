@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Window.h"
 #include "Spearman.h"
+#include "Coin.h"
 
 class Level
 {
@@ -41,6 +42,8 @@ private:
 	std::vector<Texture2D*> assetTextures{};
 
 	std::vector<Enemy*> enemies{};
+
+	std::vector<Coin*> coins{};
 
 	Texture2D* backGround{};
 	GLboolean hasClouds{ false };
