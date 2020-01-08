@@ -312,7 +312,9 @@ void Level::Draw(Window& window, float deltaTime)
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
 		enemies.at(i)->Draw(renderer);
-		dynamic_cast<Spearman*>(enemies.at(i))->DrawBlood(renderer, player);
+
+		if(enemies.at(i)->GetEnemyType() == EnemyType::SPEARMAN)
+			dynamic_cast<Spearman*>(enemies.at(i))->DrawBlood(renderer, player);
 	}
 }
 
@@ -412,14 +414,6 @@ void Level::UpdateAssets(float deltaTime)
 				}
 				break;
 			}
-			case Type::COIN:
-			{
-				if (CollisionCheck(player, *obj))
-				{
-					// collect the coin
-				}
-				break;
-			}
 		}
 	}
 }
@@ -444,23 +438,25 @@ void Level::RunEnemyBehaviour(float deltaTime)
 		{
 			case EnemyType::SPEARMAN:
 			{
-				if (!enemy->CheckIfHasSeenPlayer(player))
-					enemy->MoveTowardsNextPatrolPoint(deltaTime);
+				Spearman* spearman = dynamic_cast<Spearman*>(enemy);
+
+				if (!spearman->CheckIfHasSeenPlayer(player))
+					spearman->MoveTowardsNextPatrolPoint(deltaTime);
 				else
 				{
-					if (enemy->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
+					if (spearman->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
 					{
 						std::cout << "an enemy is attacking the player" << std::endl;
-						dynamic_cast<Spearman*>(enemy)->MeleeAttack();
+						spearman->MeleeAttack();
 
-						if (dynamic_cast<Spearman*>(enemy)->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
+						if (spearman->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
 						{
-							dynamic_cast<Spearman*>(enemy)->SetEnableBloodEffect(true);
+							spearman->SetEnableBloodEffect(true);
 
-							if (enemy->GetPosition().x > player.GetPosition().x)
-								dynamic_cast<Spearman*>(enemy)->SetDamageDirection(DamageDirection::RIGHT);
-							else if (enemy->GetPosition().x < player.GetPosition().x)
-								dynamic_cast<Spearman*>(enemy)->SetDamageDirection(DamageDirection::LEFT);
+							if (spearman->GetPosition().x > player.GetPosition().x)
+								spearman->SetDamageDirection(DamageDirection::RIGHT);
+							else if (spearman->GetPosition().x < player.GetPosition().x)
+								spearman->SetDamageDirection(DamageDirection::LEFT);
 						}
 						if (player.GetHealth() <= 0.0f)
 							player.SetIsDead(true);
