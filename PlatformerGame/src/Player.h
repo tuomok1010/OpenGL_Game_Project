@@ -6,7 +6,6 @@
 
 #include "SpriteRenderer.h"
 #include "Camera.h"
-#include "BloodEffect.h"
 
 enum class PlayerState
 {
@@ -40,8 +39,6 @@ public:
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
 	void MoveDown(float deltaTime);
 
-	void DrawBlood(SpriteRenderer& renderer);
-
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
 	void SetState(PlayerState newState);
@@ -49,7 +46,6 @@ public:
 	void SetHealth(GLfloat newHealth);
 	void SetIsDead(GLboolean isDead);
 	void SetShouldBleed(GLboolean newShouldBleed);
-	void SetDamageDirection(DamageDirection newDirection);
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -98,9 +94,6 @@ private:
 
 	// TODO consider removing as it is not used anywhere(i think...)
 	GLboolean hasCollided{ false };
-
-	BloodEffect bloodEffect;
-	GLboolean shouldBleed{ false };
 
 	Camera camera;
 	// centers the camera so that the player character is in the niddle of the screen

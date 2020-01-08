@@ -139,7 +139,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					//hasClouds = true;
+					hasClouds = true;
 					break;
 				}
 				case 'c':
@@ -305,15 +305,15 @@ void Level::Draw(Window& window, float deltaTime)
 	for (unsigned int i = 0; i < assets.size(); ++i)
 		assets.at(i)->Draw(renderer);
 
-	// render all enemies
-	for (unsigned int i = 0; i < enemies.size(); ++i)
-		enemies.at(i)->Draw(renderer);
-
 	// render player
 	player.Draw(renderer);
 
-	// render blood effects
-	player.DrawBlood(renderer);
+	// render all enemies and possible blood effects
+	for (unsigned int i = 0; i < enemies.size(); ++i)
+	{
+		enemies.at(i)->Draw(renderer);
+		dynamic_cast<Spearman*>(enemies.at(i))->DrawBlood(renderer, player);
+	}
 }
 
 GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
@@ -455,11 +455,12 @@ void Level::RunEnemyBehaviour(float deltaTime)
 
 						if (dynamic_cast<Spearman*>(enemy)->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
 						{
-							player.SetShouldBleed(true);
+							dynamic_cast<Spearman*>(enemy)->SetEnableBloodEffect(true);
+
 							if (enemy->GetPosition().x > player.GetPosition().x)
-								player.SetDamageDirection(DamageDirection::RIGHT);
+								dynamic_cast<Spearman*>(enemy)->SetDamageDirection(DamageDirection::RIGHT);
 							else if (enemy->GetPosition().x < player.GetPosition().x)
-								player.SetDamageDirection(DamageDirection::LEFT);
+								dynamic_cast<Spearman*>(enemy)->SetDamageDirection(DamageDirection::LEFT);
 						}
 						if (player.GetHealth() <= 0.0f)
 							player.SetIsDead(true);

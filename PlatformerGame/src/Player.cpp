@@ -184,37 +184,6 @@ void Player::MoveDown(float deltaTime)
 	camera.SetPosition(position + cameraOffset);
 }
 
-void Player::DrawBlood(SpriteRenderer& renderer)
-{
-	if (shouldBleed)
-	{
-		GLfloat offset = 10.0f;
-		switch (bloodEffect.damageDirection)
-		{
-			case DamageDirection::RIGHT:
-			{
-				bloodEffect.SetPosition(glm::vec3(position.x + (size.x / 2.0f) + offset, position.y + (size.y - 40.0f) / 2.0f, position.z));
-				bloodEffect.Rotate(-90.0f);
-				break;
-			}
-			case DamageDirection::LEFT:
-			{
-				bloodEffect.SetPosition(glm::vec3(position.x + (size.x / 2.0f) - bloodEffect.GetSize().x - offset, position.y + (size.y - 40.0f) / 2.0f, position.z));
-				bloodEffect.Rotate(90.0f);
-				break;
-			}
-		}
-
-		bloodEffect.Draw(renderer);
-		bloodEffect.Rotate(0.0f);
-
-		if (bloodEffect.GetShouldStop())
-			shouldBleed = false;
-		else
-			shouldBleed = true;
-	}
-}
-
 void Player::SetPosition(glm::vec3 newPosition)
 {
 	previousPosition = position;
@@ -245,16 +214,6 @@ void Player::SetHealth(GLfloat newHealth)
 void Player::SetIsDead(GLboolean isDead)
 {
 	this->isDead = isDead;
-}
-
-void Player::SetShouldBleed(GLboolean newShouldBleed)
-{
-	shouldBleed = newShouldBleed;
-}
-
-void Player::SetDamageDirection(DamageDirection newDirection)
-{
-	bloodEffect.SetDamageDirection(newDirection);
 }
 
 void Player::ResetAnimation(PlayerState animationToReset)
