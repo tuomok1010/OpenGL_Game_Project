@@ -15,7 +15,8 @@ Game::Game(int scrnWidth, int scrnHeight)
 	mainWindow(scrnWidth, scrnHeight), 
 	projection(glm::mat4(1.0f)),
 	gameState(GameState::MENU),
-	jumpCooldown(0.0f)
+	jumpCooldown(0.0f),
+	levelLoadTimer(5.0f)
 {
 	projection = glm::ortho(0.0f, (float)mainWindow.GetBufferWidth(), 0.0f, (float)mainWindow.GetBufferHeight(), -2.0f, 2.0f);
 
@@ -63,10 +64,12 @@ void Game::Run()
 		if (gameState == GameState::QUIT)
 			mainWindow.SetShouldClose(true);
 
-		ProcessInput(*level);
-
-		Draw(*level);
-
+		if (levelLoadTimer <= 0)
+		{
+			ProcessInput(*level);
+			Draw(*level);
+		}
+		levelLoadTimer -= deltaTime;
 	}
 
 	glfwTerminate();
@@ -106,7 +109,7 @@ void Game::ProcessInput(Level& level)
 			if (level.IsPlayerCollidingWithBlocks())
 			{
 				// if player is jumping, this will reset the animation to idle when he collides with the ground again
-				if(!player.GetIsDead())
+				if (!player.GetIsDead())
 					player.SetState(PlayerState::IDLE);
 
 				player.SetPosition(player.GetPreviousPosition());
@@ -193,8 +196,10 @@ void Game::ProcessInput(Level& level)
 			attackCooldown -= deltaTime;
 		}
 	}
+
 	if (level.levelComplete)
 	{
+		levelLoadTimer = 5.0f;
 		advanceLevel = true;
 		++levelNumber;
 	}

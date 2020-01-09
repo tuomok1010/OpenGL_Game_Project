@@ -33,7 +33,11 @@ public:
 	GLboolean quitGame{ false };
 
 private:
+	/*
+		TODO consider refactoring. Maybe edit the GameObject class and make the coin inherit from it
+	*/
 	GLboolean CollisionCheck(Player& player, GameObject& obj);
+	GLboolean CollisionCheck(Player& player, Coin& coin);
 	GLboolean CollisionCheck(GameObject& obj1, GameObject& obj2);
 private:
 	std::vector<std::vector<GLchar>> levelData;

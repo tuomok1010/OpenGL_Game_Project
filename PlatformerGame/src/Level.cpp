@@ -66,6 +66,9 @@ Level::~Level()
 
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 		delete enemies.at(i);
+
+	for (unsigned int i = 0; i < coins.size(); ++i)
+		delete coins.at(i);
 }
 
 void Level::Load(const std::string& filePath, const std::string& backGroundPath)
@@ -144,22 +147,19 @@ void Level::ProcessLevelData()
 				}
 				case 'c':
 				{
-					Coin* coin = new Coin(CoinType::COPPER);
-					coin->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					Coin* coin = new Coin(CoinType::COPPER, glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
 					coins.emplace_back(coin);
 					break;
 				}
 				case 's':
 				{
-					Coin* coin = new Coin(CoinType::SILVER);
-					coin->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					Coin* coin = new Coin(CoinType::SILVER, glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
 					coins.emplace_back(coin);
 					break;
 				}
 				case 'g':
 				{
-					Coin* coin = new Coin(CoinType::GOLD);
-					coin->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					Coin* coin = new Coin(CoinType::GOLD, glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
 					coins.emplace_back(coin);
 					break;
 				}
@@ -322,7 +322,10 @@ void Level::Draw(Window& window, float deltaTime)
 		assets.at(i)->Draw(renderer);
 
 	for (unsigned int i = 0; i < coins.size(); ++i)
-		coins.at(i)->Draw(renderer);
+	{
+		if(!coins.at(i)->GetShouldBeDestroyed())
+			coins.at(i)->Draw(renderer);
+	}
 
 	// render player
 	player.Draw(renderer);
@@ -360,6 +363,28 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 	}
 	player.SetHasCollided(false);
 	return false;	
+}
+
+GLboolean Level::CollisionCheck(Player& player, Coin& coin)
+{
+
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
+	glm::vec3 objPos = coin.GetPosition();
+	glm::vec2 objSize = coin.GetSize();
+
+	GLfloat xOffset = 5.0f;
+	GLfloat yOffset = 15.0f;
+
+	bool collisionX = playerPos.x + playerSize.x / 2.0f + xOffset > objPos.x&& objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f) - xOffset;
+	bool collisionY = playerPos.y + playerSize.y / 2.0f + yOffset > objPos.y&& objPos.y + objSize.y > playerPos.y;
+
+	if (collisionX && collisionY)
+	{
+		return collisionX && collisionY;
+	}
+
+	return false;
 }
 
 GLboolean Level::CollisionCheck(GameObject& obj1, GameObject& obj2)
@@ -433,6 +458,14 @@ void Level::UpdateAssets(float deltaTime)
 				}
 				break;
 			}
+		}
+	}
+
+	for (auto& coin : coins)
+	{
+		if (CollisionCheck(player, *coin))
+		{
+			coin->SetIsCollected(true);
 		}
 	}
 }

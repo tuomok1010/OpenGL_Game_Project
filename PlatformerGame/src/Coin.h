@@ -6,6 +6,7 @@
 
 #include "Texture2D.h"
 #include "SpriteRenderer.h"
+#include "FireSparkleEffect.h"
 
 enum class CoinType
 {
@@ -18,7 +19,7 @@ class Coin
 {
 public:
 public:
-	Coin(CoinType type);
+	Coin(CoinType type, glm::vec3 position = glm::vec3(0.0f));
 	~Coin();
 
 	void Draw(SpriteRenderer& renderer);
@@ -26,8 +27,13 @@ public:
 
 	void SetPosition(glm::vec3 newPos) { position = newPos; }
 	void Rotate(GLfloat degrees) { rotation = degrees; }
+	void SetIsCollected(GLboolean newVal) { isCollected = newVal; }
 
 	glm::vec2 GetSize()const { return size; }
+	glm::vec3 GetPosition()const { return position; }
+	GLboolean GetIsCollected()const { return isCollected; }
+	GLuint GetValue()const { return value; }
+	GLboolean GetShouldBeDestroyed()const { return sparkleEffect.GetIsDestroyed(); }
 
 private:
 	std::vector<Texture2D*> texturesCoin{};
@@ -42,4 +48,7 @@ private:
 
 	CoinType coinType{};
 	GLuint value{};
+
+	FireSparkleEffect sparkleEffect;
+	GLboolean isCollected{ false }; // this will change to "true" when the player collides with the coin
 };

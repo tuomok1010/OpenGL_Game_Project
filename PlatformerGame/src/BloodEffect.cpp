@@ -1,5 +1,4 @@
 #include "BloodEffect.h"
-#include <iostream>
 
 BloodEffect::BloodEffect()
 	:
@@ -32,7 +31,6 @@ void BloodEffect::Draw(SpriteRenderer& renderer)
 		shouldStop = true;
 		return;
 	}
-	std::cout << "Drawing blood" << std::endl;
 
 	renderer.Draw(*texturesBlood.at(texIterator), 0, color, position, size, rotation, textureScale, textureOffset);
 	++texIterator;

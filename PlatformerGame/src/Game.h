@@ -55,5 +55,9 @@ private:
 	GLfloat jumpCooldown{};
 	bool canAttackAgain{ true };
 	GLfloat attackCooldown{};
+
+	// doesnt allow the ProcessInput function to work until the levelLoadTimer hits 0. This is needed because otherwise the player will fall through the level
+	// if the level is too large
+	GLfloat levelLoadTimer{};
 };
 

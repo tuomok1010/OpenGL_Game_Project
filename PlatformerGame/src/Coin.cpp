@@ -1,10 +1,10 @@
 #include "Coin.h"
 
-Coin::Coin(CoinType type)
+Coin::Coin(CoinType type, glm::vec3 position)
 	:
 	textureOffset(0.0f),
 	textureScale(1.0f),
-	position(0.0f),
+	position(position),
 	size(32.0f),
 	color(1.0f),
 	rotation(0.0f),
@@ -37,6 +37,8 @@ Coin::Coin(CoinType type)
 			break;
 		}
 	}
+
+	sparkleEffect.SetPosition(position);
 }
 
 Coin::~Coin()
@@ -50,11 +52,18 @@ Coin::~Coin()
 
 void Coin::Draw(SpriteRenderer& renderer)
 {
-	if (texIterator >= texturesCoin.size() - 1)
-		texIterator = 0;
+	if (!isCollected)
+	{
+		if (texIterator >= texturesCoin.size() - 1)
+			texIterator = 0;
 
-	renderer.Draw(*texturesCoin.at(texIterator), 0, color, position, size, rotation, textureScale, textureOffset);
-	++texIterator;
+		renderer.Draw(*texturesCoin.at(texIterator), 0, color, position, size, rotation, textureScale, textureOffset);
+		++texIterator;
+	}
+	else
+	{
+		sparkleEffect.Draw(renderer);
+	}
 }
 
 void Coin::ResetAnimation()
