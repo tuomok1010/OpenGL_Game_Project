@@ -117,6 +117,9 @@ void Enemy::MoveDown(float deltaTime)
 
 GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 {
+	if (isDead)
+		return false;
+
 	GLboolean hasBeenSpotted{ false };
 
 	glm::vec3 playerPos = player.GetPosition();

@@ -142,7 +142,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					hasClouds = true;
+					//hasClouds = true;
 					break;
 				}
 				case 'c':
@@ -490,34 +490,42 @@ void Level::RunEnemyBehaviour(float deltaTime)
 		{
 			case EnemyType::SPEARMAN:
 			{
-				Spearman* spearman = dynamic_cast<Spearman*>(enemy);
-
-				if (!spearman->CheckIfHasSeenPlayer(player))
-					spearman->MoveTowardsNextPatrolPoint(deltaTime);
-				else
+				if (!enemy->GetIsDead())
 				{
-					if (spearman->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
+					Spearman* spearman = dynamic_cast<Spearman*>(enemy);
+
+					if (!spearman->CheckIfHasSeenPlayer(player))
+						spearman->MoveTowardsNextPatrolPoint(deltaTime);
+					else
 					{
-						std::cout << "an enemy is attacking the player" << std::endl;
-						spearman->MeleeAttack();
-
-						if (spearman->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
+						if (spearman->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
 						{
-							spearman->SetEnableBloodEffect(true);
+							std::cout << "an enemy is attacking the player" << std::endl;
+							spearman->MeleeAttack();
 
-							if (spearman->GetPosition().x > player.GetPosition().x)
-								spearman->SetDamageDirection(DamageDirection::RIGHT);
-							else if (spearman->GetPosition().x < player.GetPosition().x)
-								spearman->SetDamageDirection(DamageDirection::LEFT);
+							if (spearman->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
+							{
+								spearman->SetEnableBloodEffect(true);
+
+								if (spearman->GetPosition().x > player.GetPosition().x)
+									spearman->SetDamageDirection(DamageDirection::RIGHT);
+								else if (spearman->GetPosition().x < player.GetPosition().x)
+									spearman->SetDamageDirection(DamageDirection::LEFT);
+							}
+							if (player.GetHealth() <= 0.0f)
+								player.SetIsDead(true);
 						}
-						if (player.GetHealth() <= 0.0f)
-							player.SetIsDead(true);
 					}
 				}
 			}
 		}
 		if(player.GetIsDead())
 			enemy->SetState(EnemyState::IDLE);
+		if (enemy->GetHealth() <= 0.0f)
+		{
+			enemy->SetIsDead(true);
+			enemy->SetState(EnemyState::DEATH);
+		}
 	}
 }
 
@@ -527,5 +535,14 @@ void Level::SetAnimationToAllAliveEnemies(EnemyState newState)
 	{
 		if(!enemy->GetIsDead())
 			enemy->SetState(newState);
+	}
+}
+
+void Level::KillAllEnemies()
+{
+	for (auto& enemy : enemies)
+	{
+		enemy->SetIsDead(true);
+		enemy->SetState(EnemyState::DEATH);
 	}
 }

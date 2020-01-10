@@ -45,7 +45,7 @@ public:
 	void SetHasCollided(GLboolean hasCollided);
 	void SetHealth(GLfloat newHealth);
 	void SetIsDead(GLboolean isDead);
-	void SetShouldBleed(GLboolean newShouldBleed);
+	void SetIsInMeleeRange(GLboolean newVal) { isInMeleeRange = newVal; }
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -57,6 +57,8 @@ public:
 	GLfloat GetHealth()const { return health; }
 	GLboolean GetIsDead()const { return isDead; }
 	PlayerState GetState()const { return state; }
+	PlayerOrientation GetOrientation()const { return orientation; }
+	GLboolean GetIsInMeleeRange()const { return isInMeleeRange; }
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
@@ -99,5 +101,5 @@ private:
 	// centers the camera so that the player character is in the niddle of the screen
 	glm::vec3 cameraOffset{ -400, -300, 0 };
 
-
+	GLboolean isInMeleeRange{ false };
 };

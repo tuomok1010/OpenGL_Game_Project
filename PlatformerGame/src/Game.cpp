@@ -123,6 +123,11 @@ void Game::ProcessInput(Level& level)
 
 		if (!player.GetIsDead())
 		{
+			if (mainWindow.IsKeyPressed(GLFW_KEY_K))
+			{
+				level.KillAllEnemies();
+			}
+
 			if (mainWindow.IsKeyPressed(GLFW_KEY_D))
 			{
 				if (previusKeyPressed != GLFW_KEY_D)

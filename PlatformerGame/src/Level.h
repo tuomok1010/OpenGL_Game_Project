@@ -32,6 +32,8 @@ public:
 	GLboolean levelComplete{ false };
 	GLboolean quitGame{ false };
 
+	void KillAllEnemies();
+
 private:
 	/*
 		TODO consider refactoring. Maybe edit the GameObject class and make the coin inherit from it

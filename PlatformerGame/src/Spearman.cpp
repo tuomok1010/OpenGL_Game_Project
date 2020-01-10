@@ -6,19 +6,20 @@ Spearman::Spearman()
 {
 	state = EnemyState::IDLE;
 	orientation = EnemyOrientation::LEFT;
-	textureOffset = glm::vec2(-0.2f, 0.07f);
+	textureOffset = glm::vec2(-0.32f, 0.07f);
 	textureScale = glm::vec2(1.45f, 1.1f);
 	color = glm::vec3(1.0f);
 	position = glm::vec3(0.0f);
-	size = glm::vec2(160.0f, 100.0f);
+	size = glm::vec2(250.0f, 100.0f);
 	rotation = 0.0f;
 	speed = 100.0f;
 	maxJumpHeight = 75.0f;
 	heightJumped = 0.0f;
-	health = 100.0f;
+	health = 50.0f;
 	lineOfSightX = 150.0f;
 	enemyType = EnemyType::SPEARMAN;
-	meleeDamage = 25.0f;
+	meleeDamage = 20.0f;
+	meleeRange = -15.0f;
 
 	for(unsigned int i = 0; i < 26; ++i)
 		texturesIdle.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Idle/Idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
@@ -27,7 +28,7 @@ Spearman::Spearman()
 		texturesRun.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Run/Run_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
 
 	for(unsigned int i = 0; i < 18; ++i)
-		texturesDeath.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Die/Die_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+		texturesDeath.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Die/Die_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE));
 
 	for(unsigned int i = 0; i < 11; ++i)
 		texturesMeleeAttack.emplace_back(new Texture2D("../enemies/Ancient Turkish Warrior/Animations/Attack/Attack_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
@@ -50,7 +51,7 @@ void Spearman::Draw(SpriteRenderer& renderer)
 		if (idleTexIterator >= texturesIdle.size())
 			idleTexIterator = 0;
 
-		textureScale = glm::vec2(1.45f, 1.1f);
+		textureScale = glm::vec2(2.4f, 1.1f);
 		renderer.Draw(*texturesIdle.at(idleTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++idleTexIterator;
 	}
@@ -59,7 +60,7 @@ void Spearman::Draw(SpriteRenderer& renderer)
 		if (runTexIterator >= texturesRun.size())
 			runTexIterator = 0;
 
-		textureScale = glm::vec2(1.45f, 1.1f);
+		textureScale = glm::vec2(2.25f, 1.1f);
 		renderer.Draw(*texturesRun.at(runTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++runTexIterator;
 	}
@@ -82,8 +83,12 @@ void Spearman::Draw(SpriteRenderer& renderer)
 		if (deathTexIterator >= texturesDeath.size())
 			deathTexIterator = texturesDeath.size() - 1;
 
-		textureScale = glm::vec2(1.45f, 1.1f);
+
+		textureScale = glm::vec2(1.2f, 1.0f);
+		textureOffset.x = 0.0f;
+
 		renderer.Draw(*texturesDeath.at(deathTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
+
 		++deathTexIterator;
 	}
 	else if (state == EnemyState::ATTACK)
@@ -91,7 +96,7 @@ void Spearman::Draw(SpriteRenderer& renderer)
 		if (meleeAttackIterator >= texturesMeleeAttack.size())
 			meleeAttackIterator = 0;
 
-		textureScale = glm::vec2(1.20f, 1.1f);
+		textureScale = glm::vec2(1.75f, 1.1f);
 		renderer.Draw(*texturesMeleeAttack.at(meleeAttackIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++meleeAttackIterator;
 	} 
@@ -103,17 +108,20 @@ void Spearman::DrawBlood(SpriteRenderer& renderer, Player& player)
 	{
 		GLfloat xOffset = 5.0f;
 		GLfloat yOffset = 25.0f;
+		glm::vec3 playerPos = player.GetPosition();
+		glm::vec2 playerSize = player.GetSize();
+
 		switch (bloodEffect.damageDirection)
 		{
 			case DamageDirection::RIGHT:
 			{
-				bloodEffect.SetPosition(glm::vec3(position.x + xOffset, position.y + (size.y / 2.0f) - yOffset, position.z));
+				bloodEffect.SetPosition(glm::vec3(playerPos.x + playerSize.x / 2.0f + 5.0f, position.y + (size.y / 2.0f) - yOffset, position.z));
 				bloodEffect.Rotate(-90.0f);
 				break;
 			}
 			case DamageDirection::LEFT:
 			{
-				bloodEffect.SetPosition(glm::vec3(position.x + size.x - bloodEffect.GetSize().x, position.y + (size.y / 2.0f) - yOffset, position.z));
+				bloodEffect.SetPosition(glm::vec3(playerPos.x + playerSize.x / 2.0f - bloodEffect.GetSize().x, position.y + (size.y / 2.0f) - yOffset, position.z));
 				bloodEffect.Rotate(90.0f);
 				break;
 			}
@@ -157,4 +165,16 @@ GLboolean Spearman::DamagePlayer(Player& player)
 		}
 	}
 	return false;
+}
+
+GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
+{
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
+	PlayerOrientation playerOrientation = player.GetOrientation();
+
+	if (playerPos.x + playerSize.x / 2.0f < position.x && playerOrientation == PlayerOrientation::RIGHT)
+	{
+
+	}
 }

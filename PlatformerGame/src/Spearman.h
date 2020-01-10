@@ -16,8 +16,9 @@ public:
 	void SetEnableBloodEffect(GLboolean enableBlood) { enableBloodEffect = enableBlood; }
 
 	GLboolean MeleeAttack();
-
 	GLboolean DamagePlayer(Player& player);
+
+	GLboolean IsInPlayerMeleeRange(Player& player);
 
 private:
 	GLfloat meleeDamage{};
