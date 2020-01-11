@@ -6,7 +6,7 @@ Spearman::Spearman()
 {
 	state = EnemyState::IDLE;
 	orientation = EnemyOrientation::LEFT;
-	textureOffset = glm::vec2(-0.32f, 0.07f);
+	textureOffset = glm::vec2(-0.35f, 0.07f);	// OLD VALS -0.32f, 0.07f
 	textureScale = glm::vec2(1.45f, 1.1f);
 	color = glm::vec3(1.0f);
 	position = glm::vec3(0.0f);
@@ -172,9 +172,64 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 	glm::vec3 playerPos = player.GetPosition();
 	glm::vec2 playerSize = player.GetSize();
 	PlayerOrientation playerOrientation = player.GetOrientation();
+	GLboolean isInRange = false;
 
-	if (playerPos.x + playerSize.x / 2.0f < position.x && playerOrientation == PlayerOrientation::RIGHT)
+	if (playerPos.y >= position.y - 50.0f && playerPos.y < position.y + 50.0f)	// TODO adjust later
 	{
+		switch (playerOrientation)
+		{
+			case PlayerOrientation::RIGHT:
+			{
+				if (playerPos.x + playerSize.x / 2.0f < position.x + size.x / 2.0f)
+				{
+					if (playerPos.x > position.x + size.x / 2.0f - playerSize.x)
+					{
+						std::cout << "player is in range" << std::endl;
+						player.SetIsInMeleeRange(true);
+						isInRange = true;
+					}
+				}
+				break;
+			}
+			case PlayerOrientation::LEFT:
+			{
+				if (playerPos.x + playerSize.x / 2.0f > position.x + size.x / 2.0f)
+				{
+					if (playerPos.x < (position.x + size.x / 2.0f))
+					{
+						std::cout << "player is in range" << std::endl;
+						player.SetIsInMeleeRange(true);
+						isInRange = true;
 
+					}
+				}
+				break;
+			}
+		}
 	}
+	else
+	{
+		player.SetIsInMeleeRange(false);
+		isInRange = false;
+	}
+	return isInRange;
 }
+
+//if (playerPos.x + playerSize.x / 2.0f < position.x + size.x / 2.0f && playerOrientation == PlayerOrientation::RIGHT)
+//{
+//	if (playerPos.x > (position.x + size.x / 2.0f) - playerSize.x)
+//	{
+//		std::cout << "player is in range" << std::endl;
+//		player.SetIsInMeleeRange(true);
+//		return true;
+//	}
+//}
+//else if (playerPos.x + playerSize.x / 2.0f > position.x + size.x / 2.0f && playerOrientation == PlayerOrientation::LEFT)
+//{
+//	if (playerPos.x < (position.x + size.x / 2.0f))
+//	{
+//		std::cout << "player is in range" << std::endl;
+//		player.SetIsInMeleeRange(true);
+//		return true;
+//	}
+//}

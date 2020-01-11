@@ -274,13 +274,13 @@ void Level::ProcessLevelData()
 	}
 
 	// initializes the enemy orientation so that at the start of the level they face the player
-	for (auto& enemy : enemies)
-	{
-		if (enemy->GetPosition().x > player.GetPosition().x)
-			enemy->SetOrientation(EnemyOrientation::LEFT);
-		else if(enemy->GetPosition().x < player.GetPosition().x)
-			enemy->SetOrientation(EnemyOrientation::RIGHT);
-	}
+	//for (auto& enemy : enemies)
+	//{
+	//	if (enemy->GetPosition().x > player.GetPosition().x)
+	//		enemy->SetOrientation(EnemyOrientation::LEFT);
+	//	else if(enemy->GetPosition().x < player.GetPosition().x)
+	//		enemy->SetOrientation(EnemyOrientation::RIGHT);
+	//}
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -498,9 +498,9 @@ void Level::RunEnemyBehaviour(float deltaTime)
 						spearman->MoveTowardsNextPatrolPoint(deltaTime);
 					else
 					{
+						/*
 						if (spearman->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
 						{
-							std::cout << "an enemy is attacking the player" << std::endl;
 							spearman->MeleeAttack();
 
 							if (spearman->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
@@ -515,17 +515,21 @@ void Level::RunEnemyBehaviour(float deltaTime)
 							if (player.GetHealth() <= 0.0f)
 								player.SetIsDead(true);
 						}
+						*/
+					}
+					if (spearman->IsInPlayerMeleeRange(player))
+					{
+						if (!player.MeleeAttack())	// returns false when the animation is in it's last frame
+							spearman->TakeDamage(player.GetDamage());
 					}
 				}
 			}
 		}
 		if(player.GetIsDead())
 			enemy->SetState(EnemyState::IDLE);
-		if (enemy->GetHealth() <= 0.0f)
-		{
-			enemy->SetIsDead(true);
+
+		if (enemy->GetIsDead())
 			enemy->SetState(EnemyState::DEATH);
-		}
 	}
 }
 

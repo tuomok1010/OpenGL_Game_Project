@@ -136,7 +136,6 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 			bool spotted = (playerPos.x + (playerSize.x / 2.0f)) >= (position.x - lineOfSightX);
 			if (spotted)
 			{
-				std::cout << "Player was spotted by an enemy!" << std::endl;
 				hasBeenSpotted = true;
 			}
 		}
@@ -145,7 +144,6 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 			bool spotted = (playerPos.x + (playerSize.x / 2.0f)) <= ((position.x + size.x) + lineOfSightX);
 			if (spotted)
 			{
-				std::cout << "Player was spotted by an enemy!" << std::endl;
 				hasBeenSpotted = true;
 			}
 		}
@@ -196,6 +194,14 @@ void Enemy::MoveTowardsNextPatrolPoint(float deltaTime)
 	}
 }
 
+void Enemy::TakeDamage(GLfloat damage)
+{
+	health -= damage;
+
+	if (health <= 0.0f)
+		isDead = true;
+}
+
 GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 {
 	glm::vec3 playerPos = player.GetPosition();
@@ -207,7 +213,6 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 		// check if the enemy has reached the proper range in order to attack the player in melee
 		if ((playerPos.x + playerSize.x / 2.0f) - (position.x + size.x) <= meleeRange)
 		{
-			std::cout << "Enemy has reached melee range" << std::endl;
 			isInRange = true;
 			return true;
 		}
@@ -219,7 +224,6 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 		// check if the enemy has reached the proper range in order to attack the player in melee
 		if (position.x - (playerPos.x + playerSize.x / 2.0f) <= meleeRange)
 		{
-			std::cout << "Enemy has reached melee range" << std::endl;
 			isInRange = true;
 			return true;
 		}

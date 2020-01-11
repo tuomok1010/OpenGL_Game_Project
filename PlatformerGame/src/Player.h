@@ -59,6 +59,7 @@ public:
 	PlayerState GetState()const { return state; }
 	PlayerOrientation GetOrientation()const { return orientation; }
 	GLboolean GetIsInMeleeRange()const { return isInMeleeRange; }
+	GLfloat GetDamage()const { return damage; }
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
@@ -93,6 +94,7 @@ private:
 
 	GLfloat health{};
 	GLboolean isDead{ false };
+	GLfloat damage{};
 
 	// TODO consider removing as it is not used anywhere(i think...)
 	GLboolean hasCollided{ false };

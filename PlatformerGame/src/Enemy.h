@@ -45,6 +45,8 @@ public:
 	void AddPatrolPoint(glm::vec3 patrolPoint);
 	void MoveTowardsNextPatrolPoint(float deltaTime);
 
+	void TakeDamage(GLfloat damage);
+
 	// returns true when enemy has reached melee range to attack player
 	GLboolean MoveTowardsPlayer(const Player& player, float deltaTime);
 

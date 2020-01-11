@@ -12,7 +12,8 @@ Player::Player()
 	speed(250.0f),
 	maxJumpHeight(75.0f),
 	heightJumped(0.0f),
-	health(100000.0f)
+	health(100000.0f),
+	damage(50.0f)
 {
 	for (unsigned int i = 0; i < 12; ++i)
 		texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
