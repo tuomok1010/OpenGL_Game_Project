@@ -9,12 +9,6 @@
 #include "Texture2D.h"
 #include "SpriteRenderer.h"
 
-enum class DamageDirection
-{
-	LEFT,
-	RIGHT
-};
-
 class BloodEffect
 {
 public:
@@ -27,15 +21,11 @@ public:
 	GLboolean GetShouldStop()const { return shouldStop; }
 
 	void SetPosition(glm::vec3 newPos) { position = newPos; }
-	void SetDamageDirection(DamageDirection newDirection) { damageDirection = newDirection; }
-	void Rotate(GLfloat degrees) { rotation = degrees; }
 
 	glm::vec2 GetSize()const { return size; }
 
-	DamageDirection damageDirection{};
-
 private:
-	std::vector<Texture2D*> texturesBlood{};
+	Texture2D* texture{};
 	glm::vec2 textureOffset{};
 	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions
 	GLuint texIterator{};
@@ -45,5 +35,5 @@ private:
 	glm::vec3 color{};
 	GLfloat rotation{};
 
-	GLboolean shouldStop{ false };
+	GLboolean shouldStop{ true };
 };

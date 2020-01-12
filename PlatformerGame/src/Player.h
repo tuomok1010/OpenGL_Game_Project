@@ -6,6 +6,7 @@
 
 #include "SpriteRenderer.h"
 #include "Camera.h"
+#include "BloodEffect.h"
 
 enum class PlayerState
 {
@@ -36,6 +37,9 @@ public:
 	//void ResetHeightJumped() { heightJumped = 0.0f; } // not used anywhere
 	GLboolean MeleeAttack();
 
+	void DrawBloodEffect(SpriteRenderer& renderer);
+	void ResetBloodAnimation();
+
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
 	void MoveDown(float deltaTime);
 
@@ -46,6 +50,7 @@ public:
 	void SetHealth(GLfloat newHealth);
 	void SetIsDead(GLboolean isDead);
 	void SetIsInMeleeRange(GLboolean newVal) { isInMeleeRange = newVal; }
+	void SetShouldBleed(GLboolean newVal) { shouldBleed = newVal; }
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -95,6 +100,9 @@ private:
 	GLfloat health{};
 	GLboolean isDead{ false };
 	GLfloat damage{};
+	GLboolean shouldBleed{ false };
+
+	BloodEffect bloodEffect;
 
 	// TODO consider removing as it is not used anywhere(i think...)
 	GLboolean hasCollided{ false };

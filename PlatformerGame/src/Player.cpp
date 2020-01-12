@@ -176,6 +176,25 @@ GLboolean Player::MeleeAttack()
 		return true;
 }
 
+void Player::DrawBloodEffect(SpriteRenderer& renderer)
+{
+	if (shouldBleed)
+	{
+		bloodEffect.SetPosition(glm::vec3(position.x + size.x / 2.0f - bloodEffect.GetSize().x / 2.0f, position.y + size.y / 2.0f - bloodEffect.GetSize().y / 2.0f, position.z));
+		bloodEffect.Draw(renderer);
+	}
+
+	if (bloodEffect.GetShouldStop())
+		shouldBleed = false;
+	else
+		shouldBleed = true;
+}
+
+void Player::ResetBloodAnimation()
+{
+	bloodEffect.ResetAnimation();
+}
+
 void Player::MoveDown(float deltaTime)
 {
 	GLfloat velocity = speed * deltaTime;

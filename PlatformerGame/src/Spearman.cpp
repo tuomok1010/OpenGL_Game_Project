@@ -102,46 +102,10 @@ void Spearman::Draw(SpriteRenderer& renderer)
 	} 
 }
 
-void Spearman::DrawBlood(SpriteRenderer& renderer, Player& player)
+void Spearman::DrawBlood(SpriteRenderer& renderer)
 {
-	if (enableBloodEffect)
-	{
-		GLfloat xOffset = 5.0f;
-		GLfloat yOffset = 25.0f;
-		glm::vec3 playerPos = player.GetPosition();
-		glm::vec2 playerSize = player.GetSize();
 
-		switch (bloodEffect.damageDirection)
-		{
-			case DamageDirection::RIGHT:
-			{
-				bloodEffect.SetPosition(glm::vec3(playerPos.x + playerSize.x / 2.0f + 5.0f, position.y + (size.y / 2.0f) - yOffset, position.z));
-				bloodEffect.Rotate(-90.0f);
-				break;
-			}
-			case DamageDirection::LEFT:
-			{
-				bloodEffect.SetPosition(glm::vec3(playerPos.x + playerSize.x / 2.0f - bloodEffect.GetSize().x, position.y + (size.y / 2.0f) - yOffset, position.z));
-				bloodEffect.Rotate(90.0f);
-				break;
-			}
-		}
-
-		bloodEffect.Draw(renderer);
-		bloodEffect.Rotate(0.0f);
-
-		if (bloodEffect.GetShouldStop())
-			enableBloodEffect = false;
-		else
-			enableBloodEffect = true;
-	}
 }
-
-void Spearman::SetDamageDirection(DamageDirection newDirection)
-{
-	bloodEffect.SetDamageDirection(newDirection);
-}
-
 
 GLboolean Spearman::MeleeAttack()
 {

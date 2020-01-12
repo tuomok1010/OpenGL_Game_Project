@@ -2,37 +2,45 @@
 
 BloodEffect::BloodEffect()
 	:
-	damageDirection(DamageDirection::LEFT),
-	textureOffset(0.0f),
-	textureScale(1.0f),
+	textureOffset(glm::vec2(2.0f, 3.0f)),
+	textureScale(glm::vec2(0.25f)),
 	position(0.0f),
-	size(32.0f),
+	size(128.0f),
 	color(1.0f),
 	rotation(0.0f)
 {
-	for (unsigned int i = 0; i < 6; ++i)
-		texturesBlood.emplace_back(new Texture2D("../textures/blood/splattersplash_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+	texture = new Texture2D("../textures/blood/all.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 }
 
 BloodEffect::~BloodEffect()
 {
-	for (auto& texture : texturesBlood)
-	{
-		texture->Unbind();
-		delete texture;
-	}
+	texture->Unbind();
+	delete texture;
 }
 
 void BloodEffect::Draw(SpriteRenderer& renderer)
 {
-	if (texIterator >= texturesBlood.size())
+	if (texIterator >= 13)
 	{
+		textureOffset = glm::vec2(2.0f, 3.0f);
 		texIterator = 0;
 		shouldStop = true;
 		return;
 	}
 
-	renderer.Draw(*texturesBlood.at(texIterator), 0, color, position, size, rotation, textureScale, textureOffset);
+	if(texIterator == 0)
+		textureOffset = glm::vec2(2.0f, 3.0f);
+	else
+		textureOffset.x += 1.0f;
+
+	if (textureOffset.x > 3.0f)
+		textureOffset.x = 0.0f;
+
+	if (textureOffset.x > -0.9f && textureOffset.x < 0.1f)
+		textureOffset.y -= 1.0f;
+
+	renderer.Draw(*texture, 0, color, position, size, rotation, textureScale, textureOffset);
+
 	++texIterator;
 
 	shouldStop = false;

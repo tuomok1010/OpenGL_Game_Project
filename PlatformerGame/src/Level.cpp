@@ -327,17 +327,17 @@ void Level::Draw(Window& window, float deltaTime)
 			coins.at(i)->Draw(renderer);
 	}
 
-	// render player
-	player.Draw(renderer);
-
 	// render all enemies and possible blood effects
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
 		enemies.at(i)->Draw(renderer);
 
-		if(enemies.at(i)->GetEnemyType() == EnemyType::SPEARMAN)
-			dynamic_cast<Spearman*>(enemies.at(i))->DrawBlood(renderer, player);
+		// TODO draw blood of any bleeding enemies
 	}
+
+	// render player
+	player.Draw(renderer);
+	player.DrawBloodEffect(renderer);
 }
 
 GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
@@ -498,24 +498,19 @@ void Level::RunEnemyBehaviour(float deltaTime)
 						spearman->MoveTowardsNextPatrolPoint(deltaTime);
 					else
 					{
-						/*
 						if (spearman->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
 						{
 							spearman->MeleeAttack();
 
 							if (spearman->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
 							{
-								spearman->SetEnableBloodEffect(true);
-
-								if (spearman->GetPosition().x > player.GetPosition().x)
-									spearman->SetDamageDirection(DamageDirection::RIGHT);
-								else if (spearman->GetPosition().x < player.GetPosition().x)
-									spearman->SetDamageDirection(DamageDirection::LEFT);
+								std::cout << "setting should bleed to true" << std::endl;
+								player.SetShouldBleed(true);
+								player.ResetBloodAnimation();
 							}
 							if (player.GetHealth() <= 0.0f)
 								player.SetIsDead(true);
 						}
-						*/
 					}
 					if (spearman->IsInPlayerMeleeRange(player))
 					{

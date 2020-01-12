@@ -10,10 +10,7 @@ public:
 	~Spearman();
 
 	void Draw(SpriteRenderer& renderer) override;
-	void DrawBlood(SpriteRenderer& renderer, Player& player);
-
-	void SetDamageDirection(DamageDirection newDirection);
-	void SetEnableBloodEffect(GLboolean enableBlood) { enableBloodEffect = enableBlood; }
+	void DrawBlood(SpriteRenderer& renderer);
 
 	GLboolean MeleeAttack();
 	GLboolean DamagePlayer(Player& player);
@@ -22,6 +19,4 @@ public:
 
 private:
 	GLfloat meleeDamage{};
-	BloodEffect bloodEffect;
-	GLboolean enableBloodEffect{ false };
 };
