@@ -273,14 +273,14 @@ void Level::ProcessLevelData()
 		}
 	}
 
-	// initializes the enemy orientation so that at the start of the level they face the player
-	//for (auto& enemy : enemies)
-	//{
-	//	if (enemy->GetPosition().x > player.GetPosition().x)
-	//		enemy->SetOrientation(EnemyOrientation::LEFT);
-	//	else if(enemy->GetPosition().x < player.GetPosition().x)
-	//		enemy->SetOrientation(EnemyOrientation::RIGHT);
-	//}
+	 //initializes the enemy orientation so that at the start of the level they face the player
+	for (auto& enemy : enemies)
+	{
+		if (enemy->GetPosition().x > player.GetPosition().x)
+			enemy->SetOrientation(EnemyOrientation::LEFT);
+		else if(enemy->GetPosition().x < player.GetPosition().x)
+			enemy->SetOrientation(EnemyOrientation::RIGHT);
+	}
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -327,17 +327,21 @@ void Level::Draw(Window& window, float deltaTime)
 			coins.at(i)->Draw(renderer);
 	}
 
-	// render all enemies and possible blood effects
+	// render all enemies
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
 		enemies.at(i)->Draw(renderer);
-
-		// TODO draw blood of any bleeding enemies
 	}
 
 	// render player
 	player.Draw(renderer);
 	player.DrawBloodEffect(renderer);
+
+	// render enemy effects
+	for (unsigned int i = 0; i < enemies.size(); ++i)
+	{
+		dynamic_cast<Spearman*>(enemies.at(i))->DrawBloodEffect(renderer);
+	}
 }
 
 GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
@@ -515,7 +519,11 @@ void Level::RunEnemyBehaviour(float deltaTime)
 					if (spearman->IsInPlayerMeleeRange(player))
 					{
 						if (!player.MeleeAttack())	// returns false when the animation is in it's last frame
+						{
 							spearman->TakeDamage(player.GetDamage());
+							spearman->SetShouldBleed(true);
+							spearman->ResetBloodAnimation();
+						}
 					}
 				}
 			}

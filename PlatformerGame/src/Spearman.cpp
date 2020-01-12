@@ -179,21 +179,21 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 	return isInRange;
 }
 
-//if (playerPos.x + playerSize.x / 2.0f < position.x + size.x / 2.0f && playerOrientation == PlayerOrientation::RIGHT)
-//{
-//	if (playerPos.x > (position.x + size.x / 2.0f) - playerSize.x)
-//	{
-//		std::cout << "player is in range" << std::endl;
-//		player.SetIsInMeleeRange(true);
-//		return true;
-//	}
-//}
-//else if (playerPos.x + playerSize.x / 2.0f > position.x + size.x / 2.0f && playerOrientation == PlayerOrientation::LEFT)
-//{
-//	if (playerPos.x < (position.x + size.x / 2.0f))
-//	{
-//		std::cout << "player is in range" << std::endl;
-//		player.SetIsInMeleeRange(true);
-//		return true;
-//	}
-//}
+void Spearman::DrawBloodEffect(SpriteRenderer& renderer)
+{
+	if (shouldBleed)
+	{
+		bloodEffect.SetPosition(glm::vec3(position.x + size.x / 2.0f - bloodEffect.GetSize().x / 2.0f, position.y + size.y / 2.0f - bloodEffect.GetSize().y / 2.0f, position.z));
+		bloodEffect.Draw(renderer);
+	}
+
+	if (bloodEffect.GetShouldStop())
+		shouldBleed = false;
+	else
+		shouldBleed = true;
+}
+
+void Spearman::ResetBloodAnimation()
+{
+	bloodEffect.ResetAnimation();
+}

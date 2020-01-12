@@ -14,9 +14,14 @@ public:
 
 	GLboolean MeleeAttack();
 	GLboolean DamagePlayer(Player& player);
+	void DrawBloodEffect(SpriteRenderer& renderer);
+	void ResetBloodAnimation();
+	void SetShouldBleed(GLboolean newVal) { shouldBleed = newVal; }
 
 	GLboolean IsInPlayerMeleeRange(Player& player);
 
 private:
 	GLfloat meleeDamage{};
+	BloodEffect bloodEffect;
+	GLboolean shouldBleed{ false };
 };
