@@ -38,7 +38,6 @@ private:
 	float deltaTime{};
 	float lastFrame{};
 	GameState gameState;
-	GLuint levelNumber{};
 	GLboolean advanceLevel{ true };
 
 	GLint previusKeyPressed{};

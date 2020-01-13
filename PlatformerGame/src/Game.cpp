@@ -39,7 +39,6 @@ void Game::Run()
 {
 	while (!mainWindow.GetShouldClose())
 	{
-
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -51,7 +50,9 @@ void Game::Run()
 			
 			level = new Level(*renderer, player);
 
-			std::string levelNumberString = std::to_string(levelNumber);
+			std::cout << "Level number: " << level->levelNumber << std::endl;
+
+			std::string levelNumberString = std::to_string(level->levelNumber);
 			std::string levelPath = "../levels/OpenGLGame_Level" + levelNumberString + ".txt";
 			std::string backGroundPath = "../textures/backGround" + levelNumberString + ".png";
 			
@@ -207,7 +208,6 @@ void Game::ProcessInput(Level& level)
 	{
 		levelLoadTimer = 5.0f;
 		advanceLevel = true;
-		++levelNumber;
 	}
 }
 

@@ -24,6 +24,8 @@
 
 #define BLOCK_SIZE 50
 
+static GLuint levelNumCounter{ 0 };
+
 Level::Level(SpriteRenderer& renderer, Player& player)
 	:
 	renderer(renderer),
@@ -48,6 +50,9 @@ Level::Level(SpriteRenderer& renderer, Player& player)
 
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0380_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0370_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+
+	levelNumber = levelNumCounter;
+	levelNumCounter += 1;
 }
 
 Level::~Level()
