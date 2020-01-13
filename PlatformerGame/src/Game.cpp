@@ -85,7 +85,7 @@ void Game::ProcessInput(Level& level)
 	*/
 
 	// Starts the game
-	if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && gameState == GameState::MENU)
+	if (mainWindow.IsKeyPressed(GLFW_KEY_ENTER) && gameState == GameState::MENU)
 		gameState = GameState::RUN;
 	// exits the game
 	else if (mainWindow.IsKeyPressed(GLFW_KEY_ESCAPE) && gameState == GameState::MENU)
@@ -128,11 +128,6 @@ void Game::ProcessInput(Level& level)
 
 		if (!player.GetIsDead())
 		{
-			if (mainWindow.IsKeyPressed(GLFW_KEY_K))
-			{
-				level.KillAllEnemies();
-			}
-
 			if (mainWindow.IsKeyPressed(GLFW_KEY_D))
 			{
 				if (previusKeyPressed != GLFW_KEY_D)
@@ -157,6 +152,7 @@ void Game::ProcessInput(Level& level)
 				if (level.IsPlayerCollidingWithBlocks())
 					player.SetPosition(player.GetPreviousPosition());
 			}
+	
 			// Jump logic **********************************
 			if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && canJumpAgain)
 			{

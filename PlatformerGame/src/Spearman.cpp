@@ -137,8 +137,9 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 	glm::vec2 playerSize = player.GetSize();
 	PlayerOrientation playerOrientation = player.GetOrientation();
 	GLboolean isInRange = false;
+	GLfloat xOffset = 15.0f;
 
-	if (playerPos.y >= position.y - 50.0f && playerPos.y < position.y + 50.0f)	// TODO adjust later
+	if (playerPos.y >= position.y - 50.0f && playerPos.y < position.y + 50.0f)	// TODO adjust later. This checks if enemy and player are about in the same level on y axis
 	{
 		switch (playerOrientation)
 		{
@@ -146,7 +147,7 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 			{
 				if (playerPos.x + playerSize.x / 2.0f < position.x + size.x / 2.0f)
 				{
-					if (playerPos.x > position.x + size.x / 2.0f - playerSize.x)
+					if (playerPos.x > position.x + size.x / 2.0f - playerSize.x - xOffset)
 					{
 						std::cout << "player is in range" << std::endl;
 						player.SetIsInMeleeRange(true);
@@ -159,7 +160,7 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 			{
 				if (playerPos.x + playerSize.x / 2.0f > position.x + size.x / 2.0f)
 				{
-					if (playerPos.x < (position.x + size.x / 2.0f))
+					if (playerPos.x < (position.x + size.x / 2.0f + xOffset))
 					{
 						std::cout << "player is in range" << std::endl;
 						player.SetIsInMeleeRange(true);

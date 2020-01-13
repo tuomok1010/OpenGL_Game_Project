@@ -32,8 +32,6 @@ public:
 	GLboolean levelComplete{ false };
 	GLboolean quitGame{ false };
 
-	void KillAllEnemies();
-
 private:
 	/*
 		TODO consider refactoring. Maybe edit the GameObject class and make the coin inherit from it
@@ -46,9 +44,7 @@ private:
 	std::vector<GameObject*> blocks;
 	std::vector<GameObject*> assets;
 	std::vector<Texture2D*> assetTextures{};
-
 	std::vector<Enemy*> enemies{};
-
 	std::vector<Coin*> coins{};
 
 	Texture2D* backGround{};

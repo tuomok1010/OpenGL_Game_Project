@@ -120,6 +120,8 @@ void Level::ProcessLevelData()
 {
 	blocks.clear();
 	assets.clear();
+	enemies.clear();
+	coins.clear();
 
 	for (unsigned int i = 0; i < levelData.size(); ++i)
 	{
@@ -142,7 +144,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					//hasClouds = true;
+					hasClouds = true;
 					break;
 				}
 				case 'c':
@@ -433,6 +435,10 @@ void Level::UpdateAssets(float deltaTime)
 				if (CollisionCheck(player, *obj))
 				{
 					dynamic_cast<SpikeTrap*>(obj)->DamagePlayer(player);
+
+					if (!player.GetIsDead())
+						player.SetShouldBleed(true);
+
 					if (player.GetHealth() <= 0.0f)
 						player.SetIsDead(true);
 				}
@@ -542,14 +548,5 @@ void Level::SetAnimationToAllAliveEnemies(EnemyState newState)
 	{
 		if(!enemy->GetIsDead())
 			enemy->SetState(newState);
-	}
-}
-
-void Level::KillAllEnemies()
-{
-	for (auto& enemy : enemies)
-	{
-		enemy->SetIsDead(true);
-		enemy->SetState(EnemyState::DEATH);
 	}
 }
