@@ -12,7 +12,7 @@ Player::Player()
 	speed(250.0f),
 	maxJumpHeight(75.0f),
 	heightJumped(0.0f),
-	health(100000.0f),
+	health(10000.0f),
 	damage(50.0f)
 {
 	for (unsigned int i = 0; i < 12; ++i)
@@ -104,7 +104,10 @@ void Player::Draw(SpriteRenderer& renderer)
 	else if (state == PlayerState::DEATH)
 	{
 		if (deathTexIterator >= texturesDeath.size())
+		{
+			readyToDespawn = true;
 			deathTexIterator = texturesDeath.size() - 1;
+		}
 
 		renderer.Draw(*texturesDeath.at(deathTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++deathTexIterator;
@@ -191,6 +194,16 @@ void Player::DrawBloodEffect(SpriteRenderer& renderer)
 void Player::ResetBloodAnimation()
 {
 	bloodEffect.ResetAnimation();
+}
+
+void Player::DrawPuffEffect(SpriteRenderer& renderer)
+{
+	GLfloat yOffset = 50.0f;
+
+	puffEffect.SetPosition(glm::vec3(position.x + size.x / 2.0f - puffEffect.GetSize().x / 2.0f, position.y - yOffset, position.z));
+
+	if(!puffEffect.GetShouldStop())
+		puffEffect.Draw(renderer);
 }
 
 void Player::MoveDown(float deltaTime)

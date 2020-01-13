@@ -75,7 +75,10 @@ void Enemy::Draw(SpriteRenderer& renderer)
 	else if (state == EnemyState::DEATH)
 	{
 		if (deathTexIterator >= texturesDeath.size())
+		{
+			readyToDespawn = true;
 			deathTexIterator = texturesDeath.size() - 1;
+		}
 
 		renderer.Draw(*texturesDeath.at(deathTexIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++deathTexIterator;
@@ -88,6 +91,17 @@ void Enemy::Draw(SpriteRenderer& renderer)
 		renderer.Draw(*texturesMeleeAttack.at(meleeAttackIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++meleeAttackIterator;
 	}
+}
+
+void Enemy::DrawPuffEffect(SpriteRenderer& renderer)
+{
+	GLfloat puffEffectYOffset = -50.0f;
+	GLfloat puffEffectXOffset = orientation == EnemyOrientation::RIGHT ? -40.0f : 40.0f;
+
+	puffEffect.SetPosition(glm::vec3(position.x + size.x / 2.0f - puffEffect.GetSize().x / 2.0f + puffEffectXOffset, position.y + puffEffectYOffset, position.z));
+
+	if (!puffEffect.GetShouldStop())
+		puffEffect.Draw(renderer);
 }
 
 void Enemy::Move(float deltaTime)

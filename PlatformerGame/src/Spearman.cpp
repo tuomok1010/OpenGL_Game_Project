@@ -81,7 +81,10 @@ void Spearman::Draw(SpriteRenderer& renderer)
 	else if (state == EnemyState::DEATH)
 	{
 		if (deathTexIterator >= texturesDeath.size())
+		{
+			readyToDespawn = true;
 			deathTexIterator = texturesDeath.size() - 1;
+		}
 
 
 		textureScale = glm::vec2(1.2f, 1.0f);
@@ -100,11 +103,6 @@ void Spearman::Draw(SpriteRenderer& renderer)
 		renderer.Draw(*texturesMeleeAttack.at(meleeAttackIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++meleeAttackIterator;
 	} 
-}
-
-void Spearman::DrawBlood(SpriteRenderer& renderer)
-{
-
 }
 
 GLboolean Spearman::MeleeAttack()
@@ -149,7 +147,6 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 				{
 					if (playerPos.x > position.x + size.x / 2.0f - playerSize.x - xOffset)
 					{
-						std::cout << "player is in range" << std::endl;
 						player.SetIsInMeleeRange(true);
 						isInRange = true;
 					}
@@ -162,7 +159,6 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 				{
 					if (playerPos.x < (position.x + size.x / 2.0f + xOffset))
 					{
-						std::cout << "player is in range" << std::endl;
 						player.SetIsInMeleeRange(true);
 						isInRange = true;
 

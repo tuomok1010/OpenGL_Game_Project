@@ -152,6 +152,7 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\PuffEffect.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -176,6 +177,7 @@
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\PuffEffect.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Spearman.h" />

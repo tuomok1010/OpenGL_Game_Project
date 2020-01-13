@@ -10,7 +10,6 @@ public:
 	~Spearman();
 
 	void Draw(SpriteRenderer& renderer) override;
-	void DrawBlood(SpriteRenderer& renderer);
 
 	GLboolean MeleeAttack();
 	GLboolean DamagePlayer(Player& player);

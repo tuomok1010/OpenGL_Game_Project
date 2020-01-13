@@ -332,17 +332,32 @@ void Level::Draw(Window& window, float deltaTime)
 	// render all enemies
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
-		enemies.at(i)->Draw(renderer);
+		if (!enemies.at(i)->GetShouldDespawn())
+		{
+			enemies.at(i)->Draw(renderer);
+		}
+		else
+		{
+			enemies.at(i)->DrawPuffEffect(renderer);
+		}
 	}
 
 	// render player
-	player.Draw(renderer);
-	player.DrawBloodEffect(renderer);
+	if (!player.GetShouldDespawn())
+	{
+		player.Draw(renderer);
+		player.DrawBloodEffect(renderer);
+	}
+	else
+	{
+		player.DrawPuffEffect(renderer);
+	}
 
 	// render enemy effects
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
-		dynamic_cast<Spearman*>(enemies.at(i))->DrawBloodEffect(renderer);
+		if(!enemies.at(i)->GetShouldDespawn())
+			dynamic_cast<Spearman*>(enemies.at(i))->DrawBloodEffect(renderer);
 	}
 }
 

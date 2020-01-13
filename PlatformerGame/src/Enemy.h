@@ -35,6 +35,7 @@ public:
 	virtual ~Enemy();
 
 	virtual void Draw(SpriteRenderer& renderer);
+	virtual void DrawPuffEffect(SpriteRenderer& renderer);
 	void Move(float deltaTime);
 
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
@@ -69,6 +70,7 @@ public:
 	EnemyState GetState()const { return state; }
 	GLfloat GetLineOfSightX()const { return lineOfSightX; }
 	EnemyType GetEnemyType()const { return enemyType; }
+	GLboolean GetShouldDespawn()const { return readyToDespawn; }
 
 protected:
 	std::vector<Texture2D*> texturesIdle{};
@@ -102,6 +104,7 @@ protected:
 
 	GLfloat health{};
 	GLboolean isDead{ false };
+	GLboolean readyToDespawn{ false };
 
 	GLboolean hasCollided{ false };
 
@@ -116,4 +119,6 @@ protected:
 	GLboolean hasSpottedPlayer{ false };
 
 	EnemyType enemyType{};
+
+	PuffEffect puffEffect;
 };

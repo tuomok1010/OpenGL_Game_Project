@@ -7,6 +7,7 @@
 #include "SpriteRenderer.h"
 #include "Camera.h"
 #include "BloodEffect.h"
+#include "PuffEffect.h"
 
 enum class PlayerState
 {
@@ -39,6 +40,7 @@ public:
 
 	void DrawBloodEffect(SpriteRenderer& renderer);
 	void ResetBloodAnimation();
+	void DrawPuffEffect(SpriteRenderer& renderer);
 
 	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
 	void MoveDown(float deltaTime);
@@ -65,6 +67,7 @@ public:
 	PlayerOrientation GetOrientation()const { return orientation; }
 	GLboolean GetIsInMeleeRange()const { return isInMeleeRange; }
 	GLfloat GetDamage()const { return damage; }
+	GLboolean GetShouldDespawn()const { return readyToDespawn; }
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
@@ -103,6 +106,8 @@ private:
 	GLboolean shouldBleed{ false };
 
 	BloodEffect bloodEffect;
+	PuffEffect puffEffect;
+	GLboolean readyToDespawn{ false };
 
 	// TODO consider removing as it is not used anywhere(i think...)
 	GLboolean hasCollided{ false };
