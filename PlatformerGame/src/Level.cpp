@@ -76,13 +76,13 @@ void Level::Load(const std::string& filePath, const std::string& backGroundPath)
 	levelData.clear();
 
 	if (backGroundPath != "")
-		backGround = new Texture2D(backGroundPath, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
+		backGround = new Texture2D(backGroundPath, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 
 	if (backGround->loadFailed)
 	{
 		delete backGround;
 		// loads the level1 backGround if current level doesn't have a unique background
-		backGround = new Texture2D("../textures/backGround1.jpg", GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
+		backGround = new Texture2D("../textures/backGround1.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 	}
 
 	std::fstream stream;

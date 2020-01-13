@@ -6,7 +6,7 @@ Spearman::Spearman()
 {
 	state = EnemyState::IDLE;
 	orientation = EnemyOrientation::LEFT;
-	textureOffset = glm::vec2(-0.35f, 0.07f);	// OLD VALS -0.32f, 0.07f
+	textureOffset = glm::vec2(-0.35f, 0.07f);
 	textureScale = glm::vec2(1.45f, 1.1f);
 	color = glm::vec3(1.0f);
 	position = glm::vec3(0.0f);

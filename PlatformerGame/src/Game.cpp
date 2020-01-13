@@ -53,7 +53,7 @@ void Game::Run()
 
 			std::string levelNumberString = std::to_string(levelNumber);
 			std::string levelPath = "../levels/OpenGLGame_Level" + levelNumberString + ".txt";
-			std::string backGroundPath = "../textures/backGround" + levelNumberString + ".jpg"; // the backGround image must be in jpg format with no alpha channel
+			std::string backGroundPath = "../textures/backGround" + levelNumberString + ".png";
 			
 			level->Load(levelPath, backGroundPath);
 			advanceLevel = false;
@@ -99,6 +99,9 @@ void Game::ProcessInput(Level& level)
 		// handles enemy related stuff such as damage to player
 		level.RunEnemyBehaviour(deltaTime);
 
+		// player animation is idle by default
+		player.SetState(PlayerState::IDLE);
+
 		if (player.GetIsDead())
 			player.SetState(PlayerState::DEATH);
 
@@ -108,9 +111,11 @@ void Game::ProcessInput(Level& level)
 			player.MoveDown(deltaTime);
 			if (level.IsPlayerCollidingWithBlocks())
 			{
-				// if player is jumping, this will reset the animation to idle when he collides with the ground again
+				// if player is jumping, this will reset the animation to idle when he collides with the ground again, commented out as it doesn't seem to be needed
+				/*
 				if (!player.GetIsDead())
 					player.SetState(PlayerState::IDLE);
+				*/
 
 				player.SetPosition(player.GetPreviousPosition());
 			}
@@ -224,8 +229,10 @@ void Game::Draw(Level& level)
 		glm::mat4 view = glm::mat4(1.0f);
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
-		Texture2D* menu = new Texture2D("../textures/menu.jpg", GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+		Texture2D* menu = new Texture2D("../textures/menu.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 		renderer->Draw(*menu, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec2(mainWindow.GetBufferWidth(), mainWindow.GetBufferHeight()), 0.0f);
+		menu->Unbind();
+		delete menu;
 	}
 	else if(gameState == GameState::RUN)
 	{

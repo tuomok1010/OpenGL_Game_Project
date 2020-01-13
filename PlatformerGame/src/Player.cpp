@@ -139,10 +139,8 @@ void Player::Move(float deltaTime)
 		camera.SetPosition(position + cameraOffset);
 		break;
 	}
-
 }
 
-// TODO fix: there is a bug when player jumps and hits a block above him. This will cause the player to freeze in place and other weird behaviour
 GLboolean Player::Jump(float deltaTime, GLboolean& gravityEnabled)
 {
 	GLfloat velocity = speed * deltaTime;
