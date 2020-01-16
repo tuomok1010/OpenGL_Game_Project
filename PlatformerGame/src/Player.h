@@ -39,6 +39,8 @@ public:
 	void DrawBloodEffect(SpriteRenderer& renderer);
 	void ResetBloodAnimation();
 	void DrawPuffEffect(SpriteRenderer& renderer);
+	
+	void IncrementScore(GLint amountToAdd) { score += amountToAdd; }
 
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
@@ -69,6 +71,7 @@ public:
 	GLboolean GetShouldDespawn()const { return readyToDespawn; }
 	GLboolean GetIsOnGround()const { return isOnGround; }
 	GLboolean GetIsAttacking()const { return isAttacking; }
+	GLuint GetScore()const { return score; }
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
@@ -120,4 +123,6 @@ private:
 
 	GLboolean isInMeleeRange{ false };
 	GLboolean isAttacking{ false };
+
+	GLuint score{};
 };

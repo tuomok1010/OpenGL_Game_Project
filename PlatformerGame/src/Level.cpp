@@ -86,8 +86,8 @@ void Level::Load(const std::string& filePath, const std::string& backGroundPath)
 	if (backGround->loadFailed)
 	{
 		delete backGround;
-		// loads the level1 backGround if current level doesn't have a unique background
-		backGround = new Texture2D("../textures/backGround1.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+		// loads the default backGround if current level doesn't have a unique background
+		backGround = new Texture2D("../textures/backGroundDefault.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 	}
 
 	std::fstream stream;
@@ -364,6 +364,17 @@ void Level::Draw(Window& window, float deltaTime)
 		if(!enemies.at(i)->GetShouldDespawn())
 			dynamic_cast<Spearman*>(enemies.at(i))->DrawBloodEffect(renderer);
 	}
+
+	// if level number is 0(we are in the tutorial level), render the player controls instructions
+	if (levelNumber == 0)
+	{
+		Texture2D* menuTexture = new Texture2D("../textures/playerControls.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+		glm::vec2 menuPos = glm::vec2(player.GetPosition().x, player.GetPosition().y + player.GetSize().y);
+		GameObject* controlsMenu = new GameObject(menuPos, glm::vec2(200.0f), *menuTexture);
+		controlsMenu->Draw(renderer);
+		delete menuTexture;
+		delete controlsMenu;
+	}
 }
 
 GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
@@ -441,7 +452,7 @@ GLboolean Level::JumpCollisionBoxCheck(Player& player, GameObject& obj)
 
 	// jump box -----------------------
 	glm::vec2 jumpColBoxSize{};
-	jumpColBoxSize.x = 2.0f;
+	jumpColBoxSize.x = 10.0f;
 	jumpColBoxSize.y = 2.0f;
 
 	glm::vec3 jumpColBoxPos{};
@@ -458,6 +469,10 @@ GLboolean Level::JumpCollisionBoxCheck(Player& player, GameObject& obj)
 	// --------------------------------
 }
 
+/*
+	TODO when player is walking off a ledge, he sometimes gets stuck. Probably a problem with the collision/jumpCollisionCheck logic. Fix!
+	Also when a player is walking towards a single block, he sometimes teleports on top of it.
+*/
 void Level::ProcessPlayerCollisionWithBlocks()
 {
 	glm::vec3 playerPos = player.GetPosition();
@@ -468,14 +483,16 @@ void Level::ProcessPlayerCollisionWithBlocks()
 
 	for (auto& block : blocks)
 	{
+		glm::vec2 blockPos = block->GetPosition();
+		glm::vec2 blockSize = block->GetSize();
+
 		if (JumpCollisionBoxCheck(player, *block))
 		{
 			player.SetIsOnGround(true);
 			player.SetVelocityY(0.0f);
-			player.SetPosition(glm::vec3(playerPos.x, block->GetPosition().y + block->GetSize().y, 0.0f));
+			player.SetPosition(glm::vec3(playerPos.x, blockPos.y + blockSize.y, 0.0f));
 		}
-
-		if (CollisionCheck(player, *block))
+		else if (CollisionCheck(player, *block))
 			player.SetPosition(playerPrevPos);
 	}
 }
@@ -531,6 +548,11 @@ void Level::UpdateAssets(float deltaTime)
 	{
 		if (CollisionCheck(player, *coin))
 		{
+			if (!coin->GetIsCollected())
+			{
+				player.IncrementScore(coin->GetValue());
+				std::cout << "player score increased by " << coin->GetValue() << "! New score: " << player.GetScore() << std::endl;
+			}
 			coin->SetIsCollected(true);
 		}
 	}
