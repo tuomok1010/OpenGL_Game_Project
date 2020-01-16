@@ -172,7 +172,7 @@ void Level::ProcessLevelData()
 				}
 				case 'P':
 				{
-					player.SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE + 0.05f, 0.0f));
+					player.SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE + 1.05f, 0.0f));
 					break;
 				}
 				case '^':
@@ -375,7 +375,7 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 		glm::vec2 objPos = obj.GetPosition();
 		glm::vec2 objSize = obj.GetSize();
 
-		GLfloat xOffset = 5.0f;
+		GLfloat xOffset = 10.0f;
 		GLfloat yOffset = 15.0f;
 
 		bool collisionX = playerPos.x + playerSize.x / 2.0f + xOffset > objPos.x && objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f) - xOffset;
@@ -432,16 +432,52 @@ GLboolean Level::CollisionCheck(GameObject& obj1, GameObject& obj2)
 	}
 }
 
-GLboolean Level::IsPlayerCollidingWithBlocks()
+GLboolean Level::JumpCollisionBoxCheck(Player& player, GameObject& obj)
 {
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	// jump box -----------------------
+	glm::vec2 jumpColBoxSize{};
+	jumpColBoxSize.x = 2.0f;
+	jumpColBoxSize.y = 2.0f;
+
+	glm::vec3 jumpColBoxPos{};
+	jumpColBoxPos.x = (playerPos.x + playerSize.x / 2.0f) - (jumpColBoxSize.x / 2.0f);
+	jumpColBoxPos.y = playerPos.y - 1.0f;
+
+	bool jumpBoxCollisionX = jumpColBoxPos.x + jumpColBoxSize.x > objPos.x&& objPos.x + objSize.x > jumpColBoxPos.x + jumpColBoxSize.x;
+	bool jumpBoxCollisionY = jumpColBoxPos.y + jumpColBoxSize.y > objPos.y&& objPos.y + objSize.y > jumpColBoxPos.y;
+
+	if (jumpBoxCollisionX && jumpBoxCollisionY)
+		return true;
+	else
+		return false;
+	// --------------------------------
+}
+
+void Level::ProcessPlayerCollisionWithBlocks()
+{
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec3 playerPrevPos = player.GetPreviousPosition();
+	glm::vec2 playerSize = player.GetSize();
+
+	player.SetIsOnGround(false);
+
 	for (auto& block : blocks)
 	{
-		if (CollisionCheck(player, *block))
+		if (JumpCollisionBoxCheck(player, *block))
 		{
-			return true;
+			player.SetIsOnGround(true);
+			player.SetVelocityY(0.0f);
+			player.SetPosition(glm::vec3(playerPos.x, block->GetPosition().y + block->GetSize().y, 0.0f));
 		}
+
+		if (CollisionCheck(player, *block))
+			player.SetPosition(playerPrevPos);
 	}
-	return false;
 }
 
 void Level::UpdateAssets(float deltaTime)
@@ -534,7 +570,6 @@ void Level::RunEnemyBehaviour(float deltaTime)
 
 							if (spearman->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
 							{
-								std::cout << "setting should bleed to true" << std::endl;
 								player.SetShouldBleed(true);
 								player.ResetBloodAnimation();
 							}
@@ -544,7 +579,7 @@ void Level::RunEnemyBehaviour(float deltaTime)
 					}
 					if (spearman->IsInPlayerMeleeRange(player))
 					{
-						if (!player.MeleeAttack())	// returns false when the animation is in it's last frame
+						if (player.IsMeleeAttackFinished())	// returns false when the animation is in it's last frame // TODO this causes player to automatically attack: FIX!
 						{
 							spearman->TakeDamage(player.GetDamage());
 							spearman->SetShouldBleed(true);

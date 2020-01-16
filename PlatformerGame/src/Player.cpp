@@ -9,9 +9,10 @@ Player::Player()
 	position(glm::vec3(0.0f)),
 	size(glm::vec2(160.0f, 100.0f)),
 	rotation(0.0f),
-	speed(250.0f),
-	maxJumpHeight(75.0f),
-	heightJumped(0.0f),
+	velocityX(0.0f),
+	velocityY(0.0f),
+	speed(200.0f),
+	gravity(5.0f),
 	health(10000.0f),
 	damage(50.0f)
 {
@@ -122,59 +123,33 @@ void Player::Draw(SpriteRenderer& renderer)
 	}
 }
 
-void Player::Move(float deltaTime)
+void Player::Update(float deltaTime)
 {
-	GLfloat velocity = speed * deltaTime;
-
-	if(state != PlayerState::JUMP)
-		state = PlayerState::RUN;
-
-	switch (orientation)
-	{
-	case PlayerOrientation::RIGHT:
-		previousPosition = position;
-		position += glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
-		camera.SetPosition(position + cameraOffset);
-		break;
-	case PlayerOrientation::LEFT:
-		previousPosition = position;
-		position -= glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
-		camera.SetPosition(position + cameraOffset);
-		break;
-	}
-}
-
-GLboolean Player::Jump(float deltaTime, GLboolean& gravityEnabled)
-{
-	GLfloat velocity = speed * deltaTime;
-	state = PlayerState::JUMP;
+	// Update movement
 	previousPosition = position;
-	gravityEnabled = false;
 
-	if (heightJumped >= maxJumpHeight)
-	{
-		heightJumped = 0.0f;
-		gravityEnabled = true;
-		return false;
-	}
-	else
-	{
-		position += glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
-		camera.SetPosition(position + cameraOffset);
+	position.x += velocityX * speed * deltaTime;
+	position.y += velocityY * speed * deltaTime;
+	velocityY -= gravity * deltaTime;
 
-		heightJumped += position.y - previousPosition.y;
+	camera.SetPosition(position + cameraOffset);
+	//////////////////////////////
+
+	// Update melee attack state
+	if (IsMeleeAttackFinished())
+	{
+		isAttacking = false;
+		ResetAnimation(PlayerState::ATTACK);
 	}
-	return true;
+	/////////////////////////////
 }
 
-GLboolean Player::MeleeAttack()
+GLboolean Player::IsMeleeAttackFinished()
 {
-	state = PlayerState::ATTACK;
-
 	if (meleeAttackIterator == texturesMeleeAttack.size() - 1)
-		return false;
-	else
 		return true;
+	else
+		return false;
 }
 
 void Player::DrawBloodEffect(SpriteRenderer& renderer)
@@ -204,15 +179,6 @@ void Player::DrawPuffEffect(SpriteRenderer& renderer)
 
 	if(!puffEffect.GetShouldStop())
 		puffEffect.Draw(renderer);
-}
-
-void Player::MoveDown(float deltaTime)
-{
-	GLfloat velocity = speed * deltaTime;
-	previousPosition = position;
-
-	position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
-	camera.SetPosition(position + cameraOffset);
 }
 
 void Player::SetPosition(glm::vec3 newPosition)

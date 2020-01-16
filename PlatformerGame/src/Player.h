@@ -32,18 +32,13 @@ public:
 	~Player();
 
 	void Draw(SpriteRenderer& renderer);
-	void Move(float deltaTime);
+	void Update(float deltaTime);
 
-	GLboolean Jump(float deltaTime, GLboolean& gravityEnabled);
-	//void ResetHeightJumped() { heightJumped = 0.0f; } // not used anywhere
-	GLboolean MeleeAttack();
+	GLboolean IsMeleeAttackFinished();
 
 	void DrawBloodEffect(SpriteRenderer& renderer);
 	void ResetBloodAnimation();
 	void DrawPuffEffect(SpriteRenderer& renderer);
-
-	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
-	void MoveDown(float deltaTime);
 
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
@@ -53,6 +48,10 @@ public:
 	void SetIsDead(GLboolean isDead);
 	void SetIsInMeleeRange(GLboolean newVal) { isInMeleeRange = newVal; }
 	void SetShouldBleed(GLboolean newVal) { shouldBleed = newVal; }
+	void SetVelocityX(GLfloat val) { velocityX = val; }
+	void SetVelocityY(GLfloat val) { velocityY = val; }
+	void SetIsOnGround(GLboolean newVal) { isOnGround = newVal; }
+	void SetIsAttacking(GLboolean newVal) { isAttacking = newVal; }
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -68,6 +67,8 @@ public:
 	GLboolean GetIsInMeleeRange()const { return isInMeleeRange; }
 	GLfloat GetDamage()const { return damage; }
 	GLboolean GetShouldDespawn()const { return readyToDespawn; }
+	GLboolean GetIsOnGround()const { return isOnGround; }
+	GLboolean GetIsAttacking()const { return isAttacking; }
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
@@ -95,10 +96,11 @@ private:
 	glm::vec2 size{};
 	glm::vec3 color{};
 	GLfloat rotation{};
+	GLfloat velocityX{};
+	GLfloat velocityY{};
 	GLfloat speed{};
-
-	GLfloat maxJumpHeight{};
-	GLfloat heightJumped{};
+	GLfloat gravity{};
+	GLboolean isOnGround{ true };
 
 	GLfloat health{};
 	GLboolean isDead{ false };
@@ -117,4 +119,5 @@ private:
 	glm::vec3 cameraOffset{ -400, -300, 0 };
 
 	GLboolean isInMeleeRange{ false };
+	GLboolean isAttacking{ false };
 };

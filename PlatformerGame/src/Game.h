@@ -14,6 +14,8 @@
 #include "Camera.h"
 #include "Player.h"
 
+#define JUMP_COOLDOWN 1
+
 enum class GameState
 {
 	MENU,
@@ -29,6 +31,7 @@ public:
 
 	void Run();
 	void ProcessInput(Level& level);
+	void Update(Level& level);
 	void Draw(Level& level);
 
 public:
@@ -50,13 +53,11 @@ private:
 
 	Player player;
 
-	bool canJumpAgain{ true };
-	GLfloat jumpCooldown{};
 	bool canAttackAgain{ true };
 	GLfloat attackCooldown{};
 
-	// doesnt allow the ProcessInput function to work until the levelLoadTimer hits 0. This is needed because otherwise the player will fall through the level
-	// if the level is too large
+	GLfloat jumpCooldown{};
+
 	GLfloat levelLoadTimer{};
 };
 

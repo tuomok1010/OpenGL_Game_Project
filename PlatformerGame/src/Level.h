@@ -22,25 +22,24 @@ public:
 	void Load(const std::string& filePath, const std::string& backGroundPath = "");
 	void ProcessLevelData();
 	void Draw(Window& window, float deltaTime);
-	GLboolean IsPlayerCollidingWithBlocks();
 	void UpdateAssets(float deltaTime);
 	GLboolean IsPlayerSpottedByEnemies();
 	void RunEnemyBehaviour(float deltaTime);
 	void SetAnimationToAllAliveEnemies(EnemyState newState);
 
-	GLboolean gravityEnabled{ true };
+	void ProcessPlayerCollisionWithBlocks();
+
 	GLboolean levelComplete{ false };
 	GLboolean quitGame{ false };
 
 	GLuint levelNumber{};
 
 private:
-	/*
-		TODO consider refactoring. Maybe edit the GameObject class and make the coin inherit from it
-	*/
 	GLboolean CollisionCheck(Player& player, GameObject& obj);
 	GLboolean CollisionCheck(Player& player, Coin& coin);
 	GLboolean CollisionCheck(GameObject& obj1, GameObject& obj2);
+	GLboolean JumpCollisionBoxCheck(Player& player, GameObject& obj);
+
 private:
 	std::vector<std::vector<GLchar>> levelData;
 	std::vector<GameObject*> blocks;
