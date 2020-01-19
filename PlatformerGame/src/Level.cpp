@@ -149,7 +149,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					//hasClouds = true;
+					hasClouds = true;
 					break;
 				}
 				case 'c':
@@ -297,8 +297,9 @@ void Level::Draw(Window& window, float deltaTime)
 	// render background
 	if (backGround != nullptr)
 	{
-		glm::vec2 backGroundPos = player.GetPosition() - glm::vec3(window.GetBufferWidth() / 2, window.GetBufferHeight() / 2, 0);
-		renderer.Draw(*backGround, 0, glm::vec3(1.0f), backGroundPos, glm::vec2(window.GetBufferWidth(), window.GetBufferHeight()), 0.0f);
+		//glm::vec2 backGroundPos = player.GetPosition() - glm::vec3(window.GetWindowWidth() / 2, window.GetWindowHeight() / 2, 0);
+		glm::vec2 backGroundPos = player.GetCameraPos();
+		renderer.Draw(*backGround, 0, glm::vec3(1.0f), backGroundPos, glm::vec2(window.GetWindowWidth(), window.GetWindowHeight()), 0.0f);
 	}
 
 	// render clouds if there are any in level, also adjusts their position.
@@ -365,16 +366,16 @@ void Level::Draw(Window& window, float deltaTime)
 			dynamic_cast<Spearman*>(enemies.at(i))->DrawBloodEffect(renderer);
 	}
 
-	// if level number is 0(we are in the tutorial level), render the player controls instructions
-	//if (levelNumber == 0)
-	//{
-	//	Texture2D* menuTexture = new Texture2D("../textures/playerControls.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-	//	glm::vec2 menuPos = glm::vec2(player.GetPosition().x, player.GetPosition().y + player.GetSize().y);
-	//	GameObject* controlsMenu = new GameObject(menuPos, glm::vec2(200.0f), *menuTexture);
-	//	controlsMenu->Draw(renderer);
-	//	delete menuTexture;
-	//	delete controlsMenu;
-	//}
+	 //if level number is 0(we are in the tutorial level), render the player controls instructions
+	if (levelNumber == 0)
+	{
+		Texture2D* menuTexture = new Texture2D("../textures/playerControls.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+		glm::vec2 menuPos = glm::vec2(player.GetPosition().x, player.GetPosition().y + player.GetSize().y);
+		GameObject* controlsMenu = new GameObject(menuPos, glm::vec2(200.0f), *menuTexture);
+		controlsMenu->Draw(renderer);
+		delete menuTexture;
+		delete controlsMenu;
+	}
 }
 
 GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
@@ -513,7 +514,9 @@ void Level::UpdateAssets(float deltaTime)
 						player.SetShouldBleed(true);
 
 					if (player.GetHealth() <= 0.0f)
+					{
 						player.SetIsDead(true);
+					}
 				}
 				break;
 			}
@@ -551,6 +554,17 @@ void Level::UpdateAssets(float deltaTime)
 			if (!coin->GetIsCollected())
 			{
 				player.IncrementScore(coin->GetValue());
+				GLint newScore = player.GetScore();
+
+				if (newScore >= 100)
+				{
+					player.SetLives(player.GetLives() + 1);
+					GLint scoreLeftover = newScore - 100;
+					player.SetScore(scoreLeftover);
+
+					// let the player know he received a new life for 100 coins he collected
+				}
+
 				std::cout << "player score increased by " << coin->GetValue() << "! New score: " << player.GetScore() << std::endl;
 			}
 			coin->SetIsCollected(true);
@@ -594,8 +608,15 @@ void Level::RunEnemyBehaviour(float deltaTime)
 							{
 								player.SetShouldBleed(true);
 								player.ResetBloodAnimation();
+
+								if (player.GetHealth() <= 0.0f)
+								{
+									player.SetLives(player.GetLives() - 1);
+									if (player.GetLives() > 0)
+										player.SetHealth(100.0f);
+								}
 							}
-							if (player.GetHealth() <= 0.0f)
+							if (player.GetLives() == 0 && player.GetHealth() <= 0.0f)
 								player.SetIsDead(true);
 						}
 					}

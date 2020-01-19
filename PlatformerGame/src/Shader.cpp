@@ -139,6 +139,7 @@ void Shader::Unbind() const
 void Shader::SetUniformBool(const std::string& name, GLboolean val)
 {
 	glUniform1i(GetUniformLocation(name), val);
+	Unbind();
 }
 
 void Shader::SetUniformi(const std::string& name, GLint val)

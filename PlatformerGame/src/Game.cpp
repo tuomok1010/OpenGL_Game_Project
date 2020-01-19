@@ -13,8 +13,7 @@ Game::Game(int scrnWidth, int scrnHeight)
 	gameState(GameState::MENU),
 	levelLoadTimer(5.0f)
 {
-	projection = glm::ortho(0.0f, (float)mainWindow.GetBufferWidth(), 0.0f, (float)mainWindow.GetBufferHeight(), -2.0f, 2.0f);
-	textProjection = glm::ortho(0.0f, (float)mainWindow.GetBufferWidth(), 0.0f, (float)mainWindow.GetBufferHeight(), -2.0f, 2.0f);
+	projection = glm::ortho(0.0f, (float)mainWindow.GetWindowWidth(), 0.0f, (float)mainWindow.GetWindowHeight(), -2.0f, 2.0f);
 
 	// init shaders list
 	shaders.emplace_back(new Shader("shaders/simple_sprite.vert", "shaders/simple_sprite.frag"));
@@ -24,6 +23,8 @@ Game::Game(int scrnWidth, int scrnHeight)
 	textRenderer = new TextRenderer(*shaders[SHADER_TEXT]);
 
 	textRenderer->Load("../fonts/arial.ttf", 24);
+
+	ui = new UI(mainWindow, *renderer, *textRenderer, player);
 }
 
 Game::~Game()
@@ -32,6 +33,8 @@ Game::~Game()
 		delete shaders.at(i);
 
 	delete renderer;
+	delete textRenderer;
+	delete ui;
 }
 
 void Game::Run()
@@ -68,7 +71,7 @@ void Game::Run()
 		{
 			ProcessInput(*level);
 
-			if(gameState == GameState::RUN)
+			if(gameState == GameState::RUN && !ui->GetGamePaused())
 				Update(*level);
 
 			Draw(*level);
@@ -91,7 +94,7 @@ void Game::ProcessInput(Level& level)
 	if (gameState == GameState::RUN)
 	{
 	
-		if (!player.GetIsDead())
+		if (!player.GetIsDead() && !ui->GetGamePaused())
 		{
 			if (mainWindow.IsKeyPressed(GLFW_KEY_A) && !player.GetIsAttacking())
 			{
@@ -140,6 +143,21 @@ void Game::ProcessInput(Level& level)
 				player.SetState(PlayerState::ATTACK);
 			}
 		}
+
+		// activate a pause menu
+		if (mainWindow.IsKeyPressed(GLFW_KEY_ESCAPE))
+		{
+			ui->SetGamePaused(true);
+		}
+
+		if (mainWindow.IsKeyPressed(GLFW_KEY_Q) && ui->GetGamePaused())
+		{
+			mainWindow.SetShouldClose(true);
+		}
+		else if (mainWindow.IsKeyPressed(GLFW_KEY_ENTER) && ui->GetGamePaused())
+		{
+			ui->SetGamePaused(false);
+		}
 	}
 }
 
@@ -176,32 +194,38 @@ void Game::Draw(Level& level)
 
 	glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-
+	
+	shaders[SHADER_SPRITE]->Bind();
 	shaders[SHADER_SPRITE]->SetUniformMat4("projection", &projection);
+
+	shaders[SHADER_TEXT]->Bind();
 	shaders[SHADER_TEXT]->SetUniformMat4("projection", &projection);
 
 	if (gameState == GameState::MENU)
 	{
+		shaders[SHADER_SPRITE]->Bind();
 		glm::mat4 view = glm::mat4(1.0f);
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
 		Texture2D* menu = new Texture2D("../textures/menu.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-		renderer->Draw(*menu, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec2(mainWindow.GetBufferWidth(), mainWindow.GetBufferHeight()), 0.0f);
+		renderer->Draw(*menu, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec2(mainWindow.GetWindowWidth(), mainWindow.GetWindowHeight()), 0.0f);
 		menu->Unbind();
 		delete menu;
 	}
 	else if(gameState == GameState::RUN)
 	{
+		shaders[SHADER_SPRITE]->Bind();
 		glm::mat4 view = glm::mat4(1.0f);
 		view = player.GetCameraViewMatrix();
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
-		level.Draw(mainWindow, deltaTime);
+		shaders[SHADER_TEXT]->Bind();
+		shaders[SHADER_TEXT]->SetUniformMat4("view", &view);
 
+		level.Draw(mainWindow, deltaTime);
 		level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
 
-		shaders[SHADER_TEXT]->SetUniformMat4("view", &view);
-		textRenderer->RenderText("just a test!", player.GetPosition().x, player.GetPosition().y, 2, glm::vec3(1.0f, 0.0f, 0.0f));
+		ui->Draw();
 	}
 	else
 	{

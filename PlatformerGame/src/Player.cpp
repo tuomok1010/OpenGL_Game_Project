@@ -13,8 +13,9 @@ Player::Player()
 	velocityY(0.0f),
 	speed(200.0f),
 	gravity(5.0f),
-	health(10000.0f),
-	damage(50.0f)
+	health(100),
+	damage(50.0f),
+	lives(3)
 {
 	for (unsigned int i = 0; i < 12; ++i)
 		texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -203,7 +204,7 @@ void Player::SetHasCollided(GLboolean hasCollided)
 	this->hasCollided = hasCollided;
 }
 
-void Player::SetHealth(GLfloat newHealth)
+void Player::SetHealth(GLint newHealth)
 {
 	health = newHealth;
 }

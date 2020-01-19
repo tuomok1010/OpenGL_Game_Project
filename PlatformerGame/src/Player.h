@@ -46,7 +46,7 @@ public:
 	void SetOrientation(PlayerOrientation newOrientation);
 	void SetState(PlayerState newState);
 	void SetHasCollided(GLboolean hasCollided);
-	void SetHealth(GLfloat newHealth);
+	void SetHealth(GLint newHealth);
 	void SetIsDead(GLboolean isDead);
 	void SetIsInMeleeRange(GLboolean newVal) { isInMeleeRange = newVal; }
 	void SetShouldBleed(GLboolean newVal) { shouldBleed = newVal; }
@@ -55,15 +55,18 @@ public:
 	void SetIsOnGround(GLboolean newVal) { isOnGround = newVal; }
 	void SetIsAttacking(GLboolean newVal) { isAttacking = newVal; }
 	void SetColor(glm::vec3 newColor) { color = newColor; }
+	void SetScore(GLuint newScore) { score = newScore; }
+	void SetLives(GLuint amount) { lives = amount; }
 
 	void ResetAnimation(PlayerState animationToReset);
 
 	glm::mat4 GetCameraViewMatrix() { return camera.GetViewMatrix(); }
+	glm::vec3 GetCameraPos()const { return camera.GetPosition(); }
 	glm::vec3 GetPosition()const { return position; }
 	glm::vec2 GetSize()const { return size; }
 	glm::vec3 GetPreviousPosition()const { return previousPosition; }
 	GLboolean GetHasCollided()const { return hasCollided; }
-	GLfloat GetHealth()const { return health; }
+	GLint GetHealth()const { return health; }
 	GLboolean GetIsDead()const { return isDead; }
 	PlayerState GetState()const { return state; }
 	PlayerOrientation GetOrientation()const { return orientation; }
@@ -73,6 +76,8 @@ public:
 	GLboolean GetIsOnGround()const { return isOnGround; }
 	GLboolean GetIsAttacking()const { return isAttacking; }
 	GLuint GetScore()const { return score; }
+	GLuint GetLives()const { return lives; }
+
 
 private:
 	std::vector<Texture2D*> texturesIdle{};
@@ -106,7 +111,7 @@ private:
 	GLfloat gravity{};
 	GLboolean isOnGround{ true };
 
-	GLfloat health{};
+	GLint health{};
 	GLboolean isDead{ false };
 	GLfloat damage{};
 	GLboolean shouldBleed{ false };
@@ -126,4 +131,5 @@ private:
 	GLboolean isAttacking{ false };
 
 	GLuint score{};
+	GLuint lives{};
 };

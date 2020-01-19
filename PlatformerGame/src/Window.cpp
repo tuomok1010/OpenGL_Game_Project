@@ -71,10 +71,10 @@ void Window::KeyCallback(GLFWwindow* window, int key, int code, int action, int 
 {
 	Window* currentWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-	{
-		currentWindow->SetShouldClose(true);
-	}
+	//if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	//{
+	//	currentWindow->SetShouldClose(true);
+	//}
 
 	if (key >= 0 && key < 1024)
 	{

@@ -23,6 +23,7 @@ public:
 
 	void Move(CameraDirection direction);
 	void SetPosition(glm::vec3 position);
+	glm::vec3 GetPosition()const { return position; }
 private:
 
 private:

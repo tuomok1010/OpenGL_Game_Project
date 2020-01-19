@@ -13,7 +13,7 @@
 #include "Level.h"
 #include "Camera.h"
 #include "Player.h"
-#include "TextRenderer.h"
+#include "UI.h"
 
 #define JUMP_COOLDOWN 1
 
@@ -47,7 +47,6 @@ private:
 	GLint previusKeyPressed{};
 
 	glm::mat4 projection{};
-	glm::mat4 textProjection{};
 	SpriteRenderer* renderer{};
 	TextRenderer* textRenderer{};
 
@@ -55,6 +54,8 @@ private:
 	Level* level{};
 
 	Player player;
+
+	UI* ui{};
 
 	bool canAttackAgain{ true };
 	GLfloat attackCooldown{};

@@ -17,9 +17,11 @@ public:
 
 	// returns the width of the viewport
 	GLint GetBufferWidth() const { return bufferWidth; }
-
 	// returns the height of the viewport
 	GLint GetBufferHeight() const { return bufferHeight; }
+
+	GLint GetWindowWidth()const { return width; }
+	GLint GetWindowHeight()const { return height; }
 
 	GLboolean GetShouldClose() const { return glfwWindowShouldClose(window); }
 	void SetShouldClose(bool shouldClose) { glfwSetWindowShouldClose(window, shouldClose); }

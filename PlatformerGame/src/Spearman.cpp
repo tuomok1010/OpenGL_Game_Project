@@ -18,7 +18,7 @@ Spearman::Spearman()
 	health = 50.0f;
 	lineOfSightX = 150.0f;
 	enemyType = EnemyType::SPEARMAN;
-	meleeDamage = 20.0f;
+	meleeDamage = 20;
 	meleeRange = -15.0f;
 
 	for(unsigned int i = 0; i < 26; ++i)

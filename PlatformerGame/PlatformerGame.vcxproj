@@ -162,6 +162,7 @@
     <ClCompile Include="src\SpriteRenderer.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\TextRenderer.cpp" />
+    <ClCompile Include="src\UI.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="src\SpriteRenderer.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\TextRenderer.h" />
+    <ClInclude Include="src\UI.h" />
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\VertexBuffer.h" />
