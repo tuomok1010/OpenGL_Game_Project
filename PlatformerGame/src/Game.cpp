@@ -3,11 +3,8 @@
 #include <iostream>
 
 // shader indices
-#define SHADER_BASIC	0
-#define SHADER_SPRITE	1
-
-// used in the ProcessInput function to reset the jumpCooldown and attackCooldown variables
-#define ATTACK_COOLDOWN 1
+#define SHADER_SPRITE	0
+#define SHADER_TEXT		1
 
 Game::Game(int scrnWidth, int scrnHeight)
 	: 
@@ -17,12 +14,16 @@ Game::Game(int scrnWidth, int scrnHeight)
 	levelLoadTimer(5.0f)
 {
 	projection = glm::ortho(0.0f, (float)mainWindow.GetBufferWidth(), 0.0f, (float)mainWindow.GetBufferHeight(), -2.0f, 2.0f);
+	textProjection = glm::ortho(0.0f, (float)mainWindow.GetBufferWidth(), 0.0f, (float)mainWindow.GetBufferHeight(), -2.0f, 2.0f);
 
 	// init shaders list
-	shaders.emplace_back(new Shader("shaders/shader.vert", "shaders/shader.frag"));
 	shaders.emplace_back(new Shader("shaders/simple_sprite.vert", "shaders/simple_sprite.frag"));
+	shaders.emplace_back(new Shader("shaders/text.vert", "shaders/text.frag"));
 
 	renderer = new SpriteRenderer(*shaders[SHADER_SPRITE]);
+	textRenderer = new TextRenderer(*shaders[SHADER_TEXT]);
+
+	textRenderer->Load("../fonts/arial.ttf", 24);
 }
 
 Game::~Game()
@@ -128,7 +129,7 @@ void Game::ProcessInput(Level& level)
 					player.SetState(PlayerState::JUMP);
 			}
 
-			if (mainWindow.IsKeyPressed(GLFW_KEY_SPACE) && player.GetIsOnGround() && !player.GetIsAttacking())
+			if ((mainWindow.IsKeyPressed(GLFW_KEY_SPACE) || mainWindow.IsKeyPressed(GLFW_KEY_W)) && player.GetIsOnGround() && !player.GetIsAttacking())
 			{
 				player.SetState(PlayerState::JUMP);
 				player.SetVelocityY(2.0f);
@@ -151,7 +152,12 @@ void Game::Update(Level& level)
 	level.RunEnemyBehaviour(deltaTime);
 
 	if (player.GetIsDead())
+	{
 		player.SetState(PlayerState::DEATH);
+		player.SetVelocityX(0.0f);
+		if(player.GetIsOnGround())
+			player.SetVelocityY(0.0f);
+	}
 
 	player.Update(deltaTime);
 
@@ -172,6 +178,7 @@ void Game::Draw(Level& level)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	shaders[SHADER_SPRITE]->SetUniformMat4("projection", &projection);
+	shaders[SHADER_TEXT]->SetUniformMat4("projection", &projection);
 
 	if (gameState == GameState::MENU)
 	{
@@ -192,6 +199,9 @@ void Game::Draw(Level& level)
 		level.Draw(mainWindow, deltaTime);
 
 		level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
+
+		shaders[SHADER_TEXT]->SetUniformMat4("view", &view);
+		textRenderer->RenderText("just a test!", player.GetPosition().x, player.GetPosition().y, 2, glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 	else
 	{

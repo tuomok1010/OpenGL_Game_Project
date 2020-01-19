@@ -54,6 +54,7 @@ public:
 	void SetVelocityY(GLfloat val) { velocityY = val; }
 	void SetIsOnGround(GLboolean newVal) { isOnGround = newVal; }
 	void SetIsAttacking(GLboolean newVal) { isAttacking = newVal; }
+	void SetColor(glm::vec3 newColor) { color = newColor; }
 
 	void ResetAnimation(PlayerState animationToReset);
 

@@ -11,14 +11,13 @@ class SpriteRenderer
 {
 public:
 	SpriteRenderer(Shader& shader);
-	virtual ~SpriteRenderer();
+	~SpriteRenderer();
 
 	void Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 color, glm::vec2 position, glm::vec2 sizeInPixels, GLfloat rotationInDegrees, 
 		glm::vec2 textureZoom = glm::vec2(1.0f), glm::vec2 textureOffset = glm::vec2(0.0f), glm::vec3 rotationAxises = glm::vec3(0.0f, 0.0f, 1.0f));
 
 private:
 	void InitMeshData();
-private:
-	Mesh* mesh;
 	Shader& shader;
+	Mesh* mesh;
 };

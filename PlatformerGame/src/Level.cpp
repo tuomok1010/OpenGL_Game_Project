@@ -149,7 +149,7 @@ void Level::ProcessLevelData()
 					// The initial positions of the clouds. They will slowly drift from right to left in the draw function
 					Cloud* cloud = new Cloud(*cloudTextures.at(randRange(rng)), glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					clouds.emplace_back(cloud);
-					hasClouds = true;
+					//hasClouds = true;
 					break;
 				}
 				case 'c':
@@ -366,15 +366,15 @@ void Level::Draw(Window& window, float deltaTime)
 	}
 
 	// if level number is 0(we are in the tutorial level), render the player controls instructions
-	if (levelNumber == 0)
-	{
-		Texture2D* menuTexture = new Texture2D("../textures/playerControls.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-		glm::vec2 menuPos = glm::vec2(player.GetPosition().x, player.GetPosition().y + player.GetSize().y);
-		GameObject* controlsMenu = new GameObject(menuPos, glm::vec2(200.0f), *menuTexture);
-		controlsMenu->Draw(renderer);
-		delete menuTexture;
-		delete controlsMenu;
-	}
+	//if (levelNumber == 0)
+	//{
+	//	Texture2D* menuTexture = new Texture2D("../textures/playerControls.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+	//	glm::vec2 menuPos = glm::vec2(player.GetPosition().x, player.GetPosition().y + player.GetSize().y);
+	//	GameObject* controlsMenu = new GameObject(menuPos, glm::vec2(200.0f), *menuTexture);
+	//	controlsMenu->Draw(renderer);
+	//	delete menuTexture;
+	//	delete controlsMenu;
+	//}
 }
 
 GLboolean Level::CollisionCheck(Player& player, GameObject& obj)

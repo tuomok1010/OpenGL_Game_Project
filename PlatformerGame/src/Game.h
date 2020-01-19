@@ -13,6 +13,7 @@
 #include "Level.h"
 #include "Camera.h"
 #include "Player.h"
+#include "TextRenderer.h"
 
 #define JUMP_COOLDOWN 1
 
@@ -46,7 +47,9 @@ private:
 	GLint previusKeyPressed{};
 
 	glm::mat4 projection{};
+	glm::mat4 textProjection{};
 	SpriteRenderer* renderer{};
+	TextRenderer* textRenderer{};
 
 	std::vector<Shader*> shaders{};
 	Level* level{};
