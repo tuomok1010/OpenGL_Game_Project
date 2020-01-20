@@ -444,7 +444,7 @@ GLboolean Level::CollisionCheck(GameObject& obj1, GameObject& obj2)
 	}
 }
 
-GLboolean Level::JumpCollisionBoxCheck(Player& player, GameObject& obj)
+GLboolean Level::BottomCollisionBoxCheck(Player& player, GameObject& obj)
 {
 	glm::vec3 playerPos = player.GetPosition();
 	glm::vec2 playerSize = player.GetSize();
@@ -470,10 +470,66 @@ GLboolean Level::JumpCollisionBoxCheck(Player& player, GameObject& obj)
 	// --------------------------------
 }
 
-/*
-	TODO when player is walking off a ledge, he sometimes gets stuck. Probably a problem with the collision/jumpCollisionCheck logic. Fix!
-	Also when a player is walking towards a single block, he sometimes teleports on top of it.
-*/
+// creates a small collision box to the left side of the player and checks if it collides with the object
+GLboolean Level::LeftCollisionCheck(Player& player, GameObject& obj)
+{
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
+
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	// left collision box
+	CollisionBox leftColBox;
+	leftColBox.size.x = 10.0f;
+	leftColBox.size.y = 30.0f; // setting this value roughly, TODO adjust if needed
+	leftColBox.position.x = playerPos.x + playerSize.x / 2.0f - 10.0 - leftColBox.size.x / 2.0f;
+	leftColBox.position.y = playerPos.y + 5.0f;
+	
+	GLboolean collisionX = leftColBox.position.x + leftColBox.size.x > objPos.x&& objPos.x + objSize.x > leftColBox.position.x;
+	GLboolean collisionY = leftColBox.position.y + leftColBox.size.y > objPos.y&& objPos.y + objSize.y > leftColBox.position.y;
+
+	if (collisionX && collisionY)
+		return true;
+	else
+		return false;
+}
+
+// creates a small collision box to the right side of the player and checks if it collides with the object
+GLboolean Level::RightCollisionCheck(Player& player, GameObject& obj)
+{
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
+
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	// right collision box
+	CollisionBox rightColBox;
+	rightColBox.size.x = 10.0f;
+	rightColBox.size.y = 30.0f; // setting this value roughly, TODO adjust if needed
+	rightColBox.position.x = playerPos.x + playerSize.x / 2.0f + 10.0f - rightColBox.size.x / 2.0f;
+	rightColBox.position.y = playerPos.y + 5.0f;
+
+	GLboolean collisionX = rightColBox.position.x + rightColBox.size.x > objPos.x&& objPos.x + objSize.x > rightColBox.position.x;
+	GLboolean collisionY = rightColBox.position.y + rightColBox.size.y > objPos.y&& objPos.y + objSize.y > rightColBox.position.y;
+
+	if (collisionX && collisionY)
+		return true;
+	else
+		return false;
+}
+
 void Level::ProcessPlayerCollisionWithBlocks()
 {
 	glm::vec3 playerPos = player.GetPosition();
@@ -487,14 +543,55 @@ void Level::ProcessPlayerCollisionWithBlocks()
 		glm::vec2 blockPos = block->GetPosition();
 		glm::vec2 blockSize = block->GetSize();
 
-		if (JumpCollisionBoxCheck(player, *block))
+		// ignore blocks that are far from the player
+		if (abs(blockPos.x - playerPos.x) >= 200.0f || abs(blockPos.y - playerPos.y) >= 200.0f)
+			continue;
+
+		if (RightCollisionCheck(player, *block))
+			std::cout << "colliding right" << std::endl;
+		else if (LeftCollisionCheck(player, *block))
+			std::cout << "colliding left" << std::endl;
+
+		if (BottomCollisionBoxCheck(player, *block))
 		{
 			player.SetIsOnGround(true);
+			player.SetPosition(glm::vec3(playerPos.x, blockPos.y + blockSize.y, playerPos.z));
 			player.SetVelocityY(0.0f);
-			player.SetPosition(glm::vec3(playerPos.x, blockPos.y + blockSize.y, 0.0f));
 		}
+		else if (RightCollisionCheck(player, *block))
+		{
+			player.SetPosition(glm::vec3(blockPos.x - playerSize.x / 2.0f - 20.0f, playerPos.y, playerPos.z));
+			player.SetVelocityX(0.0f);
+		}
+		else if (LeftCollisionCheck(player, *block))
+		{
+			player.SetPosition(glm::vec3(blockPos.x + blockSize.x - playerSize.x / 2.0f + 20.0f, playerPos.y, playerPos.z));
+			player.SetVelocityX(0.0f);
+		}
+		// if all else fails, do the regular collision checks...this may not be necessary if we add a TopCollisionCheck function as well
 		else if (CollisionCheck(player, *block))
-			player.SetPosition(playerPrevPos);
+		{
+			if (playerPos.y < playerPrevPos.y)
+			{
+				player.SetPosition(glm::vec3(playerPos.x, blockPos.y + blockSize.y, playerPos.z));
+			}			
+			else if (playerPos.y > playerPrevPos.y)
+			{
+				player.SetPosition(glm::vec3(playerPos.x, blockPos.y - playerSize.y / 2.0f - 15.0f, playerPos.z));
+			}
+
+			if (CollisionCheck(player, *block))
+			{
+				if (playerPos.x < playerPrevPos.x)
+				{
+					player.SetPosition(glm::vec3(blockPos.x + blockSize.x - playerSize.x / 2.0f + 5.0f, playerPos.y, playerPos.z));
+				}
+				else if (playerPos.x > playerPrevPos.x)
+				{
+					player.SetPosition(glm::vec3(blockPos.x - playerSize.x / 2.0f - 5.0f, playerPos.y, playerPos.z));
+				}
+			}
+		}
 	}
 }
 

@@ -38,7 +38,15 @@ private:
 	GLboolean CollisionCheck(Player& player, GameObject& obj);
 	GLboolean CollisionCheck(Player& player, Coin& coin);
 	GLboolean CollisionCheck(GameObject& obj1, GameObject& obj2);
-	GLboolean JumpCollisionBoxCheck(Player& player, GameObject& obj);
+
+	// checks only if the bottom side of player collides with the object
+	GLboolean BottomCollisionBoxCheck(Player& player, GameObject& obj);
+
+	// checks only if the left side of player collides with the object
+	GLboolean LeftCollisionCheck(Player& player, GameObject& obj);
+
+	// checks only if the right side of player collides with the object
+	GLboolean RightCollisionCheck(Player& player, GameObject& obj);
 
 private:
 	std::vector<std::vector<GLchar>> levelData;
