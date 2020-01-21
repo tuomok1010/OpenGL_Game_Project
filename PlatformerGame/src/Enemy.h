@@ -108,12 +108,11 @@ protected:
 
 	GLboolean hasCollided{ false };
 
-	GLfloat lineOfSightX{};
-
 	std::vector<glm::vec3> patrolPoints{};
 	GLuint previousPatrolPointIndex{};
 	GLuint nextPatrolPointIndex{};
 
+	GLfloat lineOfSightX{};
 	GLfloat meleeRange{};
 	GLboolean isInRange{ false };
 	GLboolean hasSpottedPlayer{ false };

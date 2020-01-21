@@ -138,7 +138,7 @@ void Level::ProcessLevelData()
 				case '!':
 				{
 					Spearman* spearman = new Spearman();
-					spearman->SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE, 0.0f));
+					spearman->SetPosition(glm::vec3((j * BLOCK_SIZE) - (spearman->GetSize().x / 2.0f), i * BLOCK_SIZE, 0.0f));
 					enemies.emplace_back(spearman);
 					break;
 				}
@@ -172,7 +172,7 @@ void Level::ProcessLevelData()
 				}
 				case 'P':
 				{
-					player.SetPosition(glm::vec3(j * BLOCK_SIZE, i * BLOCK_SIZE + 1.05f, 0.0f));
+					player.SetPosition(glm::vec3(j * BLOCK_SIZE - (player.GetSize().x / 2.0f), i * BLOCK_SIZE + 1.05f, 0.0f));
 					break;
 				}
 				case '^':
@@ -281,13 +281,13 @@ void Level::ProcessLevelData()
 	}
 
 	 //initializes the enemy orientation so that at the start of the level they face the player
-	for (auto& enemy : enemies)
-	{
-		if (enemy->GetPosition().x > player.GetPosition().x)
-			enemy->SetOrientation(EnemyOrientation::LEFT);
-		else if(enemy->GetPosition().x < player.GetPosition().x)
-			enemy->SetOrientation(EnemyOrientation::RIGHT);
-	}
+	//for (auto& enemy : enemies)
+	//{
+	//	if (enemy->GetPosition().x > player.GetPosition().x)
+	//		enemy->SetOrientation(EnemyOrientation::LEFT);
+	//	else if(enemy->GetPosition().x < player.GetPosition().x)
+	//		enemy->SetOrientation(EnemyOrientation::RIGHT);
+	//}
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -547,11 +547,6 @@ void Level::ProcessPlayerCollisionWithBlocks()
 		if (abs(blockPos.x - playerPos.x) >= 200.0f || abs(blockPos.y - playerPos.y) >= 200.0f)
 			continue;
 
-		if (RightCollisionCheck(player, *block))
-			std::cout << "colliding right" << std::endl;
-		else if (LeftCollisionCheck(player, *block))
-			std::cout << "colliding left" << std::endl;
-
 		if (BottomCollisionBoxCheck(player, *block))
 		{
 			player.SetIsOnGround(true);
@@ -560,11 +555,13 @@ void Level::ProcessPlayerCollisionWithBlocks()
 		}
 		else if (RightCollisionCheck(player, *block))
 		{
+			std::cout << "colliding right" << std::endl;
 			player.SetPosition(glm::vec3(blockPos.x - playerSize.x / 2.0f - 20.0f, playerPos.y, playerPos.z));
 			player.SetVelocityX(0.0f);
 		}
 		else if (LeftCollisionCheck(player, *block))
 		{
+			std::cout << "colliding left" << std::endl;
 			player.SetPosition(glm::vec3(blockPos.x + blockSize.x - playerSize.x / 2.0f + 20.0f, playerPos.y, playerPos.z));
 			player.SetVelocityX(0.0f);
 		}

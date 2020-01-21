@@ -16,7 +16,7 @@ Spearman::Spearman()
 	maxJumpHeight = 75.0f;
 	heightJumped = 0.0f;
 	health = 50.0f;
-	lineOfSightX = 150.0f;
+	lineOfSightX = 250.0f;
 	enemyType = EnemyType::SPEARMAN;
 	meleeDamage = 20;
 	meleeRange = -15.0f;

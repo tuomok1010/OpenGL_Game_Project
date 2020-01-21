@@ -129,40 +129,64 @@ void Enemy::MoveDown(float deltaTime)
 	position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
 }
 
+// TODO perhaps add a sneak functionality to the player that allows player to sneak up behind enemy without him hearing the player
 GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 {
 	if (isDead)
 		return false;
 
-	GLboolean hasBeenSpotted{ false };
-
-	glm::vec3 playerPos = player.GetPosition();
 	glm::vec2 playerSize = player.GetSize();
+	glm::vec3 playerPos = player.GetPosition();
+	playerPos.x = playerPos.x + (playerSize.x / 2.0f);
 
-	// check if the enemy if facing the player, thus would he be able to spot the player in the first place
-	// && if the player is (about )in the same height on the y axiis as the enemy
-	if (((position.x + (size.x / 2.0f) > playerPos.x + (size.x / 2.0f) && orientation == EnemyOrientation::LEFT) ||
-		(position.x + (size.x / 2.0f) < playerPos.x + (size.x / 2.0f) && orientation == EnemyOrientation::RIGHT)) &&
-		(playerPos.y + playerSize.y > position.y && position.y + size.y > playerPos.y))
+	glm::vec3 enemyPos = position;
+	enemyPos.x = position.x + (size.x / 2.0f);
+
+	// check if the player is (about )in the same height on the y axiis as the enemy. TODO adjust the y axis detection range
+	if (playerPos.y + playerSize.y > position.y && position.y + size.y > playerPos.y)
 	{
 		if (orientation == EnemyOrientation::LEFT)
 		{
-			bool spotted = (playerPos.x + (playerSize.x / 2.0f)) >= (position.x - lineOfSightX);
-			if (spotted)
+			// when the enemy is facing the player, how close the player needs to be before the enemy "sees" him
+			bool spottedFacingPlayer = (playerPos.x >= enemyPos.x - lineOfSightX) && (playerPos.x <= enemyPos.x);
+			// when the enemy is NOT facing the player, how close the player needs to be before the enemy "hears" him
+			bool spottedNotFacingPlayer = (playerPos.x <= enemyPos.x + lineOfSightX / 2.0f) && (playerPos.x >= enemyPos.x);
+
+			if (spottedFacingPlayer)
 			{
-				hasBeenSpotted = true;
+				hasSpottedPlayer = true;
+				std::cout << "spotted facing player LEFT" << std::endl;
 			}
+			else if (spottedNotFacingPlayer)
+			{
+				hasSpottedPlayer = true;
+				std::cout << "spotted not facing player LEFT" << std::endl;
+			}
+			else
+				hasSpottedPlayer = false;
 		}
 		else if (orientation == EnemyOrientation::RIGHT)
 		{
-			bool spotted = (playerPos.x + (playerSize.x / 2.0f)) <= ((position.x + size.x) + lineOfSightX);
-			if (spotted)
+			// when the enemy is facing the player, how close the player needs to be before the enemy "sees" him
+			bool spottedFacingPlayer = (playerPos.x <= enemyPos.x + lineOfSightX) && (playerPos.x >= enemyPos.x);
+			// when the enemy is NOT facing the player, how close the player needs to be before the enemy "hears" him
+			bool spottedNotFacingPlayer = (playerPos.x >= enemyPos.x - lineOfSightX / 2.0f) && (playerPos.x <= enemyPos.x);
+
+			if (spottedFacingPlayer)
 			{
-				hasBeenSpotted = true;
+				hasSpottedPlayer = true;
+				std::cout << "spotted facing player RIGHT" << std::endl;
 			}
+			else if (spottedNotFacingPlayer)
+			{
+				hasSpottedPlayer = true;
+				std::cout << "spotted not facing player RIGHT" << std::endl;
+			}
+			else
+				hasSpottedPlayer = false;
 		}
 	}
-	return hasBeenSpotted;
+	return hasSpottedPlayer;
 }
 
 void Enemy::AddPatrolPoint(glm::vec3 patrolPoint)
