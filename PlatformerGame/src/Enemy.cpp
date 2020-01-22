@@ -256,44 +256,56 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 {
 	glm::vec3 playerPos = player.GetPosition();
 	glm::vec2 playerSize = player.GetSize();
-	
-	std::cout << "move towards player called" << std::endl;
+	GLboolean isInYRange{ false };
+	GLboolean isInXRangeRight{ false };
+	GLboolean isInXRangeLeft{ false };
 
-	if (playerPos.x > position.x)
+	isInYRange = (playerPos.y >= (position.y - playerSize.y / 2.0f + 20.0f)) && (playerPos.y <= (position.y + size.y / 2.0f - 20.0f));
+
+	if (playerPos.x + playerSize.x / 2.0f > position.x + size.x / 2.0f)
 	{
+		isInXRangeRight = (playerPos.x + playerSize.x / 2.0f) - (position.x + size.x) <= meleeRange;
 		orientation = EnemyOrientation::RIGHT;
 		// check if the enemy has reached the proper range in order to attack the player in melee
-		if ((playerPos.x + playerSize.x / 2.0f) - (position.x + size.x) <= meleeRange)
+		if (isInXRangeRight)
 		{
-			std::cout << "enemy has reached melee range" << std::endl;
-			isInRange = true;
 			SetVelocityX(0.0f);
-			return true;
-		}
 
+			if (isInYRange)
+			{
+				std::cout << "enemy has reached melee range" << std::endl;
+				isInRange = true;
+				return true;
+			}
+		}
 	}
-	else if (playerPos.x < position.x)
+	else if (playerPos.x + playerSize.x / 2.0f < position.x + size.x / 2.0f)
 	{
+		isInXRangeLeft = position.x - (playerPos.x + playerSize.x / 2.0f) <= meleeRange;
 		orientation = EnemyOrientation::LEFT;
 		// check if the enemy has reached the proper range in order to attack the player in melee
-		if (position.x - (playerPos.x + playerSize.x / 2.0f) <= meleeRange)
+		if (isInXRangeLeft)
 		{
-			std::cout << "enemy has reached melee range" << std::endl;
-			isInRange = true;
 			SetVelocityX(0.0f);
-			return true;
+
+			if (isInYRange)
+			{
+				std::cout << "enemy has reached melee range" << std::endl;
+				isInRange = true;
+				return true;
+			}
 		}
 	}
 
-	std::cout << "enemy is not in range" << std::endl;
 	isInRange = false;
 
 	if (state == EnemyState::ATTACK)
 		state = EnemyState::IDLE;
 
-	if (orientation == EnemyOrientation::LEFT)
+
+	if (orientation == EnemyOrientation::LEFT && !isInXRangeLeft)
 		SetVelocityX(-1.0f);
-	else if (orientation == EnemyOrientation::RIGHT)
+	else if (orientation == EnemyOrientation::RIGHT && !isInXRangeRight)
 		SetVelocityX(1.0f);
 
 	return false;

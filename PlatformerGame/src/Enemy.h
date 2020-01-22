@@ -117,9 +117,9 @@ protected:
 	glm::vec3 initialPosition{};	// the position the enemy spawns in
 
 	GLfloat lineOfSightX{};
-	GLfloat meleeRange{};
 	GLboolean isInRange{ false };
 	GLboolean hasSpottedPlayer{ false };
+	GLfloat meleeRange{};
 
 	EnemyType enemyType{};
 
