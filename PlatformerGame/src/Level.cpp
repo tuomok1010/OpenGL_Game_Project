@@ -378,7 +378,7 @@ void Level::Draw(Window& window, float deltaTime)
 	}
 }
 
-GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
+GLboolean Level::SimpleCollisionCheck(Player& player, GameObject& obj)
 {
 	if (obj.isCollisionEnabled())
 	{
@@ -403,7 +403,7 @@ GLboolean Level::CollisionCheck(Player& player, GameObject& obj)
 	return false;	
 }
 
-GLboolean Level::CollisionCheck(Player& player, Coin& coin)
+GLboolean Level::SimpleCollisionCheck(Player& player, Coin& coin)
 {
 
 	glm::vec3 playerPos = player.GetPosition();
@@ -425,7 +425,7 @@ GLboolean Level::CollisionCheck(Player& player, Coin& coin)
 	return false;
 }
 
-GLboolean Level::CollisionCheck(GameObject& obj1, GameObject& obj2)
+GLboolean Level::SimpleCollisionCheck(GameObject& obj1, GameObject& obj2)
 {
 	if (obj1.isCollisionEnabled() && obj2.isCollisionEnabled())
 	{
@@ -446,28 +446,58 @@ GLboolean Level::CollisionCheck(GameObject& obj1, GameObject& obj2)
 
 GLboolean Level::BottomCollisionBoxCheck(Player& player, GameObject& obj)
 {
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
+
 	glm::vec3 playerPos = player.GetPosition();
 	glm::vec2 playerSize = player.GetSize();
 	glm::vec2 objPos = obj.GetPosition();
 	glm::vec2 objSize = obj.GetSize();
 
-	// jump box -----------------------
-	glm::vec2 jumpColBoxSize{};
-	jumpColBoxSize.x = 10.0f;
-	jumpColBoxSize.y = 2.0f;
+	CollisionBox bottomColBox;
+	bottomColBox.size.x = 10.0f;
+	bottomColBox.size.y = 2.0f;
+	bottomColBox.position.x = (playerPos.x + playerSize.x / 2.0f) - (bottomColBox.size.x / 2.0f);
+	bottomColBox.position.y = playerPos.y - bottomColBox.size.y / 2.0f;
 
-	glm::vec3 jumpColBoxPos{};
-	jumpColBoxPos.x = (playerPos.x + playerSize.x / 2.0f) - (jumpColBoxSize.x / 2.0f);
-	jumpColBoxPos.y = playerPos.y - 1.0f;
+	bool bottomBoxCollisionX = bottomColBox.position.x + bottomColBox.size.x > objPos.x&& objPos.x + objSize.x > bottomColBox.position.x + bottomColBox.size.x;
+	bool bottomBoxCollisionY = bottomColBox.position.y + bottomColBox.size.y > objPos.y&& objPos.y + objSize.y > bottomColBox.position.y;
 
-	bool jumpBoxCollisionX = jumpColBoxPos.x + jumpColBoxSize.x > objPos.x&& objPos.x + objSize.x > jumpColBoxPos.x + jumpColBoxSize.x;
-	bool jumpBoxCollisionY = jumpColBoxPos.y + jumpColBoxSize.y > objPos.y&& objPos.y + objSize.y > jumpColBoxPos.y;
-
-	if (jumpBoxCollisionX && jumpBoxCollisionY)
+	if (bottomBoxCollisionX && bottomBoxCollisionY)
 		return true;
 	else
 		return false;
-	// --------------------------------
+}
+
+GLboolean Level::TopCollisionBoxCheck(Player& player, GameObject& obj)
+{
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
+
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec2 playerSize = player.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	CollisionBox topColBox;
+	topColBox.size.x = 10.0f;
+	topColBox.size.y = 2.0f;
+	topColBox.position.x = (playerPos.x + playerSize.x / 2.0f) - (topColBox.size.x / 2.0f);
+	topColBox.position.y = playerPos.y + playerSize.y / 2.0f + 15.0f + 1.0f;
+
+	bool topBoxCollisionX = topColBox.position.x + topColBox.size.x > objPos.x&& objPos.x + objSize.x > topColBox.position.x + topColBox.size.x;
+	bool topBoxCollisionY = topColBox.position.y + topColBox.size.y > objPos.y&& objPos.y + objSize.y > topColBox.position.y;
+
+	if (topBoxCollisionX && topBoxCollisionY)
+		return true;
+	else
+		return false;
 }
 
 // creates a small collision box to the left side of the player and checks if it collides with the object
@@ -487,8 +517,8 @@ GLboolean Level::LeftCollisionCheck(Player& player, GameObject& obj)
 	// left collision box
 	CollisionBox leftColBox;
 	leftColBox.size.x = 10.0f;
-	leftColBox.size.y = 30.0f; // setting this value roughly, TODO adjust if needed
-	leftColBox.position.x = playerPos.x + playerSize.x / 2.0f - 10.0 - leftColBox.size.x / 2.0f;
+	leftColBox.size.y = 50.0f; // setting this value roughly, TODO adjust if needed
+	leftColBox.position.x = playerPos.x + playerSize.x / 2.0f - 10.0f - leftColBox.size.x / 2.0f;
 	leftColBox.position.y = playerPos.y + 5.0f;
 	
 	GLboolean collisionX = leftColBox.position.x + leftColBox.size.x > objPos.x&& objPos.x + objSize.x > leftColBox.position.x;
@@ -517,7 +547,7 @@ GLboolean Level::RightCollisionCheck(Player& player, GameObject& obj)
 	// right collision box
 	CollisionBox rightColBox;
 	rightColBox.size.x = 10.0f;
-	rightColBox.size.y = 30.0f; // setting this value roughly, TODO adjust if needed
+	rightColBox.size.y = 50.0f; // setting this value roughly, TODO adjust if needed
 	rightColBox.position.x = playerPos.x + playerSize.x / 2.0f + 10.0f - rightColBox.size.x / 2.0f;
 	rightColBox.position.y = playerPos.y + 5.0f;
 
@@ -530,65 +560,219 @@ GLboolean Level::RightCollisionCheck(Player& player, GameObject& obj)
 		return false;
 }
 
-void Level::ProcessPlayerCollisionWithBlocks()
+GLboolean Level::BottomCollisionBoxCheck(Enemy& enemy, GameObject& obj)
 {
-	glm::vec3 playerPos = player.GetPosition();
-	glm::vec3 playerPrevPos = player.GetPreviousPosition();
-	glm::vec2 playerSize = player.GetSize();
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
 
+	glm::vec3 enemyPos = enemy.GetPosition();
+	glm::vec2 enemySize = enemy.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	CollisionBox bottomColBox;
+	bottomColBox.size.x = 5.0f;
+	bottomColBox.size.y = 2.0f;
+	bottomColBox.position.x = (enemyPos.x + enemySize.x / 2.0f) - (bottomColBox.size.x / 2.0f);
+	bottomColBox.position.y = enemyPos.y - bottomColBox.size.y / 2.0f;
+
+	bool bottomBoxCollisionX = bottomColBox.position.x + bottomColBox.size.x > objPos.x&& objPos.x + objSize.x > bottomColBox.position.x + bottomColBox.size.x;
+	bool bottomBoxCollisionY = bottomColBox.position.y + bottomColBox.size.y > objPos.y&& objPos.y + objSize.y > bottomColBox.position.y;
+
+	if (bottomBoxCollisionX && bottomBoxCollisionY)
+		return true;
+	else
+		return false;
+}
+
+GLboolean Level::TopCollisionBoxCheck(Enemy& enemy, GameObject& obj)
+{
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
+
+	glm::vec3 enemyPos = enemy.GetPosition();
+	glm::vec2 enemySize = enemy.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	CollisionBox topColBox;
+	topColBox.size.x = 10.0f;
+	topColBox.size.y = 2.0f;
+	topColBox.position.x = (enemyPos.x + enemySize.x / 2.0f) - (topColBox.size.x / 2.0f);
+	topColBox.position.y = enemyPos.y + enemySize.y;	// TODO adjust
+
+	bool topBoxCollisionX = topColBox.position.x + topColBox.size.x > objPos.x&& objPos.x + objSize.x > topColBox.position.x + topColBox.size.x;
+	bool topBoxCollisionY = topColBox.position.y + topColBox.size.y > objPos.y&& objPos.y + objSize.y > topColBox.position.y;
+
+	if (topBoxCollisionX && topBoxCollisionY)
+		return true;
+	else
+		return false;
+}
+
+GLboolean Level::LeftCollisionCheck(Enemy& enemy, GameObject& obj)
+{
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
+
+	glm::vec3 enemyPos = enemy.GetPosition();
+	glm::vec2 enemySize = enemy.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	// left collision box
+	CollisionBox leftColBox;
+	leftColBox.size.x = 10.0f;
+	leftColBox.size.y = 50.0f; // setting this value roughly, TODO adjust if needed
+	leftColBox.position.x = enemyPos.x + enemySize.x / 2.0f - leftColBox.size.x * 2.0f / 2.0f;
+	leftColBox.position.y = enemyPos.y + 5.0f;
+
+	GLboolean collisionX = leftColBox.position.x + leftColBox.size.x > objPos.x&& objPos.x + objSize.x > leftColBox.position.x;
+	GLboolean collisionY = leftColBox.position.y + leftColBox.size.y > objPos.y&& objPos.y + objSize.y > leftColBox.position.y;
+
+	if (collisionX && collisionY)
+		return true;
+	else
+		return false;
+}
+
+GLboolean Level::RightCollisionCheck(Enemy& enemy, GameObject& obj)
+{
+	struct CollisionBox
+	{
+		glm::vec2 position{};
+		glm::vec2 size{};
+	};
+
+	glm::vec3 enemyPos = enemy.GetPosition();
+	glm::vec2 enemySize = enemy.GetSize();
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	// right collision box
+	CollisionBox rightColBox;
+	rightColBox.size.x = 10.0f;
+	rightColBox.size.y = 50.0f; // setting this value roughly, TODO adjust if needed
+	rightColBox.position.x = enemyPos.x + enemySize.x / 2.0f + rightColBox.size.x / 2.0f;
+	rightColBox.position.y = enemyPos.y + 5.0f;
+
+	GLboolean collisionX = rightColBox.position.x + rightColBox.size.x > objPos.x&& objPos.x + objSize.x > rightColBox.position.x;
+	GLboolean collisionY = rightColBox.position.y + rightColBox.size.y > objPos.y&& objPos.y + objSize.y > rightColBox.position.y;
+
+	if (collisionX && collisionY)
+		return true;
+	else
+		return false;
+}
+
+void Level::ProcessCollisions()
+{
 	player.SetIsOnGround(false);
 
 	for (auto& block : blocks)
 	{
-		glm::vec2 blockPos = block->GetPosition();
-		glm::vec2 blockSize = block->GetSize();
+		ProcessPlayerCollisions(*block);
 
-		// ignore blocks that are far from the player
-		if (abs(blockPos.x - playerPos.x) >= 200.0f || abs(blockPos.y - playerPos.y) >= 200.0f)
-			continue;
+		for(auto& enemy : enemies)
+			ProcessEnemyCollisions(*enemy, *block);
+	}
+}
 
-		if (BottomCollisionBoxCheck(player, *block))
-		{
-			player.SetIsOnGround(true);
-			player.SetPosition(glm::vec3(playerPos.x, blockPos.y + blockSize.y, playerPos.z));
-			player.SetVelocityY(0.0f);
-		}
-		else if (RightCollisionCheck(player, *block))
-		{
-			std::cout << "colliding right" << std::endl;
-			player.SetPosition(glm::vec3(blockPos.x - playerSize.x / 2.0f - 20.0f, playerPos.y, playerPos.z));
-			player.SetVelocityX(0.0f);
-		}
-		else if (LeftCollisionCheck(player, *block))
-		{
-			std::cout << "colliding left" << std::endl;
-			player.SetPosition(glm::vec3(blockPos.x + blockSize.x - playerSize.x / 2.0f + 20.0f, playerPos.y, playerPos.z));
-			player.SetVelocityX(0.0f);
-		}
-		// if all else fails, do the regular collision checks...this may not be necessary if we add a TopCollisionCheck function as well
-		else if (CollisionCheck(player, *block))
-		{
-			if (playerPos.y < playerPrevPos.y)
-			{
-				player.SetPosition(glm::vec3(playerPos.x, blockPos.y + blockSize.y, playerPos.z));
-			}			
-			else if (playerPos.y > playerPrevPos.y)
-			{
-				player.SetPosition(glm::vec3(playerPos.x, blockPos.y - playerSize.y / 2.0f - 15.0f, playerPos.z));
-			}
+void Level::ProcessPlayerCollisions(GameObject& obj)
+{
+	glm::vec3 playerPos = player.GetPosition();
+	glm::vec3 playerPrevPos = player.GetPreviousPosition();
+	glm::vec2 playerSize = player.GetSize();
+	glm::vec2 playerVelocity = player.GetVelocity();
 
-			if (CollisionCheck(player, *block))
-			{
-				if (playerPos.x < playerPrevPos.x)
-				{
-					player.SetPosition(glm::vec3(blockPos.x + blockSize.x - playerSize.x / 2.0f + 5.0f, playerPos.y, playerPos.z));
-				}
-				else if (playerPos.x > playerPrevPos.x)
-				{
-					player.SetPosition(glm::vec3(blockPos.x - playerSize.x / 2.0f - 5.0f, playerPos.y, playerPos.z));
-				}
-			}
-		}
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	// ignore objs that are far from the player
+	if (abs(objPos.x - playerPos.x) >= 500.0f || abs(objPos.y - playerPos.y) >= 500.0f)
+		return;
+
+	if (BottomCollisionBoxCheck(player, obj))
+	{
+		player.SetIsOnGround(true);
+		player.SetPosition(glm::vec3(playerPos.x, objPos.y + objSize.y, playerPos.z));
+		player.SetVelocityY(0.0f);
+	}
+	else if (TopCollisionBoxCheck(player, obj))
+	{
+		std::cout << "colliding top" << std::endl;
+		player.SetPosition(glm::vec3(playerPos.x, objPos.y - (playerSize.y / 2.0f + 15.0f + 1.0f), playerPos.z));
+		if (!player.GetIsOnGround())
+			player.SetVelocityY(playerVelocity.y - 2 * playerVelocity.y);
+	}
+	else if (RightCollisionCheck(player, obj))
+	{
+		std::cout << "colliding right" << std::endl;
+		player.SetPosition(glm::vec3(objPos.x - playerSize.x / 2.0f - 20.0f, playerPos.y, playerPos.z));
+		player.SetVelocityX(0.0f);
+	}
+	else if (LeftCollisionCheck(player, obj))
+	{
+		std::cout << "colliding left" << std::endl;
+		player.SetPosition(glm::vec3(objPos.x + objSize.x - playerSize.x / 2.0f + 20.0f, playerPos.y, playerPos.z));
+		player.SetVelocityX(0.0f);
+	}
+}
+
+void Level::ProcessEnemyCollisions(Enemy& enemy, GameObject& obj)
+{
+	if (enemy.GetIsDead())
+		return;
+
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	glm::vec3 enemyPos = enemy.GetPosition();
+	glm::vec3 enemyPrevPos = enemy.GetPreviousPosition();
+	glm::vec2 enemySize = enemy.GetSize();
+	glm::vec2 enemyVelocity = enemy.GetVelocity();
+
+	// ignore objs that are far from the enemy
+	if (abs(objPos.x - enemyPos.x) >= 500.0f || abs(objPos.y - enemyPos.y) >= 500.0f)
+		return;
+
+	if (BottomCollisionBoxCheck(enemy, obj))
+	{
+		enemy.SetIsOnGround(true);
+		enemy.SetPosition(glm::vec3(enemyPos.x, objPos.y + objSize.y, enemyPos.z));
+		enemy.SetVelocityY(0.0f);
+	}
+	else if (TopCollisionBoxCheck(enemy, obj))
+	{
+		std::cout << "enemy colliding top" << std::endl;
+		enemy.SetPosition(glm::vec3(enemyPos.x, objPos.y - (enemySize.y + 1.0f), enemyPos.z));
+		if (!enemy.GetIsOnGround())
+			enemy.SetVelocityY(enemyVelocity.y - 2 * enemyVelocity.y);
+	}
+	else if (RightCollisionCheck(enemy, obj))
+	{
+		std::cout << "enemy colliding right" << std::endl;
+		enemy.SetPosition(glm::vec3(objPos.x - enemySize.x / 2.0f - 10.0f, enemyPos.y, enemyPos.z));
+
+		if (enemy.GetOrientation() == EnemyOrientation::RIGHT)
+			enemy.SetVelocityX(0.0f);
+	}
+	else if (LeftCollisionCheck(enemy, obj))
+	{
+		std::cout << "enemy colliding left" << std::endl;
+		enemy.SetPosition(glm::vec3(objPos.x + objSize.x - enemySize.x / 2.0f + 9.0f, enemyPos.y, enemyPos.z));
+
+		if (enemy.GetOrientation() == EnemyOrientation::LEFT)
+			enemy.SetVelocityX(0.0f);
 	}
 }
 
@@ -600,7 +784,7 @@ void Level::UpdateAssets(float deltaTime)
 		{
 			case Type::SPIKETRAP:
 			{
-				if (CollisionCheck(player, *obj))
+				if (SimpleCollisionCheck(player, *obj))
 				{
 					dynamic_cast<SpikeTrap*>(obj)->DamagePlayer(player);
 
@@ -616,7 +800,7 @@ void Level::UpdateAssets(float deltaTime)
 			}
 			case Type::SIGNSTART:
 			{
-				if (CollisionCheck(player, *obj))
+				if (SimpleCollisionCheck(player, *obj))
 				{
 					levelComplete = true;
 				}
@@ -624,7 +808,7 @@ void Level::UpdateAssets(float deltaTime)
 			}
 			case Type::SIGNQUIT:
 			{
-				if (CollisionCheck(player, *obj))
+				if (SimpleCollisionCheck(player, *obj))
 				{
 					quitGame = true;
 				}
@@ -632,7 +816,7 @@ void Level::UpdateAssets(float deltaTime)
 			}
 			case Type::CHEST:
 			{
-				if (CollisionCheck(player, *obj))
+				if (SimpleCollisionCheck(player, *obj))
 				{
 					levelComplete = true;
 				}
@@ -643,7 +827,7 @@ void Level::UpdateAssets(float deltaTime)
 
 	for (auto& coin : coins)
 	{
-		if (CollisionCheck(player, *coin))
+		if (SimpleCollisionCheck(player, *coin))
 		{
 			if (!coin->GetIsCollected())
 			{
@@ -690,6 +874,8 @@ void Level::RunEnemyBehaviour(float deltaTime)
 				{
 					Spearman* spearman = dynamic_cast<Spearman*>(enemy);
 
+					spearman->Update(deltaTime);
+
 					if (!spearman->CheckIfHasSeenPlayer(player))
 						spearman->MoveTowardsNextPatrolPoint(deltaTime);
 					else
@@ -710,7 +896,7 @@ void Level::RunEnemyBehaviour(float deltaTime)
 										player.SetHealth(100.0f);
 								}
 							}
-							if (player.GetLives() == 0 && player.GetHealth() <= 0.0f)
+							if (player.GetLives() == 0 && player.GetHealth() <= 0)
 								player.SetIsDead(true);
 						}
 					}

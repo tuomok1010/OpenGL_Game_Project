@@ -9,11 +9,10 @@ Player::Player()
 	position(glm::vec3(0.0f)),
 	size(glm::vec2(160.0f, 100.0f)),
 	rotation(0.0f),
-	velocityX(0.0f),
-	velocityY(0.0f),
+	velocity(0.0f),
 	speed(200.0f),
 	gravity(5.0f),
-	health(100),
+	health(10000),
 	damage(50.0f),
 	lives(3)
 {
@@ -129,9 +128,9 @@ void Player::Update(float deltaTime)
 	// Update movement
 	previousPosition = position;
 
-	position.x += velocityX * speed * deltaTime;
-	position.y += velocityY * speed * deltaTime;
-	velocityY -= gravity * deltaTime;
+	position.x += velocity.x * speed * deltaTime;
+	position.y += velocity.y * speed * deltaTime;
+	velocity.y -= gravity * deltaTime;
 
 	camera.SetPosition(position + cameraOffset);
 	//////////////////////////////
@@ -142,6 +141,11 @@ void Player::Update(float deltaTime)
 		isAttacking = false;
 		ResetAnimation(PlayerState::ATTACK);
 	}
+	/////////////////////////////
+
+	// Reset Jump animation if necessary
+	if (state != PlayerState::JUMP && isOnGround)
+		ResetAnimation(PlayerState::JUMP);
 	/////////////////////////////
 }
 

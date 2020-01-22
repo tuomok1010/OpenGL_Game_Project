@@ -13,8 +13,6 @@ Spearman::Spearman()
 	size = glm::vec2(250.0f, 100.0f);
 	rotation = 0.0f;
 	speed = 100.0f;
-	maxJumpHeight = 75.0f;
-	heightJumped = 0.0f;
 	health = 50.0f;
 	lineOfSightX = 250.0f;
 	enemyType = EnemyType::SPEARMAN;

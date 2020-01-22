@@ -36,10 +36,8 @@ public:
 
 	virtual void Draw(SpriteRenderer& renderer);
 	virtual void DrawPuffEffect(SpriteRenderer& renderer);
-	void Move(float deltaTime);
 
-	// this acts as the gravity in the game.cpp. Gets activated if gravity is enabled in the level
-	void MoveDown(float deltaTime);
+	void Update(GLfloat deltaTime);
 
 	GLboolean CheckIfHasSeenPlayer(const Player& player);
 
@@ -57,6 +55,9 @@ public:
 	void SetHasCollided(GLboolean newHasCollided) { hasCollided = newHasCollided; }
 	void SetHealth(GLfloat newHealth) { health = newHealth; }
 	void SetIsDead(GLboolean newIsDead) { isDead = newIsDead; }
+	void SetVelocityX(GLfloat val) { velocity.x = val; }
+	void SetVelocityY(GLfloat val) { velocity.y = val; }
+	void SetIsOnGround(GLboolean newVal) { isOnGround = newVal; }
 
 	void ResetAnimation(EnemyState animationToReset);
 
@@ -71,6 +72,8 @@ public:
 	GLfloat GetLineOfSightX()const { return lineOfSightX; }
 	EnemyType GetEnemyType()const { return enemyType; }
 	GLboolean GetShouldDespawn()const { return readyToDespawn; }
+	glm::vec2 GetVelocity()const { return velocity; }
+	GLboolean GetIsOnGround()const { return isOnGround; }
 
 protected:
 	std::vector<Texture2D*> texturesIdle{};
@@ -97,10 +100,10 @@ protected:
 	glm::vec2 size{};
 	glm::vec3 color{};
 	GLfloat rotation{};
+	glm::vec2 velocity{};
 	GLfloat speed{};
-
-	GLfloat maxJumpHeight{};
-	GLfloat heightJumped{};
+	GLfloat gravity{};
+	GLboolean isOnGround{ true };
 
 	GLfloat health{};
 	GLboolean isDead{ false };
@@ -111,6 +114,7 @@ protected:
 	std::vector<glm::vec3> patrolPoints{};
 	GLuint previousPatrolPointIndex{};
 	GLuint nextPatrolPointIndex{};
+	glm::vec3 initialPosition{};	// the position the enemy spawns in
 
 	GLfloat lineOfSightX{};
 	GLfloat meleeRange{};

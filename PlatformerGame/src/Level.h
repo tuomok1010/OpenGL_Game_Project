@@ -27,7 +27,10 @@ public:
 	void RunEnemyBehaviour(float deltaTime);
 	void SetAnimationToAllAliveEnemies(EnemyState newState);
 
-	void ProcessPlayerCollisionWithBlocks();
+	void ProcessCollisions();
+
+	void ProcessPlayerCollisions(GameObject& obj);
+	void ProcessEnemyCollisions(Enemy& enemy, GameObject& obj);
 
 	GLboolean levelComplete{ false };
 	GLboolean quitGame{ false };
@@ -35,18 +38,27 @@ public:
 	GLuint levelNumber{};
 
 private:
-	GLboolean CollisionCheck(Player& player, GameObject& obj);
-	GLboolean CollisionCheck(Player& player, Coin& coin);
-	GLboolean CollisionCheck(GameObject& obj1, GameObject& obj2);
+	// this is a lot of functions for just collisions....
+	// TODO consider finding a more simple way to do it. having the enemy and player inherit from the same parent class might be an option
 
-	// checks only if the bottom side of player collides with the object
+	// these function create one large collision box around the player/obj and checks if it overlaps with the other object
+	GLboolean SimpleCollisionCheck(Player& player, GameObject& obj);
+	GLboolean SimpleCollisionCheck(Player& player, Coin& coin);
+	GLboolean SimpleCollisionCheck(GameObject& obj1, GameObject& obj2);
+
+	// these functions create a small collision box on one side of the player/enemy and checks if it collides with the object.
+	// TODO perhaps alternatively we could have only 1 large function which returns an int based on which side collides.
+	// TODO consider moving the collision box data to the player/enemy classes themselves. Might be more practical when creating different types of enemies with
+	// different sized collision boxes. Should reduce the amount of code repetition as well.
 	GLboolean BottomCollisionBoxCheck(Player& player, GameObject& obj);
-
-	// checks only if the left side of player collides with the object
+	GLboolean TopCollisionBoxCheck(Player& player, GameObject& obj);
 	GLboolean LeftCollisionCheck(Player& player, GameObject& obj);
-
-	// checks only if the right side of player collides with the object
 	GLboolean RightCollisionCheck(Player& player, GameObject& obj);
+
+	GLboolean BottomCollisionBoxCheck(Enemy& enemy, GameObject& obj);
+	GLboolean TopCollisionBoxCheck(Enemy& enemy, GameObject& obj);
+	GLboolean LeftCollisionCheck(Enemy& enemy, GameObject& obj);
+	GLboolean RightCollisionCheck(Enemy& enemy, GameObject& obj);
 
 private:
 	std::vector<std::vector<GLchar>> levelData;

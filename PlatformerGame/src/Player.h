@@ -50,8 +50,8 @@ public:
 	void SetIsDead(GLboolean isDead);
 	void SetIsInMeleeRange(GLboolean newVal) { isInMeleeRange = newVal; }
 	void SetShouldBleed(GLboolean newVal) { shouldBleed = newVal; }
-	void SetVelocityX(GLfloat val) { velocityX = val; }
-	void SetVelocityY(GLfloat val) { velocityY = val; }
+	void SetVelocityX(GLfloat val) { velocity.x = val; }
+	void SetVelocityY(GLfloat val) { velocity.y = val; }
 	void SetIsOnGround(GLboolean newVal) { isOnGround = newVal; }
 	void SetIsAttacking(GLboolean newVal) { isAttacking = newVal; }
 	void SetColor(glm::vec3 newColor) { color = newColor; }
@@ -77,6 +77,7 @@ public:
 	GLboolean GetIsAttacking()const { return isAttacking; }
 	GLuint GetScore()const { return score; }
 	GLuint GetLives()const { return lives; }
+	glm::vec2 GetVelocity()const { return velocity; }
 
 
 private:
@@ -105,8 +106,7 @@ private:
 	glm::vec2 size{};
 	glm::vec3 color{};
 	GLfloat rotation{};
-	GLfloat velocityX{};
-	GLfloat velocityY{};
+	glm::vec2 velocity{};
 	GLfloat speed{};
 	GLfloat gravity{};
 	GLboolean isOnGround{ true };

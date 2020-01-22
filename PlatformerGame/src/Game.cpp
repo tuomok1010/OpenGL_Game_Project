@@ -179,7 +179,7 @@ void Game::Update(Level& level)
 
 	player.Update(deltaTime);
 
-	level.ProcessPlayerCollisionWithBlocks();
+	level.ProcessCollisions();
 
 	if (level.levelComplete)
 	{
@@ -223,7 +223,7 @@ void Game::Draw(Level& level)
 		shaders[SHADER_TEXT]->SetUniformMat4("view", &view);
 
 		level.Draw(mainWindow, deltaTime);
-		level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
+		//level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
 
 		ui->Draw();
 	}

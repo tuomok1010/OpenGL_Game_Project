@@ -3,6 +3,13 @@
 #include <iostream>
 
 Enemy::Enemy()
+	:
+	color(glm::vec3(1.0f)),
+	position(glm::vec3(0.0f)),
+	rotation(0.0f),
+	velocity(glm::vec2(0.0f)),
+	speed(200.0f),
+	gravity(5.0f)
 {
 }
 
@@ -104,29 +111,27 @@ void Enemy::DrawPuffEffect(SpriteRenderer& renderer)
 		puffEffect.Draw(renderer);
 }
 
-void Enemy::Move(float deltaTime)
+void Enemy::Update(GLfloat deltaTime)
 {
-	GLfloat velocity = speed * deltaTime;
-	state = EnemyState::RUN;
-
-	switch (orientation)
-	{
-	case EnemyOrientation::RIGHT:
-		previousPosition = position;
-		position += glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
-		break;
-	case EnemyOrientation::LEFT:
-		previousPosition = position;
-		position -= glm::vec3(1.0f, 0.0f, 0.0f) * velocity;
-		break;
-	}
-}
-
-void Enemy::MoveDown(float deltaTime)
-{
-	GLfloat velocity = speed * deltaTime;
+	// Update movement
 	previousPosition = position;
-	position -= glm::vec3(0.0f, 1.0f, 0.0f) * velocity;
+
+	if (abs(velocity.x) >= 1.0f && isOnGround)
+	{
+		state = EnemyState::RUN;
+	}
+	else if (!isOnGround)
+	{
+		state = EnemyState::JUMP;
+	}
+	else if (state != EnemyState::ATTACK)
+	{
+		state = EnemyState::IDLE;
+	}
+
+	position.x += velocity.x * speed * deltaTime;
+	position.y += velocity.y * speed * deltaTime;
+	velocity.y -= gravity * deltaTime;
 }
 
 // TODO perhaps add a sneak functionality to the player that allows player to sneak up behind enemy without him hearing the player
@@ -155,15 +160,16 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 			if (spottedFacingPlayer)
 			{
 				hasSpottedPlayer = true;
-				std::cout << "spotted facing player LEFT" << std::endl;
 			}
 			else if (spottedNotFacingPlayer)
 			{
 				hasSpottedPlayer = true;
-				std::cout << "spotted not facing player LEFT" << std::endl;
 			}
 			else
+			{
 				hasSpottedPlayer = false;
+				SetVelocityX(0.0f);
+			}
 		}
 		else if (orientation == EnemyOrientation::RIGHT)
 		{
@@ -175,15 +181,16 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 			if (spottedFacingPlayer)
 			{
 				hasSpottedPlayer = true;
-				std::cout << "spotted facing player RIGHT" << std::endl;
 			}
 			else if (spottedNotFacingPlayer)
 			{
 				hasSpottedPlayer = true;
-				std::cout << "spotted not facing player RIGHT" << std::endl;
 			}
 			else
+			{
 				hasSpottedPlayer = false;
+				SetVelocityX(0.0f);
+			}
 		}
 	}
 	return hasSpottedPlayer;
@@ -214,6 +221,7 @@ void Enemy::MoveTowardsNextPatrolPoint(float deltaTime)
 				std::cout << "Enemy has reached a patrol point" << std::endl;
 				previousPatrolPointIndex = nextPatrolPointIndex;
 				++nextPatrolPointIndex;
+				SetVelocityX(0.0f);
 				return;
 			}
 		}
@@ -225,10 +233,14 @@ void Enemy::MoveTowardsNextPatrolPoint(float deltaTime)
 				std::cout << "Enemy has reached a patrol point" << std::endl;
 				previousPatrolPointIndex = nextPatrolPointIndex;
 				++nextPatrolPointIndex;
+				SetVelocityX(0.0f);
 				return;
 			}
 		}
-		Move(deltaTime);
+		if (orientation == EnemyOrientation::LEFT)
+			SetVelocityX(-1.0f);
+		else if (orientation == EnemyOrientation::RIGHT)
+			SetVelocityX(1.0f);
 	}
 }
 
@@ -244,6 +256,8 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 {
 	glm::vec3 playerPos = player.GetPosition();
 	glm::vec2 playerSize = player.GetSize();
+	
+	std::cout << "move towards player called" << std::endl;
 
 	if (playerPos.x > position.x)
 	{
@@ -251,7 +265,9 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 		// check if the enemy has reached the proper range in order to attack the player in melee
 		if ((playerPos.x + playerSize.x / 2.0f) - (position.x + size.x) <= meleeRange)
 		{
+			std::cout << "enemy has reached melee range" << std::endl;
 			isInRange = true;
+			SetVelocityX(0.0f);
 			return true;
 		}
 
@@ -262,13 +278,24 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 		// check if the enemy has reached the proper range in order to attack the player in melee
 		if (position.x - (playerPos.x + playerSize.x / 2.0f) <= meleeRange)
 		{
+			std::cout << "enemy has reached melee range" << std::endl;
 			isInRange = true;
+			SetVelocityX(0.0f);
 			return true;
 		}
 	}
 
+	std::cout << "enemy is not in range" << std::endl;
 	isInRange = false;
-	Move(deltaTime);
+
+	if (state == EnemyState::ATTACK)
+		state = EnemyState::IDLE;
+
+	if (orientation == EnemyOrientation::LEFT)
+		SetVelocityX(-1.0f);
+	else if (orientation == EnemyOrientation::RIGHT)
+		SetVelocityX(1.0f);
+
 	return false;
 }
 
