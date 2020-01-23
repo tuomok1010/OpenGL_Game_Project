@@ -5,9 +5,12 @@
 #include <glm/glm.hpp>
 
 #include "SpriteRenderer.h"
+#include "PrimitiveRenderer.h"
+#include "CollisionBox.h"
 #include "Camera.h"
 #include "BloodEffect.h"
 #include "PuffEffect.h"
+#include "GameObject.h"
 
 enum class PlayerState
 {
@@ -31,7 +34,7 @@ public:
 	Player();
 	~Player();
 
-	void Draw(SpriteRenderer& renderer);
+	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false);
 	void Update(float deltaTime);
 
 	GLboolean IsMeleeAttackFinished();
@@ -39,8 +42,10 @@ public:
 	void DrawBloodEffect(SpriteRenderer& renderer);
 	void ResetBloodAnimation();
 	void DrawPuffEffect(SpriteRenderer& renderer);
-	
 	void IncrementScore(GLint amountToAdd) { score += amountToAdd; }
+
+	// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = top, 3 = right, 4 = left
+	GLint AdvancedCollisionCheck(GameObject& obj);
 
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
@@ -78,8 +83,10 @@ public:
 	GLuint GetScore()const { return score; }
 	GLuint GetLives()const { return lives; }
 	glm::vec2 GetVelocity()const { return velocity; }
-
-
+	CollisionBox GetCollisionBoxBottom()const { return collisionBottom; }
+	CollisionBox GetCollisionBoxTop()const { return collisionTop; }
+	CollisionBox GetCollisionBoxRight()const { return collisionRight; }
+	CollisionBox GetCollisionBoxLeft()const { return collisionLeft; }
 private:
 	std::vector<Texture2D*> texturesIdle{};
 	std::vector<Texture2D*> texturesRun{};
@@ -132,4 +139,11 @@ private:
 
 	GLuint score{};
 	GLuint lives{};
+
+	CollisionBox collisionBottom;
+	CollisionBox collisionTop;
+	CollisionBox collisionLeft;
+	CollisionBox collisionRight;
+	glm::vec2 collisionBoxOffset{};
+	GLint collisionBoxColorChangeTimer{};
 };

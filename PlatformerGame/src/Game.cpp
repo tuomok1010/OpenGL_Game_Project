@@ -3,8 +3,9 @@
 #include <iostream>
 
 // shader indices
-#define SHADER_SPRITE	0
-#define SHADER_TEXT		1
+#define SHADER_SPRITE		0
+#define SHADER_TEXT			1
+#define SHADER_PRIMITIVE	2
 
 Game::Game(int scrnWidth, int scrnHeight)
 	: 
@@ -18,9 +19,11 @@ Game::Game(int scrnWidth, int scrnHeight)
 	// init shaders list
 	shaders.emplace_back(new Shader("shaders/simple_sprite.vert", "shaders/simple_sprite.frag"));
 	shaders.emplace_back(new Shader("shaders/text.vert", "shaders/text.frag"));
+	shaders.emplace_back(new Shader("shaders/simple_primitive.vert", "shaders/simple_primitive.frag"));
 
 	renderer = new SpriteRenderer(*shaders[SHADER_SPRITE]);
 	textRenderer = new TextRenderer(*shaders[SHADER_TEXT]);
+	primitiveRenderer = new PrimitiveRenderer(*shaders[SHADER_PRIMITIVE]);
 
 	textRenderer->Load("../fonts/arial.ttf", 24);
 
@@ -34,6 +37,7 @@ Game::~Game()
 
 	delete renderer;
 	delete textRenderer;
+	delete primitiveRenderer;
 	delete ui;
 }
 
@@ -50,7 +54,7 @@ void Game::Run()
 			if (level != nullptr)
 				delete level;
 			
-			level = new Level(*renderer, player);
+			level = new Level(*renderer, *primitiveRenderer, player);
 
 			std::cout << "Level number: " << level->levelNumber << std::endl;
 
@@ -201,6 +205,9 @@ void Game::Draw(Level& level)
 	shaders[SHADER_TEXT]->Bind();
 	shaders[SHADER_TEXT]->SetUniformMat4("projection", &projection);
 
+	shaders[SHADER_PRIMITIVE]->Bind();
+	shaders[SHADER_PRIMITIVE]->SetUniformMat4("projection", &projection);
+
 	if (gameState == GameState::MENU)
 	{
 		shaders[SHADER_SPRITE]->Bind();
@@ -214,16 +221,18 @@ void Game::Draw(Level& level)
 	}
 	else if(gameState == GameState::RUN)
 	{
-		shaders[SHADER_SPRITE]->Bind();
 		glm::mat4 view = glm::mat4(1.0f);
 		view = player.GetCameraViewMatrix();
+		shaders[SHADER_SPRITE]->Bind();
 		shaders[SHADER_SPRITE]->SetUniformMat4("view", &view);
 
 		shaders[SHADER_TEXT]->Bind();
 		shaders[SHADER_TEXT]->SetUniformMat4("view", &view);
 
+		shaders[SHADER_PRIMITIVE]->Bind();
+		shaders[SHADER_PRIMITIVE]->SetUniformMat4("view", &view);
+
 		level.Draw(mainWindow, deltaTime);
-		//level.SetAnimationToAllAliveEnemies(EnemyState::IDLE);
 
 		ui->Draw();
 	}

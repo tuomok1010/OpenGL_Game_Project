@@ -16,7 +16,7 @@
 class Level
 {
 public:
-	Level(SpriteRenderer& renderer, Player& player);
+	Level(SpriteRenderer& renderer, PrimitiveRenderer& primitiveRenderer, Player& player);
 	~Level();
 
 	void Load(const std::string& filePath, const std::string& backGroundPath = "");
@@ -48,13 +48,8 @@ private:
 
 	// these functions create a small collision box on one side of the player/enemy and checks if it collides with the object.
 	// TODO perhaps alternatively we could have only 1 large function which returns an int based on which side collides.
-	// TODO consider moving the collision box data to the player/enemy classes themselves. Might be more practical when creating different types of enemies with
+	// TODO consider moving the collision box data to the player(done) and enemy classes themselves. Might be more practical when creating different types of enemies with
 	// different sized collision boxes. Should reduce the amount of code repetition as well.
-	GLboolean BottomCollisionBoxCheck(Player& player, GameObject& obj);
-	GLboolean TopCollisionBoxCheck(Player& player, GameObject& obj);
-	GLboolean LeftCollisionCheck(Player& player, GameObject& obj);
-	GLboolean RightCollisionCheck(Player& player, GameObject& obj);
-
 	GLboolean BottomCollisionBoxCheck(Enemy& enemy, GameObject& obj);
 	GLboolean TopCollisionBoxCheck(Enemy& enemy, GameObject& obj);
 	GLboolean LeftCollisionCheck(Enemy& enemy, GameObject& obj);
@@ -85,5 +80,6 @@ private:
 	std::vector<Cloud*> clouds{};
 
 	SpriteRenderer& renderer;
+	PrimitiveRenderer& primitiveRenderer;
 	Player& player;
 };

@@ -145,6 +145,7 @@
     <ClCompile Include="src\BloodEffect.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Coin.cpp" />
+    <ClCompile Include="src\CollisionBox.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\FireSparkleEffect.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\PrimitiveRenderer.cpp" />
     <ClCompile Include="src\PuffEffect.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -172,6 +174,7 @@
     <ClInclude Include="src\BloodEffect.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Coin.h" />
+    <ClInclude Include="src\CollisionBox.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\FireSparkleEffect.h" />
     <ClInclude Include="src\IndexBuffer.h" />
@@ -179,6 +182,7 @@
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\PrimitiveRenderer.h" />
     <ClInclude Include="src\PuffEffect.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Game.h" />
@@ -194,6 +198,8 @@
     <ClInclude Include="src\Texture2D.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\simple_primitive.frag" />
+    <None Include="shaders\simple_primitive.vert" />
     <None Include="shaders\simple_sprite.frag" />
     <None Include="shaders\simple_sprite.vert" />
     <None Include="shaders\text.frag" />

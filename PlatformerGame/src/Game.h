@@ -14,6 +14,7 @@
 #include "Camera.h"
 #include "Player.h"
 #include "UI.h"
+#include "PrimitiveRenderer.h"
 
 #define JUMP_COOLDOWN 1
 
@@ -49,6 +50,7 @@ private:
 	glm::mat4 projection{};
 	SpriteRenderer* renderer{};
 	TextRenderer* textRenderer{};
+	PrimitiveRenderer* primitiveRenderer{};
 
 	std::vector<Shader*> shaders{};
 	Level* level{};
