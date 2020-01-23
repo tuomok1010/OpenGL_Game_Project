@@ -9,7 +9,7 @@ public:
 	Spearman();
 	~Spearman();
 
-	void Draw(SpriteRenderer& renderer) override;
+	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false) override;
 
 	GLboolean MeleeAttack();
 	GLboolean DamagePlayer(Player& player);

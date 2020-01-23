@@ -14,8 +14,7 @@ Player::Player()
 	gravity(5.0f),
 	health(10000),
 	damage(50.0f),
-	lives(3),
-	collisionBoxColorChangeTimer(5)
+	lives(3)
 {
 	for (unsigned int i = 0; i < 12; ++i)
 		texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -36,10 +35,10 @@ Player::Player()
 
 	camera = Camera(position);
 
-	collisionBottom	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f - 5.0f  + collisionBoxOffset.x, position.y - 1.0f  + collisionBoxOffset.y), glm::vec2(15.0f, 10.0f ), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
-	collisionTop	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f - 5.0f  + collisionBoxOffset.x, position.y + 70.0f + collisionBoxOffset.y), glm::vec2(15.0f, 10.0f ), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
-	collisionLeft	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f - 15.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
-	collisionRight	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f + 15.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	collisionBottom	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y - 1.0f + collisionBoxOffset.y), glm::vec2(16.0f, 10.0f ), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	collisionTop	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y + 70.0f + 1.0f + collisionBoxOffset.y), glm::vec2(16.0f, 10.0f ), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	collisionLeft	=	CollisionBox(glm::vec2(collisionBottom.position.x - 10.0f - 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	collisionRight	=	CollisionBox(glm::vec2(collisionBottom.position.x + 16.0f + 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 }
 
 Player::~Player()
@@ -147,10 +146,10 @@ void Player::Update(float deltaTime)
 	velocity.y -= gravity * deltaTime;
 
 	// Update collision box positions
-	collisionBottom.position  =	(glm::vec2(position.x + size.x / 2.0f - 5.0f  + collisionBoxOffset.x,  position.y - 1.0f  + collisionBoxOffset.y));
-	collisionTop.position     =	(glm::vec2(position.x + size.x / 2.0f - 5.0f  + collisionBoxOffset.x,  position.y + 70.0f + collisionBoxOffset.y));
-	collisionLeft.position    =	(glm::vec2(position.x + size.x / 2.0f - 15.0f + collisionBoxOffset.x, position.y + 10.0f  + collisionBoxOffset.y));
-	collisionRight.position   =	(glm::vec2(position.x + size.x / 2.0f + 10.0f + collisionBoxOffset.x, position.y + 10.0f  + collisionBoxOffset.y));
+	collisionBottom.position  =	(glm::vec2(position.x + size.x / 2.0f - 8.0f  + collisionBoxOffset.x,  position.y - 1.0f + collisionBoxOffset.y));
+	collisionTop.position     =	(glm::vec2(position.x + size.x / 2.0f - 8.0f  + collisionBoxOffset.x,  position.y + 70.0f + 1.0f + collisionBoxOffset.y));
+	collisionLeft.position    =	(glm::vec2(collisionBottom.position.x - 10.0f - 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y));
+	collisionRight.position   = (glm::vec2(collisionBottom.position.x + 16.0f + 1.0f + collisionBoxOffset.x,  position.y + 10.0f + collisionBoxOffset.y));
 
 	camera.SetPosition(position + cameraOffset);
 	//////////////////////////////
@@ -206,7 +205,7 @@ void Player::DrawPuffEffect(SpriteRenderer& renderer)
 		puffEffect.Draw(renderer);
 }
 
-// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = top, 3 = right, 4 = left
+// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
 GLint Player::AdvancedCollisionCheck(GameObject& obj)
 {
 	glm::vec2 objPos = obj.GetPosition();
@@ -216,48 +215,28 @@ GLint Player::AdvancedCollisionCheck(GameObject& obj)
 	GLboolean collisionY = collisionBottom.position.y + collisionBottom.size.y > objPos.y&& objPos.y + objSize.y > collisionBottom.position.y;
 	if (collisionX && collisionY)
 	{
-		collisionBoxColorChangeTimer -= 1;
-		collisionBottom.color = glm::vec4(1.0f, 0.0f, 0.0f, 0.5f);
 		return 1;
-	}
-
-	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x + collisionTop.size.x;
-	collisionY = collisionTop.position.y + collisionTop.size.y > objPos.y&& objPos.y + objSize.y > collisionTop.position.y;
-	if (collisionX && collisionY)
-	{
-		collisionBoxColorChangeTimer -= 1;
-		collisionTop.color = glm::vec4(1.0f, 0.0f, 0.0f, 0.5f);
-		return 2;
 	}
 
 	collisionX = collisionRight.position.x + collisionRight.size.x > objPos.x&& objPos.x + objSize.x > collisionRight.position.x + collisionRight.size.x;
 	collisionY = collisionRight.position.y + collisionRight.size.y > objPos.y&& objPos.y + objSize.y > collisionRight.position.y;
 	if (collisionX && collisionY)
 	{
-		collisionBoxColorChangeTimer -= 1;
-		collisionRight.color = glm::vec4(1.0f, 0.0f, 0.0f, 0.5f);
-		return 3;
+		return 2;
 	}
 
 	collisionX = collisionLeft.position.x + collisionLeft.size.x > objPos.x&& objPos.x + objSize.x > collisionLeft.position.x + collisionLeft.size.x;
 	collisionY = collisionLeft.position.y + collisionLeft.size.y > objPos.y&& objPos.y + objSize.y > collisionLeft.position.y;
 	if (collisionX && collisionY)
 	{
-		collisionBoxColorChangeTimer -= 1;
-		collisionLeft.color = glm::vec4(1.0f, 0.0f, 0.0f, 0.5f);
-		return 4;
+		return 3;
 	}
 
-	collisionBoxColorChangeTimer -= 1;
-
-	if (collisionBoxColorChangeTimer <= 0)
+	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x + collisionTop.size.x;
+	collisionY = collisionTop.position.y + collisionTop.size.y > objPos.y&& objPos.y + objSize.y > collisionTop.position.y;
+	if (collisionX && collisionY)
 	{
-		collisionBottom.color = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
-		collisionTop.color = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
-		collisionRight.color = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
-		collisionLeft.color = glm::vec4(0.0f, 1.0f, 0.0f, 0.5f);
-
-		collisionBoxColorChangeTimer = 5;
+		return 4;
 	}
 
 	return 0;

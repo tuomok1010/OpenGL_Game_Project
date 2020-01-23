@@ -341,7 +341,7 @@ void Level::Draw(Window& window, float deltaTime)
 	{
 		if (!enemies.at(i)->GetShouldDespawn())
 		{
-			enemies.at(i)->Draw(renderer);
+			enemies.at(i)->Draw(renderer, primitiveRenderer, true);
 		}
 		else
 		{
@@ -445,120 +445,6 @@ GLboolean Level::SimpleCollisionCheck(GameObject& obj1, GameObject& obj2)
 	}
 }
 
-GLboolean Level::BottomCollisionBoxCheck(Enemy& enemy, GameObject& obj)
-{
-	struct CollisionBox
-	{
-		glm::vec2 position{};
-		glm::vec2 size{};
-	};
-
-	glm::vec3 enemyPos = enemy.GetPosition();
-	glm::vec2 enemySize = enemy.GetSize();
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
-	CollisionBox bottomColBox;
-	bottomColBox.size.x = 5.0f;
-	bottomColBox.size.y = 2.0f;
-	bottomColBox.position.x = (enemyPos.x + enemySize.x / 2.0f) - (bottomColBox.size.x / 2.0f);
-	bottomColBox.position.y = enemyPos.y - bottomColBox.size.y / 2.0f;
-
-	bool bottomBoxCollisionX = bottomColBox.position.x + bottomColBox.size.x > objPos.x&& objPos.x + objSize.x > bottomColBox.position.x + bottomColBox.size.x;
-	bool bottomBoxCollisionY = bottomColBox.position.y + bottomColBox.size.y > objPos.y&& objPos.y + objSize.y > bottomColBox.position.y;
-
-	if (bottomBoxCollisionX && bottomBoxCollisionY)
-		return true;
-	else
-		return false;
-}
-
-GLboolean Level::TopCollisionBoxCheck(Enemy& enemy, GameObject& obj)
-{
-	struct CollisionBox
-	{
-		glm::vec2 position{};
-		glm::vec2 size{};
-	};
-
-	glm::vec3 enemyPos = enemy.GetPosition();
-	glm::vec2 enemySize = enemy.GetSize();
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
-	CollisionBox topColBox;
-	topColBox.size.x = 10.0f;
-	topColBox.size.y = 2.0f;
-	topColBox.position.x = (enemyPos.x + enemySize.x / 2.0f) - (topColBox.size.x / 2.0f);
-	topColBox.position.y = enemyPos.y + enemySize.y;	// TODO adjust
-
-	bool topBoxCollisionX = topColBox.position.x + topColBox.size.x > objPos.x&& objPos.x + objSize.x > topColBox.position.x + topColBox.size.x;
-	bool topBoxCollisionY = topColBox.position.y + topColBox.size.y > objPos.y&& objPos.y + objSize.y > topColBox.position.y;
-
-	if (topBoxCollisionX && topBoxCollisionY)
-		return true;
-	else
-		return false;
-}
-
-GLboolean Level::LeftCollisionCheck(Enemy& enemy, GameObject& obj)
-{
-	struct CollisionBox
-	{
-		glm::vec2 position{};
-		glm::vec2 size{};
-	};
-
-	glm::vec3 enemyPos = enemy.GetPosition();
-	glm::vec2 enemySize = enemy.GetSize();
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
-	// left collision box
-	CollisionBox leftColBox;
-	leftColBox.size.x = 10.0f;
-	leftColBox.size.y = 50.0f; // setting this value roughly, TODO adjust if needed
-	leftColBox.position.x = enemyPos.x + enemySize.x / 2.0f - leftColBox.size.x * 2.0f / 2.0f;
-	leftColBox.position.y = enemyPos.y + 5.0f;
-
-	GLboolean collisionX = leftColBox.position.x + leftColBox.size.x > objPos.x&& objPos.x + objSize.x > leftColBox.position.x;
-	GLboolean collisionY = leftColBox.position.y + leftColBox.size.y > objPos.y&& objPos.y + objSize.y > leftColBox.position.y;
-
-	if (collisionX && collisionY)
-		return true;
-	else
-		return false;
-}
-
-GLboolean Level::RightCollisionCheck(Enemy& enemy, GameObject& obj)
-{
-	struct CollisionBox
-	{
-		glm::vec2 position{};
-		glm::vec2 size{};
-	};
-
-	glm::vec3 enemyPos = enemy.GetPosition();
-	glm::vec2 enemySize = enemy.GetSize();
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
-	// right collision box
-	CollisionBox rightColBox;
-	rightColBox.size.x = 10.0f;
-	rightColBox.size.y = 50.0f; // setting this value roughly, TODO adjust if needed
-	rightColBox.position.x = enemyPos.x + enemySize.x / 2.0f + rightColBox.size.x / 2.0f;
-	rightColBox.position.y = enemyPos.y + 5.0f;
-
-	GLboolean collisionX = rightColBox.position.x + rightColBox.size.x > objPos.x&& objPos.x + objSize.x > rightColBox.position.x;
-	GLboolean collisionY = rightColBox.position.y + rightColBox.size.y > objPos.y&& objPos.y + objSize.y > rightColBox.position.y;
-
-	if (collisionX && collisionY)
-		return true;
-	else
-		return false;
-}
-
 void Level::ProcessCollisions()
 {
 	player.SetIsOnGround(false);
@@ -594,21 +480,24 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 		player.SetPosition(glm::vec3(playerPos.x, objPos.y + objSize.y, playerPos.z));
 		player.SetVelocityY(0.0f);
 	}
-	else if(collisionResult == 2)
+	else if (collisionResult == 2)
 	{
-		player.SetPosition(glm::vec3(playerPos.x, objPos.y - 80.0f, playerPos.z));
-		if (!player.GetIsOnGround())
-			player.SetVelocityY(playerVelocity.y - 2 * playerVelocity.y);
+		GLfloat xPos = objPos.x - playerSize.x / 2.0f - player.GetCollisionBoxBottom().size.x / 2.0f - player.GetCollisionBoxRight().size.x;
+		player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
+		player.SetVelocityX(0.0f);
 	}
 	else if (collisionResult == 3)
 	{
-		player.SetPosition(glm::vec3(objPos.x - playerSize.x / 2.0f - 25.0f, playerPos.y, playerPos.z));
+		GLfloat xPos = objPos.x + objSize.x - playerSize.x / 2.0f + player.GetCollisionBoxBottom().size.x / 2.0f + player.GetCollisionBoxLeft().size.x;
+		player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
 		player.SetVelocityX(0.0f);
 	}
 	else if (collisionResult == 4)
 	{
-		player.SetPosition(glm::vec3(objPos.x + objSize.x - playerSize.x / 2.0f + 10.0f, playerPos.y, playerPos.z));
-		player.SetVelocityX(0.0f);
+		GLfloat yPos = objPos.y - player.GetCollisionBoxBottom().size.y - player.GetCollisionBoxLeft().size.y - player.GetCollisionBoxTop().size.y;
+		player.SetPosition(glm::vec3(playerPos.x, yPos, playerPos.z));
+		if (!player.GetIsOnGround())
+			player.SetVelocityY(playerVelocity.y - 2 * playerVelocity.y);
 	}
 }
 
@@ -617,46 +506,44 @@ void Level::ProcessEnemyCollisions(Enemy& enemy, GameObject& obj)
 	if (enemy.GetIsDead())
 		return;
 
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
 	glm::vec3 enemyPos = enemy.GetPosition();
 	glm::vec3 enemyPrevPos = enemy.GetPreviousPosition();
 	glm::vec2 enemySize = enemy.GetSize();
 	glm::vec2 enemyVelocity = enemy.GetVelocity();
 
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
 	// ignore objs that are far from the enemy
 	if (abs(objPos.x - enemyPos.x) >= 500.0f || abs(objPos.y - enemyPos.y) >= 500.0f)
 		return;
 
-	if (BottomCollisionBoxCheck(enemy, obj))
+	GLint collisionResult = enemy.AdvancedCollisionCheck(obj);
+
+	if (collisionResult == 1)
 	{
 		enemy.SetIsOnGround(true);
 		enemy.SetPosition(glm::vec3(enemyPos.x, objPos.y + objSize.y, enemyPos.z));
 		enemy.SetVelocityY(0.0f);
 	}
-	else if (TopCollisionBoxCheck(enemy, obj))
+	else if (collisionResult == 2)
 	{
-		std::cout << "enemy colliding top" << std::endl;
-		enemy.SetPosition(glm::vec3(enemyPos.x, objPos.y - (enemySize.y + 1.0f), enemyPos.z));
+		GLfloat xPos = objPos.x - enemySize.x / 2.0f - enemy.GetCollisionBoxBottom().size.x / 2.0f - enemy.GetCollisionBoxRight().size.x - 5.0f;
+		enemy.SetPosition(glm::vec3(xPos, enemyPos.y, enemyPos.z));
+		enemy.SetVelocityX(0.0f);
+	}
+	else if (collisionResult == 3)
+	{
+		GLfloat xPos = objPos.x + objSize.x - enemySize.x / 2.0f + enemy.GetCollisionBoxBottom().size.x / 2.0f + enemy.GetCollisionBoxLeft().size.x;
+		enemy.SetPosition(glm::vec3(xPos, enemyPos.y, enemyPos.z));
+		enemy.SetVelocityX(0.0f);
+	}
+	else if (collisionResult == 4)
+	{
+		GLfloat yPos = objPos.y - enemy.GetCollisionBoxBottom().size.y - enemy.GetCollisionBoxLeft().size.y - enemy.GetCollisionBoxTop().size.y;
+		enemy.SetPosition(glm::vec3(enemyPos.x, yPos, enemyPos.z));
 		if (!enemy.GetIsOnGround())
 			enemy.SetVelocityY(enemyVelocity.y - 2 * enemyVelocity.y);
-	}
-	else if (RightCollisionCheck(enemy, obj))
-	{
-		std::cout << "enemy colliding right" << std::endl;
-		enemy.SetPosition(glm::vec3(objPos.x - enemySize.x / 2.0f - 10.0f, enemyPos.y, enemyPos.z));
-
-		if (enemy.GetOrientation() == EnemyOrientation::RIGHT)
-			enemy.SetVelocityX(0.0f);
-	}
-	else if (LeftCollisionCheck(enemy, obj))
-	{
-		std::cout << "enemy colliding left" << std::endl;
-		enemy.SetPosition(glm::vec3(objPos.x + objSize.x - enemySize.x / 2.0f + 9.0f, enemyPos.y, enemyPos.z));
-
-		if (enemy.GetOrientation() == EnemyOrientation::LEFT)
-			enemy.SetVelocityX(0.0f);
 	}
 }
 

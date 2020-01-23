@@ -3,7 +3,9 @@
 #include <glm/glm.hpp>
 
 #include "SpriteRenderer.h"
+#include "PrimitiveRenderer.h"
 #include "Player.h"
+#include "CollisionBox.h"
 
 #include <vector>
 
@@ -34,7 +36,7 @@ public:
 	Enemy();
 	virtual ~Enemy();
 
-	virtual void Draw(SpriteRenderer& renderer);
+	virtual void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false);
 	virtual void DrawPuffEffect(SpriteRenderer& renderer);
 
 	void Update(GLfloat deltaTime);
@@ -48,6 +50,9 @@ public:
 
 	// returns true when enemy has reached melee range to attack player
 	GLboolean MoveTowardsPlayer(const Player& player, float deltaTime);
+
+	// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
+	GLint AdvancedCollisionCheck(GameObject& obj);
 
 	void SetPosition(glm::vec3 newPosition) { position = newPosition; }
 	void SetOrientation(EnemyOrientation newOrientation) { orientation = newOrientation; }
@@ -74,6 +79,11 @@ public:
 	GLboolean GetShouldDespawn()const { return readyToDespawn; }
 	glm::vec2 GetVelocity()const { return velocity; }
 	GLboolean GetIsOnGround()const { return isOnGround; }
+
+	CollisionBox GetCollisionBoxBottom()const { return collisionBottom; }
+	CollisionBox GetCollisionBoxTop()const { return collisionTop; }
+	CollisionBox GetCollisionBoxLeft()const { return collisionLeft; }
+	CollisionBox GetCollisionBoxRight()const { return collisionRight; }
 
 protected:
 	std::vector<Texture2D*> texturesIdle{};
@@ -124,4 +134,10 @@ protected:
 	EnemyType enemyType{};
 
 	PuffEffect puffEffect;
+
+	CollisionBox collisionBottom;
+	CollisionBox collisionTop;
+	CollisionBox collisionLeft;
+	CollisionBox collisionRight;
+	glm::vec2 collisionBoxOffset{};
 };

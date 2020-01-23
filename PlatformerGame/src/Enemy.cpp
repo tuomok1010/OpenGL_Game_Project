@@ -11,6 +11,10 @@ Enemy::Enemy()
 	speed(200.0f),
 	gravity(5.0f)
 {
+	collisionBottom = CollisionBox(glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y - 1.0f + collisionBoxOffset.y), glm::vec2(16.0f, 10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	collisionTop = CollisionBox(glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y + 70.0f + 1.0f + collisionBoxOffset.y), glm::vec2(16.0f, 10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	collisionLeft = CollisionBox(glm::vec2(collisionBottom.position.x - 10.0f - 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	collisionRight = CollisionBox(glm::vec2(collisionBottom.position.x + 16.0f + 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 }
 
 Enemy::~Enemy()
@@ -43,7 +47,7 @@ Enemy::~Enemy()
 	delete textureFall;
 }
 
-void Enemy::Draw(SpriteRenderer& renderer)
+void Enemy::Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes)
 {
 	// If the enemy is facing right, we do not need to rotate the sprite, if the sprite is facing left we set the axis of rotation to be the Y axis.
 	glm::vec3 rotationAxiis = (orientation == EnemyOrientation::RIGHT) ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(0.0f, 1.0f, 0.0f);
@@ -98,6 +102,14 @@ void Enemy::Draw(SpriteRenderer& renderer)
 		renderer.Draw(*texturesMeleeAttack.at(meleeAttackIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++meleeAttackIterator;
 	}
+
+	if (drawCollisionBoxes)
+	{
+		collisionBottom.Draw(collisionBoxRenderer);
+		collisionTop.Draw(collisionBoxRenderer);
+		collisionLeft.Draw(collisionBoxRenderer);
+		collisionRight.Draw(collisionBoxRenderer);
+	}
 }
 
 void Enemy::DrawPuffEffect(SpriteRenderer& renderer)
@@ -132,6 +144,12 @@ void Enemy::Update(GLfloat deltaTime)
 	position.x += velocity.x * speed * deltaTime;
 	position.y += velocity.y * speed * deltaTime;
 	velocity.y -= gravity * deltaTime;
+
+	// Update collision box positions
+	collisionBottom.position = (glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y - 1.0f + collisionBoxOffset.y));
+	collisionTop.position = (glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y + 70.0f + 1.0f + collisionBoxOffset.y));
+	collisionLeft.position = (glm::vec2(collisionBottom.position.x - 10.0f - 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y));
+	collisionRight.position = (glm::vec2(collisionBottom.position.x + 16.0f + 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y));
 }
 
 // TODO perhaps add a sneak functionality to the player that allows player to sneak up behind enemy without him hearing the player
@@ -309,6 +327,41 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 		SetVelocityX(1.0f);
 
 	return false;
+}
+
+GLint Enemy::AdvancedCollisionCheck(GameObject& obj)
+{
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	GLboolean collisionX = collisionBottom.position.x + collisionBottom.size.x > objPos.x&& objPos.x + objSize.x > collisionBottom.position.x + collisionBottom.size.x;
+	GLboolean collisionY = collisionBottom.position.y + collisionBottom.size.y > objPos.y&& objPos.y + objSize.y > collisionBottom.position.y;
+	if (collisionX && collisionY)
+	{
+		return 1;
+	}
+
+	collisionX = collisionRight.position.x + collisionRight.size.x > objPos.x&& objPos.x + objSize.x > collisionRight.position.x + collisionRight.size.x;
+	collisionY = collisionRight.position.y + collisionRight.size.y > objPos.y&& objPos.y + objSize.y > collisionRight.position.y;
+	if (collisionX && collisionY)
+	{
+		return 2;
+	}
+
+	collisionX = collisionLeft.position.x + collisionLeft.size.x > objPos.x&& objPos.x + objSize.x > collisionLeft.position.x + collisionLeft.size.x;
+	collisionY = collisionLeft.position.y + collisionLeft.size.y > objPos.y&& objPos.y + objSize.y > collisionLeft.position.y;
+	if (collisionX && collisionY)
+	{
+		return 3;
+	}
+
+	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x + collisionTop.size.x;
+	collisionY = collisionTop.position.y + collisionTop.size.y > objPos.y&& objPos.y + objSize.y > collisionTop.position.y;
+	if (collisionX && collisionY)
+	{
+		return 4;
+	}
+	return 0;
 }
 
 void Enemy::ResetAnimation(EnemyState animationToReset)

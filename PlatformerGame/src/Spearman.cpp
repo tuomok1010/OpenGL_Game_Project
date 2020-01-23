@@ -36,7 +36,7 @@ Spearman::~Spearman()
 {
 }
 
-void Spearman::Draw(SpriteRenderer& renderer)
+void Spearman::Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes)
 {
 	// If the enemy is facing right, we do not need to rotate the sprite, if the sprite is facing left we set the axis of rotation to be the Y axis.
 	glm::vec3 rotationAxiis = (orientation == EnemyOrientation::RIGHT) ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(0.0f, 1.0f, 0.0f);
@@ -101,6 +101,14 @@ void Spearman::Draw(SpriteRenderer& renderer)
 		renderer.Draw(*texturesMeleeAttack.at(meleeAttackIterator), 0, color, position, size, rotation, textureScale, textureOffset, rotationAxiis);
 		++meleeAttackIterator;
 	} 
+
+	if (drawCollisionBoxes)
+	{
+		collisionBottom.Draw(collisionBoxRenderer);
+		collisionTop.Draw(collisionBoxRenderer);
+		collisionLeft.Draw(collisionBoxRenderer);
+		collisionRight.Draw(collisionBoxRenderer);
+	}
 }
 
 GLboolean Spearman::MeleeAttack()

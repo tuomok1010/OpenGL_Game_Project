@@ -44,8 +44,11 @@ public:
 	void DrawPuffEffect(SpriteRenderer& renderer);
 	void IncrementScore(GLint amountToAdd) { score += amountToAdd; }
 
-	// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = top, 3 = right, 4 = left
+	// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
 	GLint AdvancedCollisionCheck(GameObject& obj);
+
+	// uses only one large collision box to check if it is overlapping with the obj
+	GLboolean SimpleCollisionCheck(GameObject& obj);
 
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
@@ -83,10 +86,12 @@ public:
 	GLuint GetScore()const { return score; }
 	GLuint GetLives()const { return lives; }
 	glm::vec2 GetVelocity()const { return velocity; }
+
 	CollisionBox GetCollisionBoxBottom()const { return collisionBottom; }
 	CollisionBox GetCollisionBoxTop()const { return collisionTop; }
-	CollisionBox GetCollisionBoxRight()const { return collisionRight; }
 	CollisionBox GetCollisionBoxLeft()const { return collisionLeft; }
+	CollisionBox GetCollisionBoxRight()const { return collisionRight; }
+
 private:
 	std::vector<Texture2D*> texturesIdle{};
 	std::vector<Texture2D*> texturesRun{};
@@ -145,5 +150,4 @@ private:
 	CollisionBox collisionLeft;
 	CollisionBox collisionRight;
 	glm::vec2 collisionBoxOffset{};
-	GLint collisionBoxColorChangeTimer{};
 };
