@@ -54,6 +54,8 @@ public:
 	// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
 	GLint AdvancedCollisionCheck(GameObject& obj);
 
+	GLboolean SimpleCollisionCheck(GameObject& obj);
+
 	void SetPosition(glm::vec3 newPosition) { position = newPosition; }
 	void SetOrientation(EnemyOrientation newOrientation) { orientation = newOrientation; }
 	void SetState(EnemyState newState) { state = newState; }
@@ -139,5 +141,15 @@ protected:
 	CollisionBox collisionTop;
 	CollisionBox collisionLeft;
 	CollisionBox collisionRight;
-	glm::vec2 collisionBoxOffset{};
+	CollisionBox collisionBoxSimple;
+
+	const GLfloat collisionBoxThickness = 10.0f;
+	const GLfloat collisionBoxHorizontalLength = 30.0f;
+	const GLfloat collisionBoxVerticalLength = 80.0f;
+
+	glm::vec2 colBoxOffsetBottom{};
+	glm::vec2 colBoxOffsetTop{};
+	glm::vec2 colBoxOffsetRight{};
+	glm::vec2 colBoxOffsetLeft{};
+	glm::vec2 colBoxOffsetSimple{};
 };

@@ -379,53 +379,6 @@ void Level::Draw(Window& window, float deltaTime)
 	}
 }
 
-GLboolean Level::SimpleCollisionCheck(Player& player, GameObject& obj)
-{
-	if (obj.isCollisionEnabled())
-	{
-		glm::vec3 playerPos = player.GetPosition();
-		glm::vec2 playerSize = player.GetSize();
-		glm::vec2 objPos = obj.GetPosition();
-		glm::vec2 objSize = obj.GetSize();
-
-		GLfloat xOffset = 10.0f;
-		GLfloat yOffset = 15.0f;
-
-		bool collisionX = playerPos.x + playerSize.x / 2.0f + xOffset > objPos.x && objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f) - xOffset;
-		bool collisionY = playerPos.y + playerSize.y / 2.0f + yOffset > objPos.y && objPos.y + objSize.y > playerPos.y;
-
-		if (collisionX && collisionY)
-		{
-			player.SetHasCollided(true);
-			return collisionX && collisionY;
-		}
-	}
-	player.SetHasCollided(false);
-	return false;	
-}
-
-GLboolean Level::SimpleCollisionCheck(Player& player, Coin& coin)
-{
-
-	glm::vec3 playerPos = player.GetPosition();
-	glm::vec2 playerSize = player.GetSize();
-	glm::vec3 objPos = coin.GetPosition();
-	glm::vec2 objSize = coin.GetSize();
-
-	GLfloat xOffset = 5.0f;
-	GLfloat yOffset = 15.0f;
-
-	bool collisionX = playerPos.x + playerSize.x / 2.0f + xOffset > objPos.x&& objPos.x + objSize.x > (playerPos.x + playerSize.x / 2.0f) - xOffset;
-	bool collisionY = playerPos.y + playerSize.y / 2.0f + yOffset > objPos.y&& objPos.y + objSize.y > playerPos.y;
-
-	if (collisionX && collisionY)
-	{
-		return collisionX && collisionY;
-	}
-
-	return false;
-}
-
 GLboolean Level::SimpleCollisionCheck(GameObject& obj1, GameObject& obj2)
 {
 	if (obj1.isCollisionEnabled() && obj2.isCollisionEnabled())
@@ -445,6 +398,7 @@ GLboolean Level::SimpleCollisionCheck(GameObject& obj1, GameObject& obj2)
 	}
 }
 
+/* need to optimize. slow fps causes collision to not work properly*/
 void Level::ProcessCollisions()
 {
 	player.SetIsOnGround(false);
@@ -555,7 +509,7 @@ void Level::UpdateAssets(float deltaTime)
 		{
 			case Type::SPIKETRAP:
 			{
-				if (SimpleCollisionCheck(player, *obj))
+				if (player.SimpleCollisionCheck(*obj))
 				{
 					dynamic_cast<SpikeTrap*>(obj)->DamagePlayer(player);
 
@@ -571,7 +525,7 @@ void Level::UpdateAssets(float deltaTime)
 			}
 			case Type::SIGNSTART:
 			{
-				if (SimpleCollisionCheck(player, *obj))
+				if (player.SimpleCollisionCheck(*obj))
 				{
 					levelComplete = true;
 				}
@@ -579,7 +533,7 @@ void Level::UpdateAssets(float deltaTime)
 			}
 			case Type::SIGNQUIT:
 			{
-				if (SimpleCollisionCheck(player, *obj))
+				if (player.SimpleCollisionCheck(*obj))
 				{
 					quitGame = true;
 				}
@@ -587,7 +541,7 @@ void Level::UpdateAssets(float deltaTime)
 			}
 			case Type::CHEST:
 			{
-				if (SimpleCollisionCheck(player, *obj))
+				if (player.SimpleCollisionCheck(*obj))
 				{
 					levelComplete = true;
 				}
@@ -598,7 +552,7 @@ void Level::UpdateAssets(float deltaTime)
 
 	for (auto& coin : coins)
 	{
-		if (SimpleCollisionCheck(player, *coin))
+		if (player.SimpleCollisionCheck(*coin))
 		{
 			if (!coin->GetIsCollected())
 			{

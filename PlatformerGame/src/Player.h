@@ -11,6 +11,7 @@
 #include "BloodEffect.h"
 #include "PuffEffect.h"
 #include "GameObject.h"
+#include "Coin.h"
 
 enum class PlayerState
 {
@@ -49,6 +50,9 @@ public:
 
 	// uses only one large collision box to check if it is overlapping with the obj
 	GLboolean SimpleCollisionCheck(GameObject& obj);
+	GLboolean SimpleCollisionCheck(Coin& coin);
+
+	void UpdateCollisionBoxPositions();
 
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
@@ -147,7 +151,17 @@ private:
 
 	CollisionBox collisionBottom;
 	CollisionBox collisionTop;
-	CollisionBox collisionLeft;
 	CollisionBox collisionRight;
-	glm::vec2 collisionBoxOffset{};
+	CollisionBox collisionLeft;
+	CollisionBox collisionBoxSimple;
+
+	const GLfloat collisionBoxThickness = 10.0f;
+	const GLfloat collisionBoxHorizontalLength = 30.0f;
+	const GLfloat collisionBoxVerticalLength = 80.0f;
+	
+	glm::vec2 colBoxOffsetBottom{};
+	glm::vec2 colBoxOffsetTop{};
+	glm::vec2 colBoxOffsetRight{};
+	glm::vec2 colBoxOffsetLeft{};
+	glm::vec2 colBoxOffsetSimple{};
 };

@@ -35,10 +35,23 @@ Player::Player()
 
 	camera = Camera(position);
 
-	collisionBottom	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y - 1.0f + collisionBoxOffset.y), glm::vec2(16.0f, 10.0f ), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
-	collisionTop	=	CollisionBox(glm::vec2(position.x + size.x / 2.0f - 8.0f + collisionBoxOffset.x, position.y + 70.0f + 1.0f + collisionBoxOffset.y), glm::vec2(16.0f, 10.0f ), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
-	collisionLeft	=	CollisionBox(glm::vec2(collisionBottom.position.x - 10.0f - 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
-	collisionRight	=	CollisionBox(glm::vec2(collisionBottom.position.x + 16.0f + 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y), glm::vec2(10.0f, 60.0f), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	// Initialise collision boxes
+	colBoxOffsetSimple.x = size.x / 2.0f - collisionBoxHorizontalLength / 2.0f;
+	collisionBoxSimple = CollisionBox(glm::vec2(position.x + colBoxOffsetSimple.x, position.y), glm::vec2(collisionBoxHorizontalLength, collisionBoxVerticalLength), glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
+
+	colBoxOffsetBottom.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f;
+	colBoxOffsetBottom.y = collisionBoxThickness;
+	collisionBottom = CollisionBox(glm::vec2(position.x + colBoxOffsetBottom.x, position.y - colBoxOffsetBottom.y), glm::vec2(collisionBoxSimple.size.x, collisionBoxThickness), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+
+	colBoxOffsetTop.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f;
+	colBoxOffsetTop.y = collisionBoxSimple.size.y;
+	collisionTop = CollisionBox(glm::vec2(position.x + colBoxOffsetTop.x, position.y + colBoxOffsetTop.y), glm::vec2(collisionBoxSimple.size.x, collisionBoxThickness), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+
+	colBoxOffsetLeft.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f - collisionBoxThickness;
+	collisionLeft = CollisionBox(glm::vec2(position.x + colBoxOffsetLeft.x, collisionBoxSimple.position.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+
+	colBoxOffsetRight.x = size.x / 2.0f + collisionBoxSimple.size.x / 2.0f;
+	collisionRight = CollisionBox(glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 }
 
 Player::~Player()
@@ -133,6 +146,7 @@ void Player::Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRende
 		collisionTop.Draw(collisionBoxRenderer);
 		collisionLeft.Draw(collisionBoxRenderer);
 		collisionRight.Draw(collisionBoxRenderer);
+		collisionBoxSimple.Draw(collisionBoxRenderer);
 	}
 }
 
@@ -146,10 +160,11 @@ void Player::Update(float deltaTime)
 	velocity.y -= gravity * deltaTime;
 
 	// Update collision box positions
-	collisionBottom.position  =	(glm::vec2(position.x + size.x / 2.0f - 8.0f  + collisionBoxOffset.x,  position.y - 1.0f + collisionBoxOffset.y));
-	collisionTop.position     =	(glm::vec2(position.x + size.x / 2.0f - 8.0f  + collisionBoxOffset.x,  position.y + 70.0f + 1.0f + collisionBoxOffset.y));
-	collisionLeft.position    =	(glm::vec2(collisionBottom.position.x - 10.0f - 1.0f + collisionBoxOffset.x, position.y + 10.0f + collisionBoxOffset.y));
-	collisionRight.position   = (glm::vec2(collisionBottom.position.x + 16.0f + 1.0f + collisionBoxOffset.x,  position.y + 10.0f + collisionBoxOffset.y));
+	collisionBoxSimple.position = glm::vec2(position.x + colBoxOffsetSimple.x, position.y);
+	collisionBottom.position = glm::vec2(position.x + colBoxOffsetBottom.x, position.y - colBoxOffsetBottom.y);
+	collisionTop.position = glm::vec2(position.x + colBoxOffsetTop.x, position.y + colBoxOffsetTop.y);
+	collisionRight.position = glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y);
+	collisionLeft.position = glm::vec2(position.x + colBoxOffsetLeft.x, collisionBoxSimple.position.y);
 
 	camera.SetPosition(position + cameraOffset);
 	//////////////////////////////
@@ -240,6 +255,33 @@ GLint Player::AdvancedCollisionCheck(GameObject& obj)
 	}
 
 	return 0;
+}
+
+GLboolean Player::SimpleCollisionCheck(GameObject& obj)
+{
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > objPos.x && objPos.x + objSize.x > collisionBoxSimple.position.x;
+	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > objPos.y && objPos.y + objSize.y > collisionBoxSimple.position.y;
+	return collisionX && collisionY;
+
+	return false;
+}
+
+GLboolean Player::SimpleCollisionCheck(Coin& coin)
+{
+	glm::vec3 objPos = coin.GetPosition();
+	glm::vec2 objSize = coin.GetSize();
+
+	GLfloat xOffset = 5.0f;
+	GLfloat yOffset = 15.0f;
+
+	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > objPos.x&& objPos.x + objSize.x > collisionBoxSimple.position.x;
+	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > objPos.y&& objPos.y + objSize.y > collisionBoxSimple.position.y;
+	return collisionX && collisionY;
+
+	return false;
 }
 
 void Player::SetPosition(glm::vec3 newPosition)

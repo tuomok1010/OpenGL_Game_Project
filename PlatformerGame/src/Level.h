@@ -42,19 +42,7 @@ private:
 	// TODO consider finding a more simple way to do it. having the enemy and player inherit from the same parent class might be an option
 
 	// these function create one large collision box around the player/obj and checks if it overlaps with the other object
-	GLboolean SimpleCollisionCheck(Player& player, GameObject& obj);
-	GLboolean SimpleCollisionCheck(Player& player, Coin& coin);
 	GLboolean SimpleCollisionCheck(GameObject& obj1, GameObject& obj2);
-
-	// these functions create a small collision box on one side of the player/enemy and checks if it collides with the object.
-	// TODO perhaps alternatively we could have only 1 large function which returns an int based on which side collides.
-	// TODO consider moving the collision box data to the player(done) and enemy classes themselves. Might be more practical when creating different types of enemies with
-	// different sized collision boxes. Should reduce the amount of code repetition as well.
-	GLboolean BottomCollisionBoxCheck(Enemy& enemy, GameObject& obj);
-	GLboolean TopCollisionBoxCheck(Enemy& enemy, GameObject& obj);
-	GLboolean LeftCollisionCheck(Enemy& enemy, GameObject& obj);
-	GLboolean RightCollisionCheck(Enemy& enemy, GameObject& obj);
-
 private:
 	std::vector<std::vector<GLchar>> levelData;
 	std::vector<GameObject*> blocks;
