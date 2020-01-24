@@ -398,7 +398,6 @@ GLboolean Level::SimpleCollisionCheck(GameObject& obj1, GameObject& obj2)
 	}
 }
 
-/* need to optimize. slow fps causes collision to not work properly*/
 void Level::ProcessCollisions()
 {
 	player.SetIsOnGround(false);

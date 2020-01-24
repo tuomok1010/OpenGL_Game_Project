@@ -181,7 +181,7 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 	enemyPos.x = position.x + (size.x / 2.0f);
 
 	// check if the player is (about )in the same height on the y axiis as the enemy. TODO adjust the y axis detection range
-	if (playerPos.y + playerSize.y > position.y&& position.y + size.y > playerPos.y)
+	if (playerPos.y + playerSize.y > position.y && position.y + size.y > playerPos.y)
 	{
 		if (orientation == EnemyOrientation::LEFT)
 		{
@@ -192,14 +192,17 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 
 			if (spottedFacingPlayer)
 			{
+				std::cout << "enemy spotted player LEFT" << std::endl;
 				hasSpottedPlayer = true;
 			}
 			else if (spottedNotFacingPlayer)
 			{
+				std::cout << "enemy heard player LEFT" << std::endl;
 				hasSpottedPlayer = true;
 			}
 			else
 			{
+				std::cout << "enemy lost detection of player LEFT. Setting velo to 0" << std::endl;
 				hasSpottedPlayer = false;
 				SetVelocityX(0.0f);
 			}
@@ -213,21 +216,27 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 
 			if (spottedFacingPlayer)
 			{
+				std::cout << "enemy spotted player RIGHT" << std::endl;
 				hasSpottedPlayer = true;
 			}
 			else if (spottedNotFacingPlayer)
 			{
+				std::cout << "enemy heard player RIGHT" << std::endl;
 				hasSpottedPlayer = true;
 			}
 			else
 			{
+				std::cout << "enemy lost detection of player RIGHT. Setting velo to 0" << std::endl;
 				hasSpottedPlayer = false;
 				SetVelocityX(0.0f);
 			}
 		}
 	}
 	else
+	{
+		hasSpottedPlayer = false;
 		SetVelocityX(0.0f);
+	}
 
 	return hasSpottedPlayer;
 }
@@ -309,7 +318,6 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 
 			if (isInYRange)
 			{
-				std::cout << "enemy has reached melee range" << std::endl;
 				isInRange = true;
 				return true;
 			}
@@ -326,7 +334,6 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 
 			if (isInYRange)
 			{
-				std::cout << "enemy has reached melee range" << std::endl;
 				isInRange = true;
 				return true;
 			}
@@ -337,9 +344,9 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 	if (state == EnemyState::ATTACK)
 		state = EnemyState::IDLE;
 
-	if (orientation == EnemyOrientation::LEFT && !isInXRangeLeft)
+	if (orientation == EnemyOrientation::LEFT && !isInXRangeLeft && hasSpottedPlayer)
 		SetVelocityX(-1.0f);
-	else if (orientation == EnemyOrientation::RIGHT && !isInXRangeRight)
+	else if (orientation == EnemyOrientation::RIGHT && !isInXRangeRight && hasSpottedPlayer)
 		SetVelocityX(1.0f);
 	else
 		SetVelocityX(0.0f);
