@@ -226,30 +226,30 @@ GLint Player::AdvancedCollisionCheck(GameObject& obj)
 	glm::vec2 objPos = obj.GetPosition();
 	glm::vec2 objSize = obj.GetSize();
 
-	GLboolean collisionX = collisionBottom.position.x + collisionBottom.size.x > objPos.x&& objPos.x + objSize.x > collisionBottom.position.x + collisionBottom.size.x;
-	GLboolean collisionY = collisionBottom.position.y + collisionBottom.size.y > objPos.y&& objPos.y + objSize.y > collisionBottom.position.y;
-	if (collisionX && collisionY)
+	GLboolean collisionX = collisionBottom.position.x + collisionBottom.size.x > objPos.x && objPos.x + objSize.x > collisionBottom.position.x;
+	GLboolean collisionY = collisionBottom.position.y + collisionBottom.size.y > objPos.y && objPos.y + objSize.y > collisionBottom.position.y;
+	if (collisionX && collisionY && velocity.y < 0.0f)
 	{
 		return 1;
 	}
 
-	collisionX = collisionRight.position.x + collisionRight.size.x > objPos.x&& objPos.x + objSize.x > collisionRight.position.x + collisionRight.size.x;
+	collisionX = collisionRight.position.x + collisionRight.size.x > objPos.x&& objPos.x + objSize.x > collisionRight.position.x;
 	collisionY = collisionRight.position.y + collisionRight.size.y > objPos.y&& objPos.y + objSize.y > collisionRight.position.y;
-	if (collisionX && collisionY)
+	if (collisionX && collisionY && velocity.x > 0.0f)
 	{
 		return 2;
 	}
 
-	collisionX = collisionLeft.position.x + collisionLeft.size.x > objPos.x&& objPos.x + objSize.x > collisionLeft.position.x + collisionLeft.size.x;
+	collisionX = collisionLeft.position.x + collisionLeft.size.x > objPos.x&& objPos.x + objSize.x > collisionLeft.position.x;
 	collisionY = collisionLeft.position.y + collisionLeft.size.y > objPos.y&& objPos.y + objSize.y > collisionLeft.position.y;
-	if (collisionX && collisionY)
+	if (collisionX && collisionY && velocity.x < 0.0f)
 	{
 		return 3;
 	}
 
-	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x + collisionTop.size.x;
+	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x;
 	collisionY = collisionTop.position.y + collisionTop.size.y > objPos.y&& objPos.y + objSize.y > collisionTop.position.y;
-	if (collisionX && collisionY)
+	if (collisionX && collisionY && velocity.y > 0.0f)
 	{
 		return 4;
 	}

@@ -181,7 +181,7 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 	enemyPos.x = position.x + (size.x / 2.0f);
 
 	// check if the player is (about )in the same height on the y axiis as the enemy. TODO adjust the y axis detection range
-	if (playerPos.y + playerSize.y > position.y && position.y + size.y > playerPos.y)
+	if (playerPos.y + playerSize.y > position.y&& position.y + size.y > playerPos.y)
 	{
 		if (orientation == EnemyOrientation::LEFT)
 		{
@@ -226,6 +226,9 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 			}
 		}
 	}
+	else
+		SetVelocityX(0.0f);
+
 	return hasSpottedPlayer;
 }
 
@@ -329,17 +332,17 @@ GLboolean Enemy::MoveTowardsPlayer(const Player& player, float deltaTime)
 			}
 		}
 	}
-
 	isInRange = false;
 
 	if (state == EnemyState::ATTACK)
 		state = EnemyState::IDLE;
 
-
 	if (orientation == EnemyOrientation::LEFT && !isInXRangeLeft)
 		SetVelocityX(-1.0f);
 	else if (orientation == EnemyOrientation::RIGHT && !isInXRangeRight)
 		SetVelocityX(1.0f);
+	else
+		SetVelocityX(0.0f);
 
 	return false;
 }
@@ -349,28 +352,28 @@ GLint Enemy::AdvancedCollisionCheck(GameObject& obj)
 	glm::vec2 objPos = obj.GetPosition();
 	glm::vec2 objSize = obj.GetSize();
 
-	GLboolean collisionX = collisionBottom.position.x + collisionBottom.size.x > objPos.x&& objPos.x + objSize.x > collisionBottom.position.x + collisionBottom.size.x;
+	GLboolean collisionX = collisionBottom.position.x + collisionBottom.size.x > objPos.x&& objPos.x + objSize.x > collisionBottom.position.x;
 	GLboolean collisionY = collisionBottom.position.y + collisionBottom.size.y > objPos.y&& objPos.y + objSize.y > collisionBottom.position.y;
 	if (collisionX && collisionY)
 	{
 		return 1;
 	}
 
-	collisionX = collisionRight.position.x + collisionRight.size.x > objPos.x&& objPos.x + objSize.x > collisionRight.position.x + collisionRight.size.x;
+	collisionX = collisionRight.position.x + collisionRight.size.x > objPos.x&& objPos.x + objSize.x > collisionRight.position.x;
 	collisionY = collisionRight.position.y + collisionRight.size.y > objPos.y&& objPos.y + objSize.y > collisionRight.position.y;
 	if (collisionX && collisionY)
 	{
 		return 2;
 	}
 
-	collisionX = collisionLeft.position.x + collisionLeft.size.x > objPos.x&& objPos.x + objSize.x > collisionLeft.position.x + collisionLeft.size.x;
+	collisionX = collisionLeft.position.x + collisionLeft.size.x > objPos.x&& objPos.x + objSize.x > collisionLeft.position.x;
 	collisionY = collisionLeft.position.y + collisionLeft.size.y > objPos.y&& objPos.y + objSize.y > collisionLeft.position.y;
 	if (collisionX && collisionY)
 	{
 		return 3;
 	}
 
-	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x + collisionTop.size.x;
+	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x;
 	collisionY = collisionTop.position.y + collisionTop.size.y > objPos.y&& objPos.y + objSize.y > collisionTop.position.y;
 	if (collisionX && collisionY)
 	{
