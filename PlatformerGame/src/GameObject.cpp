@@ -15,15 +15,18 @@ GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, g
 	textureOffset(textureOffset),
 	type(Type::BLOCK)
 {
+	collisionBoxSimple = CollisionBox(this->position, this->size, glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
 }
 
 GameObject::~GameObject()
 {
 }
 
-void GameObject::Draw(SpriteRenderer& renderer, GLuint textureUnit)
+void GameObject::Draw(SpriteRenderer& renderer, PrimitiveRenderer& colBoxRenderer, GLboolean renderCollisionBox, GLuint textureUnit)
 {
 	renderer.Draw(texture, textureUnit, color, position, size, rotation, textureZoom, textureOffset, rotationAxis);
+	if (renderCollisionBox)
+		collisionBoxSimple.Draw(colBoxRenderer);
 }
 
 void GameObject::Rotate(GLfloat degrees, glm::vec3 rotationAxis)
@@ -32,7 +35,20 @@ void GameObject::Rotate(GLfloat degrees, glm::vec3 rotationAxis)
 	rotation = degrees;
 }
 
+GLboolean GameObject::SimpleCollisionCheck(GameObject& obj)
+{
+	glm::vec2 objPos = obj.GetPosition();
+	glm::vec2 objSize = obj.GetSize();
+
+	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > objPos.x&& objPos.x + objSize.x > collisionBoxSimple.position.x;
+	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > objPos.y&& objPos.y + objSize.y > collisionBoxSimple.position.y;
+	return collisionX && collisionY;
+
+	return false;
+}
+
 void GameObject::SetPosition(glm::vec2 newPosition)
 {
 	position = newPosition;
+	collisionBoxSimple.position = position;
 }

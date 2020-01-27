@@ -21,3 +21,13 @@ void SpikeTrap::DamagePlayer(Player& player)
 		player.SetHealth(player.GetHealth() - damage);
 	}
 }
+
+void SpikeTrap::DamageEnemy(Enemy& enemy)
+{
+	if (!enemy.GetIsDead())
+	{
+		// making sure the spikes always kills the enemy
+		damage = enemy.GetHealth() + 1.0f;
+		enemy.SetHealth(enemy.GetHealth() - damage);
+	}
+}

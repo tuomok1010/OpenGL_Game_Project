@@ -274,11 +274,17 @@ GLboolean Player::SimpleCollisionCheck(Coin& coin)
 	glm::vec3 objPos = coin.GetPosition();
 	glm::vec2 objSize = coin.GetSize();
 
-	GLfloat xOffset = 5.0f;
-	GLfloat yOffset = 15.0f;
-
 	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > objPos.x&& objPos.x + objSize.x > collisionBoxSimple.position.x;
 	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > objPos.y&& objPos.y + objSize.y > collisionBoxSimple.position.y;
+	return collisionX && collisionY;
+
+	return false;
+}
+
+GLboolean Player::SimpleCollisionCheck(CollisionBox& colBox)
+{
+	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > colBox.position.x && colBox.position.x + colBox.size.x > collisionBoxSimple.position.x;
+	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > colBox.position.y && colBox.position.y + colBox.size.y > collisionBoxSimple.position.y;
 	return collisionX && collisionY;
 
 	return false;

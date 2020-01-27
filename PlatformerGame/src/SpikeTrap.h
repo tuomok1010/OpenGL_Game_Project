@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Player.h"
+#include "Enemy.h"
 
 class SpikeTrap : public GameObject
 {
@@ -11,6 +12,7 @@ public:
 	~SpikeTrap();
 
 	void DamagePlayer(Player& player);
+	void DamageEnemy(Enemy& enemy);
 
 private:
 	GLfloat damage{};

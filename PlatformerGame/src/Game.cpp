@@ -26,19 +26,24 @@ Game::Game(int scrnWidth, int scrnHeight)
 	primitiveRenderer = new PrimitiveRenderer(*shaders[SHADER_PRIMITIVE]);
 
 	textRenderer->Load("../fonts/arial.ttf", 24);
-
-	ui = new UI(mainWindow, *renderer, *textRenderer, player);
 }
 
 Game::~Game()
 {
 	for (unsigned int i = 0; i < shaders.size(); ++i)
-		delete shaders.at(i);
+	{
+		if(shaders.at(i) != nullptr)
+			delete shaders.at(i);
+	}
 
-	delete renderer;
-	delete textRenderer;
-	delete primitiveRenderer;
-	delete ui;
+	if (renderer != nullptr)
+		delete renderer;
+	if (textRenderer != nullptr)
+		delete textRenderer;
+	if (primitiveRenderer != nullptr)
+		delete primitiveRenderer;
+	if (ui != nullptr)
+		delete ui;
 }
 
 void Game::Run()
@@ -63,7 +68,9 @@ void Game::Run()
 			std::string backGroundPath = "../textures/backGround" + levelNumberString + ".png";
 			
 			level->Load(levelPath, backGroundPath);
+			level->InitObjectives();
 			advanceLevel = false;
+			ui = new UI(mainWindow, *renderer, *textRenderer, *primitiveRenderer, player, *level);
 		}
 		if (level->quitGame)
 			gameState = GameState::QUIT;
@@ -168,7 +175,7 @@ void Game::ProcessInput(Level& level)
 void Game::Update(Level& level)
 {
 	// checks if player is colliding with any objects in game such as traps and if so, damages the player if necessary
-	level.UpdateAssets(deltaTime);
+	level.Update(deltaTime);
 
 	// handles enemy related stuff such as damage to player
 	level.RunEnemyBehaviour(deltaTime);

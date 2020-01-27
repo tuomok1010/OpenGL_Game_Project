@@ -51,6 +51,7 @@ public:
 	// uses only one large collision box to check if it is overlapping with the obj
 	GLboolean SimpleCollisionCheck(GameObject& obj);
 	GLboolean SimpleCollisionCheck(Coin& coin);
+	GLboolean SimpleCollisionCheck(CollisionBox& colBox);
 
 	void UpdateCollisionBoxPositions();
 

@@ -9,7 +9,8 @@ Enemy::Enemy()
 	rotation(0.0f),
 	velocity(glm::vec2(0.0f)),
 	speed(200.0f),
-	gravity(5.0f)
+	gravity(5.0f),
+	lineOfSightX(LINE_OF_SIGHT_DEFAULT_X)
 {
 	// Initialise collision boxes
 	colBoxOffsetSimple.x = size.x / 2.0f - collisionBoxHorizontalLength / 2.0f;
@@ -153,6 +154,7 @@ void Enemy::Update(GLfloat deltaTime)
 	else if (state != EnemyState::ATTACK)
 	{
 		state = EnemyState::IDLE;
+		ResetAnimation(EnemyState::ATTACK);
 	}
 
 	position.x += velocity.x * speed * deltaTime;
@@ -192,18 +194,20 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 
 			if (spottedFacingPlayer)
 			{
-				std::cout << "enemy spotted player LEFT" << std::endl;
 				hasSpottedPlayer = true;
+				if (lineOfSightX <= LINE_OF_SIGHT_DEFAULT_X)
+					lineOfSightX *= 2;
 			}
 			else if (spottedNotFacingPlayer)
 			{
-				std::cout << "enemy heard player LEFT" << std::endl;
 				hasSpottedPlayer = true;
+				if (lineOfSightX <= LINE_OF_SIGHT_DEFAULT_X)
+					lineOfSightX *= 2;
 			}
 			else
 			{
-				std::cout << "enemy lost detection of player LEFT. Setting velo to 0" << std::endl;
 				hasSpottedPlayer = false;
+				lineOfSightX = LINE_OF_SIGHT_DEFAULT_X;
 				SetVelocityX(0.0f);
 			}
 		}
@@ -216,18 +220,20 @@ GLboolean Enemy::CheckIfHasSeenPlayer(const Player& player)
 
 			if (spottedFacingPlayer)
 			{
-				std::cout << "enemy spotted player RIGHT" << std::endl;
 				hasSpottedPlayer = true;
+				if (lineOfSightX <= LINE_OF_SIGHT_DEFAULT_X)
+					lineOfSightX *= 2;
 			}
 			else if (spottedNotFacingPlayer)
 			{
-				std::cout << "enemy heard player RIGHT" << std::endl;
 				hasSpottedPlayer = true;
+				if (lineOfSightX <= LINE_OF_SIGHT_DEFAULT_X)
+					lineOfSightX *= 2;
 			}
 			else
 			{
-				std::cout << "enemy lost detection of player RIGHT. Setting velo to 0" << std::endl;
 				hasSpottedPlayer = false;
+				lineOfSightX = LINE_OF_SIGHT_DEFAULT_X;
 				SetVelocityX(0.0f);
 			}
 		}

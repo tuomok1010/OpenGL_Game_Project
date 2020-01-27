@@ -12,6 +12,7 @@
 #include "Window.h"
 #include "Spearman.h"
 #include "Coin.h"
+#include "Objective.h"
 
 class Level
 {
@@ -22,27 +23,26 @@ public:
 	void Load(const std::string& filePath, const std::string& backGroundPath = "");
 	void ProcessLevelData();
 	void Draw(Window& window, float deltaTime);
-	void UpdateAssets(float deltaTime);
+	void Update(float deltaTime);
 	GLboolean IsPlayerSpottedByEnemies();
 	void RunEnemyBehaviour(float deltaTime);
+	void RunSpearmanBehaviour(Spearman& enemy, float deltaTime);
 	void SetAnimationToAllAliveEnemies(EnemyState newState);
+	void InitObjectives();
+	GLboolean CheckObjectives();	// returns true if all primary objecives are complete
 
 	void ProcessCollisions();
-
 	void ProcessPlayerCollisions(GameObject& obj);
 	void ProcessEnemyCollisions(Enemy& enemy, GameObject& obj);
+
+	const std::vector<Objective>& GetPrimaryObjectives()const { return objectivesPrimary; }
+	const std::vector<Objective>& GetSecondaryObjectives()const { return objectivesSecondary; }
 
 	GLboolean levelComplete{ false };
 	GLboolean quitGame{ false };
 
 	GLuint levelNumber{};
 
-private:
-	// this is a lot of functions for just collisions....
-	// TODO consider finding a more simple way to do it. having the enemy and player inherit from the same parent class might be an option
-
-	// these function create one large collision box around the player/obj and checks if it overlaps with the other object
-	GLboolean SimpleCollisionCheck(GameObject& obj1, GameObject& obj2);
 private:
 	std::vector<std::vector<GLchar>> levelData;
 	std::vector<GameObject*> blocks;
@@ -70,4 +70,7 @@ private:
 	SpriteRenderer& renderer;
 	PrimitiveRenderer& primitiveRenderer;
 	Player& player;
+
+	std::vector<Objective> objectivesPrimary{};
+	std::vector<Objective> objectivesSecondary{};
 };

@@ -2,6 +2,7 @@
 
 #include "Texture2D.h"
 #include "SpriteRenderer.h"
+#include "CollisionBox.h"
 
 enum class Type
 {
@@ -19,8 +20,9 @@ public:
 		glm::vec2 textureOffset = glm::vec2(0.0f), glm::vec2 textureZoom = glm::vec2(1.0f));
 	virtual ~GameObject();
 
-	void Draw(SpriteRenderer& renderer, GLuint textureUnit = 0);
+	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& colBoxRenderer, GLboolean renderCollisionBox = false, GLuint textureUnit = 0);
 	void Rotate(GLfloat degrees, glm::vec3 rotationAxis);
+	GLboolean SimpleCollisionCheck(GameObject& obj);
 
 	glm::vec2 GetSize() const { return size; }
 	glm::vec2 GetPosition()const { return position; }
@@ -44,4 +46,5 @@ protected:
 	glm::vec2 textureZoom{};
 	glm::vec2 textureOffset{};
 	Type type;
+	CollisionBox collisionBoxSimple;
 };

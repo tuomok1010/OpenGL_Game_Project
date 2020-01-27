@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#define LINE_OF_SIGHT_DEFAULT_X 250.0f
+
 enum class EnemyState
 {
 	IDLE,

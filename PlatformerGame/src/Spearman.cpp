@@ -14,7 +14,7 @@ Spearman::Spearman()
 	rotation = 0.0f;
 	speed = 100.0f;
 	health = 50.0f;
-	lineOfSightX = 250.0f;
+	lineOfSightX = LINE_OF_SIGHT_DEFAULT_X;
 	enemyType = EnemyType::SPEARMAN;
 	meleeDamage = 20;
 	meleeRange = -15.0f;
@@ -186,7 +186,6 @@ GLboolean Spearman::IsInPlayerMeleeRange(Player& player)
 					{
 						player.SetIsInMeleeRange(true);
 						isInRange = true;
-
 					}
 				}
 				break;

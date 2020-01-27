@@ -152,6 +152,7 @@
     <ClCompile Include="src\Level.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\Objective.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PrimitiveRenderer.cpp" />
     <ClCompile Include="src\PuffEffect.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="src\Level.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\GameObject.h" />
+    <ClInclude Include="src\Objective.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\PrimitiveRenderer.h" />
     <ClInclude Include="src\PuffEffect.h" />

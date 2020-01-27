@@ -140,6 +140,7 @@ void Level::ProcessLevelData()
 				{
 					Spearman* spearman = new Spearman();
 					spearman->SetPosition(glm::vec3((j * BLOCK_SIZE) - (spearman->GetSize().x / 2.0f), i * BLOCK_SIZE, 0.0f));
+					spearman->AddPatrolPoint(spearman->GetPosition());
 					enemies.emplace_back(spearman);
 					break;
 				}
@@ -282,13 +283,13 @@ void Level::ProcessLevelData()
 	}
 
 	 //initializes the enemy orientation so that at the start of the level they face the player
-	//for (auto& enemy : enemies)
-	//{
-	//	if (enemy->GetPosition().x > player.GetPosition().x)
-	//		enemy->SetOrientation(EnemyOrientation::LEFT);
-	//	else if(enemy->GetPosition().x < player.GetPosition().x)
-	//		enemy->SetOrientation(EnemyOrientation::RIGHT);
-	//}
+	for (auto& enemy : enemies)
+	{
+		if (enemy->GetPosition().x > player.GetPosition().x)
+			enemy->SetOrientation(EnemyOrientation::LEFT);
+		else if(enemy->GetPosition().x < player.GetPosition().x)
+			enemy->SetOrientation(EnemyOrientation::RIGHT);
+	}
 }
 
 void Level::Draw(Window& window, float deltaTime)
@@ -324,11 +325,11 @@ void Level::Draw(Window& window, float deltaTime)
 
 	// render all blocks
 	for (unsigned int i = 0; i < blocks.size(); ++i)
-		blocks.at(i)->Draw(renderer);
+		blocks.at(i)->Draw(renderer, primitiveRenderer);
 
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
-		assets.at(i)->Draw(renderer);
+		assets.at(i)->Draw(renderer, primitiveRenderer);
 
 	for (unsigned int i = 0; i < coins.size(); ++i)
 	{
@@ -373,28 +374,9 @@ void Level::Draw(Window& window, float deltaTime)
 		Texture2D* menuTexture = new Texture2D("../textures/playerControls.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 		glm::vec2 menuPos = glm::vec2(player.GetPosition().x, player.GetPosition().y + player.GetSize().y);
 		GameObject* controlsMenu = new GameObject(menuPos, glm::vec2(200.0f), *menuTexture);
-		controlsMenu->Draw(renderer);
+		controlsMenu->Draw(renderer, primitiveRenderer);
 		delete menuTexture;
 		delete controlsMenu;
-	}
-}
-
-GLboolean Level::SimpleCollisionCheck(GameObject& obj1, GameObject& obj2)
-{
-	if (obj1.isCollisionEnabled() && obj2.isCollisionEnabled())
-	{
-		glm::vec2 obj1Pos = obj1.GetPosition();
-		glm::vec2 obj1Size = obj1.GetSize();
-		glm::vec2 obj2Pos = obj2.GetPosition();
-		glm::vec2 ob2Size = obj2.GetSize();
-
-		bool collisionX = obj1Pos.x + obj1Size.x > obj2Pos.x && obj2Pos.x + ob2Size.x > obj1Pos.x;
-		bool collisionY = obj1Pos.y + obj1Size.y > obj2Pos.y && obj2Pos.y + ob2Size.y > obj1Pos.y;
-		return collisionX && collisionY;
-	}
-	else
-	{
-		return false;
 	}
 }
 
@@ -402,6 +384,7 @@ void Level::ProcessCollisions()
 {
 	player.SetIsOnGround(false);
 
+	// process collisions with blocks
 	for (auto& block : blocks)
 	{
 		ProcessPlayerCollisions(*block);
@@ -500,7 +483,7 @@ void Level::ProcessEnemyCollisions(Enemy& enemy, GameObject& obj)
 	}
 }
 
-void Level::UpdateAssets(float deltaTime)
+void Level::Update(float deltaTime)
 {
 	for (auto& obj : assets)
 	{
@@ -508,41 +491,35 @@ void Level::UpdateAssets(float deltaTime)
 		{
 			case Type::SPIKETRAP:
 			{
-				if (player.SimpleCollisionCheck(*obj))
-				{
-					dynamic_cast<SpikeTrap*>(obj)->DamagePlayer(player);
+				SpikeTrap* spikeTrap = dynamic_cast<SpikeTrap*>(obj);
 
+				if (player.SimpleCollisionCheck(*obj))
+				{					
+					spikeTrap->DamagePlayer(player);
 					if (!player.GetIsDead())
 						player.SetShouldBleed(true);
-
 					if (player.GetHealth() <= 0.0f)
-					{
 						player.SetIsDead(true);
+				}
+				for (auto& enemy : enemies)
+				{
+					if (enemy->SimpleCollisionCheck(*obj))
+					{
+						Spearman* spearman = dynamic_cast<Spearman*>(enemy);
+						spikeTrap->DamageEnemy(*spearman);
+						std::cout << "Spiketrap damaging enemy" << std::endl;
+						if (!spearman->GetIsDead())
+						{
+							spearman->SetShouldBleed(true);
+							std::cout << "setting should bleed to true" << std::endl;
+						}
+
+						if (spearman->GetHealth() <= 0.0f)
+						{
+							std::cout << "setting is dead to true" << std::endl;
+							spearman->SetIsDead(true);
+						}
 					}
-				}
-				break;
-			}
-			case Type::SIGNSTART:
-			{
-				if (player.SimpleCollisionCheck(*obj))
-				{
-					levelComplete = true;
-				}
-				break;
-			}
-			case Type::SIGNQUIT:
-			{
-				if (player.SimpleCollisionCheck(*obj))
-				{
-					quitGame = true;
-				}
-				break;
-			}
-			case Type::CHEST:
-			{
-				if (player.SimpleCollisionCheck(*obj))
-				{
-					levelComplete = true;
 				}
 				break;
 			}
@@ -572,6 +549,10 @@ void Level::UpdateAssets(float deltaTime)
 			coin->SetIsCollected(true);
 		}
 	}
+
+	// if all primary objectives in the level are complete, the level is finished. TODO draw some kind of "level complete" menu (maybe in UI class) 
+	// that shows how the player did
+	levelComplete = CheckObjectives();
 }
 
 GLboolean Level::IsPlayerSpottedByEnemies()
@@ -594,46 +575,8 @@ void Level::RunEnemyBehaviour(float deltaTime)
 		{
 			case EnemyType::SPEARMAN:
 			{
-				if (!enemy->GetIsDead())
-				{
-					Spearman* spearman = dynamic_cast<Spearman*>(enemy);
-
-					spearman->Update(deltaTime);
-
-					if (!spearman->CheckIfHasSeenPlayer(player))
-						spearman->MoveTowardsNextPatrolPoint(deltaTime);
-					else
-					{
-						if (spearman->MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
-						{
-							spearman->MeleeAttack();
-
-							if (spearman->DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
-							{
-								player.SetShouldBleed(true);
-								player.ResetBloodAnimation();
-
-								if (player.GetHealth() <= 0.0f)
-								{
-									player.SetLives(player.GetLives() - 1);
-									if (player.GetLives() > 0)
-										player.SetHealth(100.0f);
-								}
-							}
-							if (player.GetLives() == 0 && player.GetHealth() <= 0)
-								player.SetIsDead(true);
-						}
-					}
-					if (spearman->IsInPlayerMeleeRange(player))
-					{
-						if (player.IsMeleeAttackFinished())	// returns false when the animation is in it's last frame // TODO this causes player to automatically attack: FIX!
-						{
-							spearman->TakeDamage(player.GetDamage());
-							spearman->SetShouldBleed(true);
-							spearman->ResetBloodAnimation();
-						}
-					}
-				}
+				Spearman* spearman = dynamic_cast<Spearman*>(enemy);
+				RunSpearmanBehaviour(*spearman, deltaTime);
 			}
 		}
 		if(player.GetIsDead())
@@ -644,6 +587,48 @@ void Level::RunEnemyBehaviour(float deltaTime)
 	}
 }
 
+void Level::RunSpearmanBehaviour(Spearman& enemy, float deltaTime)
+{
+	if (!enemy.GetIsDead())
+	{
+		enemy.Update(deltaTime);
+
+		if (!enemy.CheckIfHasSeenPlayer(player))
+			enemy.MoveTowardsNextPatrolPoint(deltaTime);
+		else
+		{
+			if (enemy.MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
+			{
+				enemy.MeleeAttack();
+
+				if (enemy.DamagePlayer(player)) // returns true after the final melee attackanimation has been drawn
+				{
+					player.SetShouldBleed(true);
+					player.ResetBloodAnimation();
+
+					if (player.GetHealth() <= 0.0f)
+					{
+						player.SetLives(player.GetLives() - 1);
+						if (player.GetLives() > 0)
+							player.SetHealth(100.0f);
+					}
+				}
+				if (player.GetLives() == 0 && player.GetHealth() <= 0)
+					player.SetIsDead(true);
+			}
+		}
+		if (enemy.IsInPlayerMeleeRange(player))
+		{
+			if (player.IsMeleeAttackFinished())	// returns false when the animation is in it's last frame // TODO this causes player to automatically attack: FIX!
+			{
+				enemy.TakeDamage(player.GetDamage());
+				enemy.SetShouldBleed(true);
+				enemy.ResetBloodAnimation();
+			}
+		}
+	}
+}
+
 void Level::SetAnimationToAllAliveEnemies(EnemyState newState)
 {
 	for (auto& enemy : enemies)
@@ -651,4 +636,78 @@ void Level::SetAnimationToAllAliveEnemies(EnemyState newState)
 		if(!enemy->GetIsDead())
 			enemy->SetState(newState);
 	}
+}
+
+void Level::InitObjectives()
+{
+	switch (levelNumber)
+	{
+		case 0:
+		{
+			Objective objective1 = Objective(player, ObjectiveType::MOVE_TO_LOCATION, ObjectivePriority::PRIMARY);
+			for (auto& asset : assets)
+			{
+				if (asset->GetType() == Type::SIGNSTART)
+					objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
+				objective1.SetName("Move to the start sign to begin");
+			}
+			objectivesPrimary.emplace_back(objective1);
+			break;
+		}
+		case 1:
+		{
+			Objective objective1 = Objective(player, ObjectiveType::MOVE_TO_LOCATION, ObjectivePriority::PRIMARY);
+			for (auto& asset : assets)
+			{
+				if (asset->GetType() == Type::CHEST)
+					objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
+				objective1.SetName("Find the treasure chest!");
+			}
+			objectivesPrimary.emplace_back(objective1);
+
+			Objective objective2 = Objective(player, ObjectiveType::COLLECT_COIN, ObjectivePriority::SECONDARY);
+			for (auto& coin : coins)
+			{
+				objective2.AddCoin(coin);
+				objective2.SetName("Collect all the coins in the level");
+			}
+			objectivesSecondary.emplace_back(objective2);
+			break;
+		}
+	}
+}
+
+GLboolean Level::CheckObjectives()
+{
+	GLboolean allPrimaryObjectivesComplete{ true };
+
+	if (!objectivesPrimary.empty())
+	{
+		for (auto& objective : objectivesPrimary)
+		{
+			objective.Update();
+			if (!objective.GetIsCompleted())
+			{
+				allPrimaryObjectivesComplete = false;
+			}
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	if (!objectivesSecondary.empty())
+	{
+		for (auto& objective : objectivesSecondary)
+		{
+			objective.Update();
+			if (!objective.GetIsCompleted())
+			{
+				levelComplete = false;
+			}
+		}
+	}
+
+	return allPrimaryObjectivesComplete;
 }
