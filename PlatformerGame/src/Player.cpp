@@ -12,7 +12,7 @@ Player::Player()
 	velocity(0.0f),
 	speed(200.0f),
 	gravity(5.0f),
-	health(10000),
+	health(100),
 	damage(50.0f),
 	lives(3)
 {

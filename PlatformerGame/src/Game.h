@@ -16,8 +16,6 @@
 #include "UI.h"
 #include "PrimitiveRenderer.h"
 
-#define JUMP_COOLDOWN 1
-
 enum class GameState
 {
 	MENU,
@@ -59,11 +57,7 @@ private:
 
 	UI* ui{};
 
-	bool canAttackAgain{ true };
-	GLfloat attackCooldown{};
-
-	GLfloat jumpCooldown{};
-
 	GLfloat levelLoadTimer{};
+	GLfloat objectivesMenuCooldownTimer{};
 };
 

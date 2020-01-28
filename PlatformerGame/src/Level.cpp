@@ -552,6 +552,7 @@ void Level::Update(float deltaTime)
 
 	// if all primary objectives in the level are complete, the level is finished. TODO draw some kind of "level complete" menu (maybe in UI class) 
 	// that shows how the player did
+
 	levelComplete = CheckObjectives();
 }
 
@@ -686,7 +687,7 @@ GLboolean Level::CheckObjectives()
 		for (auto& objective : objectivesPrimary)
 		{
 			objective.Update();
-			if (!objective.GetIsCompleted())
+			if (objective.GetState() != ObjectiveState::COMPLETED)
 			{
 				allPrimaryObjectivesComplete = false;
 			}
@@ -702,9 +703,9 @@ GLboolean Level::CheckObjectives()
 		for (auto& objective : objectivesSecondary)
 		{
 			objective.Update();
-			if (!objective.GetIsCompleted())
+			if (objective.GetState() != ObjectiveState::COMPLETED)
 			{
-				levelComplete = false;
+				// if the player has not finished all secondary objectives at the end of the level, do not give him full score for the level
 			}
 		}
 	}

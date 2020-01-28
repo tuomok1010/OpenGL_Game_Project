@@ -23,6 +23,13 @@ enum class ObjectivePriority
 	SECONDARY
 };
 
+enum class ObjectiveState
+{
+	IN_PROGRESS,
+	COMPLETED,
+	FAILED
+};
+
 class Objective
 {
 public:
@@ -38,13 +45,14 @@ public:
 	void AddLocationToMoveTo(glm::vec2 locationToMoveTo);
 
 	std::string GetName() const { return name; }
-	GLboolean GetIsCompleted()const { return isCompleted; }
+	ObjectiveState GetState()const { return state; }
+
 	void SetName(std::string newName) { name = newName; }
 
 private:
 	Player& player;
 
-	GLboolean isCompleted{};
+	ObjectiveState state{};
 	std::string name{};
 
 	std::vector<Coin*> coinsToCollect{};

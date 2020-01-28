@@ -4,7 +4,8 @@ Objective::Objective(Player& player, ObjectiveType type, ObjectivePriority prior
 	:
 	player(player),
 	type(type),
-	priority(priority)
+	priority(priority),
+	state(ObjectiveState::IN_PROGRESS)
 {
 
 }
@@ -28,11 +29,11 @@ void Objective::CheckIfCompleted()
 			{
 				if (!coin->GetIsCollected())
 				{
-					isCompleted = false;
+					state = ObjectiveState::IN_PROGRESS;
 					return;
 				}
 			}
-			isCompleted = true;
+			state = ObjectiveState::COMPLETED;
 			break;
 		}
 		case ObjectiveType::COLLECT_OBJECT:	// TODO add collect functionality to GameObjects
@@ -41,10 +42,10 @@ void Objective::CheckIfCompleted()
 			{
 				if (!player.SimpleCollisionCheck(*obj))
 				{
-					isCompleted = false;
+					state = ObjectiveState::IN_PROGRESS;
 				}
 			}
-			isCompleted = true;
+			state = ObjectiveState::COMPLETED;
 			break;
 		}
 		case ObjectiveType::KILL_TARGET:
@@ -53,23 +54,23 @@ void Objective::CheckIfCompleted()
 			{
 				if (!target->GetIsDead())
 				{
-					isCompleted = false;
+					state = ObjectiveState::IN_PROGRESS;
 					return;
 				}
 			}
-			isCompleted = true;
+			state = ObjectiveState::COMPLETED;
 			break;
 		}
 		case ObjectiveType::MOVE_TO_LOCATION: // move some of this in the addlocationtomovefunc
 		{
 			if (player.SimpleCollisionCheck(locationToMoveToTriggerBox))
 			{
-				isCompleted = true;
+				state = ObjectiveState::COMPLETED;
 			}
 			break;
 		}
 		default:
-			isCompleted = false;
+			state = ObjectiveState::IN_PROGRESS;
 	}
 }
 

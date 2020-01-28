@@ -16,8 +16,10 @@ public:
 	void Draw();
 
 	GLboolean GetGamePaused()const { return gamePaused; }
+	GLboolean GetViewObjectives()const { return viewObjectives; }
 
 	void SetGamePaused(GLboolean newVal) { gamePaused = newVal; }
+	void SetViewObjectives(GLboolean newVal) { viewObjectives = newVal; }
 
 private:
 	void DrawScore();
@@ -33,7 +35,7 @@ private:
 	SpriteRenderer& spriteRenderer;
 	TextRenderer& textRenderer;
 	PrimitiveRenderer& primitiveRenderer;
-	Texture2D* coinIcon{};
-	Texture2D* lifeIcon{};
-	GLboolean gamePaused{};
+	std::vector<Texture2D*> textures{};
+	GLboolean gamePaused{ false };
+	GLboolean viewObjectives{ false };
 };

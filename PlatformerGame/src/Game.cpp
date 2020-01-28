@@ -12,7 +12,8 @@ Game::Game(int scrnWidth, int scrnHeight)
 	mainWindow(scrnWidth, scrnHeight), 
 	projection(glm::mat4(1.0f)),
 	gameState(GameState::MENU),
-	levelLoadTimer(5.0f)
+	levelLoadTimer(5.0f),
+	objectivesMenuCooldownTimer(0.25f)
 {
 	projection = glm::ortho(0.0f, (float)mainWindow.GetWindowWidth(), 0.0f, (float)mainWindow.GetWindowHeight(), -2.0f, 2.0f);
 
@@ -169,7 +170,16 @@ void Game::ProcessInput(Level& level)
 		{
 			ui->SetGamePaused(false);
 		}
+
+		// activate objectives menu
+		if (mainWindow.IsKeyPressed(GLFW_KEY_TAB) && objectivesMenuCooldownTimer <= 0.0f)
+		{
+			GLboolean value = ui->GetViewObjectives();
+			ui->SetViewObjectives(!value);
+			objectivesMenuCooldownTimer = 0.25f;
+		}
 	}
+	objectivesMenuCooldownTimer -= deltaTime;
 }
 
 void Game::Update(Level& level)
