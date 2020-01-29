@@ -33,7 +33,7 @@ public:
 	glm::vec3 GetPosition()const { return position; }
 	GLboolean GetIsCollected()const { return isCollected; }
 	GLuint GetValue()const { return value; }
-	GLboolean GetShouldBeDestroyed()const { return sparkleEffect.GetIsDestroyed(); }
+	GLboolean GetShouldBeDestroyed()const { return sparkleEffect.GetShouldStop(); }
 
 private:
 	std::vector<Texture2D*> texturesCoin{};

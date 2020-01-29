@@ -29,7 +29,8 @@ enum class EnemyOrientation
 
 enum class EnemyType
 {
-	SPEARMAN
+	SPEARMAN,
+	TARGET
 };
 
 class Enemy

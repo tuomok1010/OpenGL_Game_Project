@@ -27,7 +27,8 @@ enum class ObjectiveState
 {
 	IN_PROGRESS,
 	COMPLETED,
-	FAILED
+	FAILED,
+	LOCKED	// TODO implement this. Objectives that are blocked cannot be completed until all previous ones are completed
 };
 
 class Objective

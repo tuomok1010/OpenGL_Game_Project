@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color, GLfloat speed, glm::vec2 textureOffset, glm::vec2 textureZoom)
+GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color, GLfloat speed, glm::vec2 textureOffset, glm::vec2 textureScale)
 	:
 	position(position),
 	size(size),
@@ -9,11 +9,10 @@ GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, g
 	color(color),
 	rotation(0.0f),
 	rotationAxis(0.0f, 0.0f, 1.0f),
-	collisionEnabled(true),
-	isDestroyed(false),
-	textureZoom(textureZoom),
+	textureScale(textureScale),
 	textureOffset(textureOffset),
-	type(Type::BLOCK)
+	type(Type::BLOCK),
+	collisionEnabled(true)
 {
 	collisionBoxSimple = CollisionBox(this->position, this->size, glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
 }
@@ -24,7 +23,7 @@ GameObject::~GameObject()
 
 void GameObject::Draw(SpriteRenderer& renderer, PrimitiveRenderer& colBoxRenderer, GLboolean renderCollisionBox, GLuint textureUnit)
 {
-	renderer.Draw(texture, textureUnit, color, position, size, rotation, textureZoom, textureOffset, rotationAxis);
+	renderer.Draw(texture, textureUnit, color, position, size, rotation, textureScale, textureOffset, rotationAxis);
 	if (renderCollisionBox)
 		collisionBoxSimple.Draw(colBoxRenderer);
 }
