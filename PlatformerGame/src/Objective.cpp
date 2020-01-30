@@ -93,5 +93,5 @@ void Objective::AddLocationToMoveTo(glm::vec2 locationToMoveTo)
 {
 	this->locationToMoveTo = locationToMoveTo;
 	locationToMoveToTriggerBox.size = glm::vec2(20.0f);
-	locationToMoveToTriggerBox.position = locationToMoveTo + locationToMoveToTriggerBox.size.x / 2.0f;
+	locationToMoveToTriggerBox.position = glm::vec2(locationToMoveTo.x - locationToMoveToTriggerBox.size.x / 2.0f, locationToMoveTo.y);
 }

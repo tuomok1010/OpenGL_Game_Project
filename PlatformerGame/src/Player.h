@@ -53,8 +53,6 @@ public:
 	GLboolean SimpleCollisionCheck(Coin& coin);
 	GLboolean SimpleCollisionCheck(CollisionBox& colBox);
 
-	void UpdateCollisionBoxPositions();
-
 	void SetPosition(glm::vec3 newPosition);
 	void SetOrientation(PlayerOrientation newOrientation);
 	void SetState(PlayerState newState);

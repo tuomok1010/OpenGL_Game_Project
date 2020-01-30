@@ -59,22 +59,41 @@ Level::Level(SpriteRenderer& renderer, PrimitiveRenderer& primitiveRenderer, Pla
 Level::~Level()
 {
 	for (unsigned int i = 0; i < assetTextures.size(); ++i)
-		delete assetTextures.at(i);
+	{
+		if(assetTextures.at(i) != nullptr)
+			delete assetTextures.at(i);
+	}
+
 
 	for (unsigned int i = 0; i < blocks.size(); ++i)
-		delete blocks.at(i);
+	{
+		if(blocks.at(i) != nullptr)
+			delete blocks.at(i);
+	}
 
 	for (unsigned int i = 0; i < assets.size(); ++i)
-		delete assets.at(i);
+	{
+		if(assets.at(i) != nullptr)
+			delete assets.at(i);
+	}
 
 	for (unsigned int i = 0; i < cloudTextures.size(); ++i)
-		delete cloudTextures.at(i);
+	{
+		if(cloudTextures.at(i) != nullptr)
+			delete cloudTextures.at(i);
+	}
 
 	for (unsigned int i = 0; i < enemies.size(); ++i)
-		delete enemies.at(i);
+	{
+		if(enemies.at(i) != nullptr)
+			delete enemies.at(i);
+	}
 
 	for (unsigned int i = 0; i < coins.size(); ++i)
-		delete coins.at(i);
+	{
+		if(coins.at(i) != nullptr)
+			delete coins.at(i);
+	}
 }
 
 void Level::Load(const std::string& filePath, const std::string& backGroundPath)
@@ -142,6 +161,13 @@ void Level::ProcessLevelData()
 					spearman->SetPosition(glm::vec3((j * BLOCK_SIZE) - (spearman->GetSize().x / 2.0f), i * BLOCK_SIZE, 0.0f));
 					spearman->AddPatrolPoint(spearman->GetPosition());
 					enemies.emplace_back(spearman);
+					break;
+				}
+				case 't':
+				{
+					Target* target = new Target();
+					target->SetPosition(glm::vec3((j * BLOCK_SIZE), i * BLOCK_SIZE, 0.0f));
+					enemies.emplace_back(target);
 					break;
 				}
 				case 'C':
@@ -364,7 +390,7 @@ void Level::Draw(Window& window, float deltaTime)
 	// render enemy effects
 	for (unsigned int i = 0; i < enemies.size(); ++i)
 	{
-		if(!enemies.at(i)->GetShouldDespawn())
+		if(enemies.at(i)->GetEnemyType() == EnemyType::SPEARMAN && !enemies.at(i)->GetShouldDespawn())
 			dynamic_cast<Spearman*>(enemies.at(i))->DrawBloodEffect(renderer);
 	}
 
@@ -578,13 +604,21 @@ void Level::RunEnemyBehaviour(float deltaTime)
 			{
 				Spearman* spearman = dynamic_cast<Spearman*>(enemy);
 				RunSpearmanBehaviour(*spearman, deltaTime);
+				break;
+			}
+			case EnemyType::TARGET:
+			{
+				Target* target = dynamic_cast<Target*>(enemy);
+				RunTargetBehaviour(*target, deltaTime);
+				break;
 			}
 		}
-		if(player.GetIsDead())
+		if (player.GetIsDead())
 			enemy->SetState(EnemyState::IDLE);
 
 		if (enemy->GetIsDead())
 			enemy->SetState(EnemyState::DEATH);
+
 	}
 }
 
@@ -630,6 +664,22 @@ void Level::RunSpearmanBehaviour(Spearman& enemy, float deltaTime)
 	}
 }
 
+void Level::RunTargetBehaviour(Target& target, float deltaTime)
+{
+	if (!target.GetIsDead())
+	{
+		target.Update(deltaTime);
+
+		if (target.IsInPlayerMeleeRange(player))
+		{
+			if (player.IsMeleeAttackFinished())	// returns false when the animation is in it's last frame // TODO this causes player to automatically attack: FIX!
+			{
+				target.TakeDamage(player.GetDamage());
+			}
+		}
+	}
+}
+
 void Level::SetAnimationToAllAliveEnemies(EnemyState newState)
 {
 	for (auto& enemy : enemies)
@@ -645,37 +695,56 @@ void Level::InitObjectives()
 	{
 		case 0:
 		{
-			Objective objective1 = Objective(player, ObjectiveType::MOVE_TO_LOCATION, ObjectivePriority::PRIMARY);
-			for (auto& asset : assets)
-			{
-				if (asset->GetType() == Type::SIGNSTART)
-					objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
-				objective1.SetName("Move to the start sign to begin");
-			}
-			objectivesPrimary.emplace_back(objective1);
+			InitLevel0Objectives();
 			break;
 		}
 		case 1:
 		{
-			Objective objective1 = Objective(player, ObjectiveType::MOVE_TO_LOCATION, ObjectivePriority::PRIMARY);
-			for (auto& asset : assets)
-			{
-				if (asset->GetType() == Type::CHEST)
-					objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
-				objective1.SetName("Find the treasure chest!");
-			}
-			objectivesPrimary.emplace_back(objective1);
-
-			Objective objective2 = Objective(player, ObjectiveType::COLLECT_COIN, ObjectivePriority::SECONDARY);
-			for (auto& coin : coins)
-			{
-				objective2.AddCoin(coin);
-				objective2.SetName("Collect all the coins in the level");
-			}
-			objectivesSecondary.emplace_back(objective2);
+			InitLevel1Objectives();
 			break;
 		}
 	}
+}
+
+void Level::InitLevel0Objectives()
+{
+	Objective objective1 = Objective(player, ObjectiveType::MOVE_TO_LOCATION, ObjectivePriority::PRIMARY);
+	for (auto& asset : assets)
+	{
+		if (asset->GetType() == Type::SIGNSTART)
+			objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
+		objective1.SetName("Move to the start sign to begin");
+	}
+	objectivesPrimary.emplace_back(objective1);
+
+	Objective objective2 = Objective(player, ObjectiveType::KILL_TARGET, ObjectivePriority::SECONDARY);
+	for (auto& target : enemies)
+	{
+		if (target->GetEnemyType() == EnemyType::TARGET)
+			objective2.AddTargetToKill(target);
+		objective2.SetName("Destroy the target");
+	}
+	objectivesSecondary.emplace_back(objective2);
+}
+
+void Level::InitLevel1Objectives()
+{
+	Objective objective1 = Objective(player, ObjectiveType::MOVE_TO_LOCATION, ObjectivePriority::PRIMARY);
+	for (auto& asset : assets)
+	{
+		if (asset->GetType() == Type::CHEST)
+			objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
+		objective1.SetName("Find the treasure chest!");
+	}
+	objectivesPrimary.emplace_back(objective1);
+
+	Objective objective2 = Objective(player, ObjectiveType::COLLECT_COIN, ObjectivePriority::SECONDARY);
+	for (auto& coin : coins)
+	{
+		objective2.AddCoin(coin);
+		objective2.SetName("Collect all the coins in the level");
+	}
+	objectivesSecondary.emplace_back(objective2);
 }
 
 GLboolean Level::CheckObjectives()

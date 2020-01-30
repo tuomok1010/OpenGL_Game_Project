@@ -13,6 +13,7 @@
 #include "Spearman.h"
 #include "Coin.h"
 #include "Objective.h"
+#include "Target.h"
 
 class Level
 {
@@ -27,8 +28,11 @@ public:
 	GLboolean IsPlayerSpottedByEnemies();
 	void RunEnemyBehaviour(float deltaTime);
 	void RunSpearmanBehaviour(Spearman& enemy, float deltaTime);
+	void RunTargetBehaviour(Target& target, float deltaTime);
 	void SetAnimationToAllAliveEnemies(EnemyState newState);
 	void InitObjectives();
+	void InitLevel0Objectives();
+	void InitLevel1Objectives();
 	GLboolean CheckObjectives();	// returns true if all primary objecives are complete
 
 	void ProcessCollisions();

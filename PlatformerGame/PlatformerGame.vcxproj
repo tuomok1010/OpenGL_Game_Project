@@ -146,7 +146,6 @@
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Coin.cpp" />
     <ClCompile Include="src\CollisionBox.cpp" />
-    <ClCompile Include="src\DestructableGameObject.cpp" />
     <ClCompile Include="src\Effect.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\FireSparkleEffect.cpp" />
@@ -179,7 +178,6 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Coin.h" />
     <ClInclude Include="src\CollisionBox.h" />
-    <ClInclude Include="src\DestructableGameObject.h" />
     <ClInclude Include="src\Effect.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\FireSparkleEffect.h" />

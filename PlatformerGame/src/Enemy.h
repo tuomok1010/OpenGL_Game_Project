@@ -42,7 +42,7 @@ public:
 	virtual void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false);
 	virtual void DrawPuffEffect(SpriteRenderer& renderer);
 
-	void Update(GLfloat deltaTime);
+	virtual void Update(GLfloat deltaTime);
 
 	GLboolean CheckIfHasSeenPlayer(const Player& player);
 

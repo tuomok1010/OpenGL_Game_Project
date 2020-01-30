@@ -11,7 +11,7 @@ enum class Type
 	SIGNSTART,		// this is only used in the "menu" level. Will start the game if the player moves to it
 	SIGNQUIT,		// this is only used in the "menu" level. Will quit the game if the player moves to it
 	CHEST,
-	TARGET
+	PLATFORM
 };
 
 class GameObject
@@ -29,10 +29,12 @@ public:
 	glm::vec2 GetPosition()const { return position; }
 	GLboolean isCollisionEnabled() const { return collisionEnabled; }
 	virtual Type GetType()const { return type; }
+	CollisionBox GetCollisionBox()const { return collisionBoxSimple; }
 
 	void SetIsCollisionEnabled(GLboolean newValue) { collisionEnabled = newValue; }
 	void SetType(Type newType) { type = newType; }
 	void SetPosition(glm::vec2 newPosition);
+	void SetCollisionBoxSize(glm::vec2 newSize) { collisionBoxSimple.size = newSize; }
 
 protected:
 	glm::vec2 position{};

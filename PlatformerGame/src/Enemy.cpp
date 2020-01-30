@@ -4,6 +4,8 @@
 
 Enemy::Enemy()
 	:
+	textureOffset(glm::vec2(0.0f)),
+	textureScale(glm::vec2(1.0f)),
 	color(glm::vec3(1.0f)),
 	position(glm::vec3(0.0f)),
 	rotation(0.0f),
@@ -299,7 +301,7 @@ void Enemy::TakeDamage(GLfloat damage)
 {
 	health -= damage;
 
-	if (health <= 0.0f)
+	if (health <= 0)
 		isDead = true;
 }
 

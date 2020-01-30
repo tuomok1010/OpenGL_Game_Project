@@ -39,8 +39,10 @@ GLboolean GameObject::SimpleCollisionCheck(GameObject& obj)
 	glm::vec2 objPos = obj.GetPosition();
 	glm::vec2 objSize = obj.GetSize();
 
-	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > objPos.x&& objPos.x + objSize.x > collisionBoxSimple.position.x;
-	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > objPos.y&& objPos.y + objSize.y > collisionBoxSimple.position.y;
+	CollisionBox otherObjectColBox = obj.GetCollisionBox();
+
+	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > otherObjectColBox.position.x && otherObjectColBox.position.x + otherObjectColBox.size.x > collisionBoxSimple.position.x;
+	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > otherObjectColBox.position.y && otherObjectColBox.position.y + otherObjectColBox.size.y > collisionBoxSimple.position.y;
 	return collisionX && collisionY;
 
 	return false;
