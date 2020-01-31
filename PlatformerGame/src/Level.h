@@ -38,6 +38,7 @@ public:
 	void ProcessCollisions();
 	void ProcessPlayerCollisions(GameObject& obj);
 	void ProcessEnemyCollisions(Enemy& enemy, GameObject& obj);
+	void ProcessGameObjectCollisions(GameObject& object, GameObject& otherObject);
 
 	const std::vector<Objective>& GetPrimaryObjectives()const { return objectivesPrimary; }
 	const std::vector<Objective>& GetSecondaryObjectives()const { return objectivesSecondary; }

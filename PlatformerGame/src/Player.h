@@ -44,6 +44,7 @@ public:
 	void ResetBloodAnimation();
 	void DrawPuffEffect(SpriteRenderer& renderer);
 	void IncrementScore(GLint amountToAdd) { score += amountToAdd; }
+	void ResetSpeed() { speed = 200.0f; }
 
 	// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
 	GLint AdvancedCollisionCheck(GameObject& obj);
@@ -68,6 +69,8 @@ public:
 	void SetColor(glm::vec3 newColor) { color = newColor; }
 	void SetScore(GLuint newScore) { score = newScore; }
 	void SetLives(GLuint amount) { lives = amount; }
+	void SetIsOnMovingSurface(GLboolean newVal) { isOnMovingSurface = newVal; }
+	void SetSpeed(GLfloat newSpeed) { speed = newSpeed; }
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -89,6 +92,7 @@ public:
 	GLuint GetScore()const { return score; }
 	GLuint GetLives()const { return lives; }
 	glm::vec2 GetVelocity()const { return velocity; }
+	GLboolean GetIsOnMovingSurface()const { return isOnMovingSurface; }
 
 	CollisionBox GetCollisionBoxBottom()const { return collisionBottom; }
 	CollisionBox GetCollisionBoxTop()const { return collisionTop; }
@@ -163,4 +167,6 @@ private:
 	glm::vec2 colBoxOffsetRight{};
 	glm::vec2 colBoxOffsetLeft{};
 	glm::vec2 colBoxOffsetSimple{};
+
+	GLboolean isOnMovingSurface{ false };
 };

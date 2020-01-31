@@ -136,7 +136,8 @@ void Game::ProcessInput(Level& level)
 			}
 			else
 			{
-				player.SetVelocityX(0.0f);
+				if(!player.GetIsOnMovingSurface())
+					player.SetVelocityX(0.0f);
 
 				if (player.GetIsOnGround() && !player.GetIsAttacking())
 					player.SetState(PlayerState::IDLE);

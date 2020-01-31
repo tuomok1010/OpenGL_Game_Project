@@ -19,6 +19,7 @@
 #define TEXTURE_MENU_SIGN_START	11
 #define TEXTURE_MENU_SIGN_QUIT	12
 #define TEXTURE_CHEST_GOLD		13
+#define TEXTURE_PLATOFORM_01	14
 
 //************
 
@@ -48,6 +49,7 @@ Level::Level(SpriteRenderer& renderer, PrimitiveRenderer& primitiveRenderer, Pla
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignstart.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_START
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignquit.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_QUIT
 	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/chest3.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_CHEST_GOLD
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/shelf.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_PLATOFORM_01
 
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0380_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0370_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -207,6 +209,7 @@ void Level::ProcessLevelData()
 				{
 					SpikeTrap* trap = new SpikeTrap(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_TRAP_01), glm::vec3(1.0f), 100.0f, glm::vec2(0.0f), glm::vec2(1.0f, 0.2f));
 					trap->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					trap->SetIsCollisionEnabled(false);
 					assets.emplace_back(trap);
 					break;
 				}
@@ -215,6 +218,7 @@ void Level::ProcessLevelData()
 					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_START));
 					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					sign->SetType(Type::SIGNSTART);
+					sign->SetIsCollisionEnabled(false);
 					assets.emplace_back(sign);
 					break;
 				}
@@ -223,6 +227,7 @@ void Level::ProcessLevelData()
 					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_QUIT));
 					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					sign->SetType(Type::SIGNQUIT);
+					sign->SetIsCollisionEnabled(false);
 					assets.emplace_back(sign);
 					break;
 				}
@@ -231,7 +236,18 @@ void Level::ProcessLevelData()
 					GameObject* chest = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_CHEST_GOLD));
 					chest->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					chest->SetType(Type::CHEST);
+					chest->SetIsCollisionEnabled(false);
 					assets.emplace_back(chest);
+					break;
+				}
+				case 'p':
+				{
+					GameObject* platform = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_PLATOFORM_01));
+					platform->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					platform->SetType(Type::PLATFORM);
+					platform->SetCollisionBoxSize(glm::vec2(platform->GetSize().x, platform->GetSize().y / 4.0f));
+					platform->SetVelocity(glm::vec2(-1.0f, 0.0f));
+					assets.emplace_back(platform);
 					break;
 				}
 				case '0':
@@ -355,7 +371,9 @@ void Level::Draw(Window& window, float deltaTime)
 
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
-		assets.at(i)->Draw(renderer, primitiveRenderer);
+	{
+		assets.at(i)->Draw(renderer, primitiveRenderer, true);
+	}
 
 	for (unsigned int i = 0; i < coins.size(); ++i)
 	{
@@ -409,6 +427,8 @@ void Level::Draw(Window& window, float deltaTime)
 void Level::ProcessCollisions()
 {
 	player.SetIsOnGround(false);
+	player.SetIsOnMovingSurface(false);
+	player.ResetSpeed();
 
 	// process collisions with blocks
 	for (auto& block : blocks)
@@ -418,48 +438,87 @@ void Level::ProcessCollisions()
 		for(auto& enemy : enemies)
 			ProcessEnemyCollisions(*enemy, *block);
 	}
+
+	// process collisions with assets
+	for (auto& asset : assets)
+	{
+		ProcessPlayerCollisions(*asset);
+
+		for (auto& enemy : enemies)
+			ProcessEnemyCollisions(*enemy, *asset);
+	}
+
+	for (auto& asset : assets)
+	{
+		if (asset->GetType() == Type::PLATFORM)
+		{
+			for (auto& block : blocks)
+				ProcessGameObjectCollisions(*asset, *block);
+		}
+	}
 }
 
 void Level::ProcessPlayerCollisions(GameObject& obj)
 {
-	glm::vec3 playerPos = player.GetPosition();
-	glm::vec3 playerPrevPos = player.GetPreviousPosition();
-	glm::vec2 playerSize = player.GetSize();
-	glm::vec2 playerVelocity = player.GetVelocity();
-
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
-	// ignore objs that are far from the player
-	if (abs(objPos.x - playerPos.x) >= 500.0f || abs(objPos.y - playerPos.y) >= 500.0f)
-		return;
-
-	GLint collisionResult = player.AdvancedCollisionCheck(obj);
-
-	if (collisionResult == 1)
+	if (obj.isCollisionEnabled())
 	{
-		player.SetIsOnGround(true);
-		player.SetPosition(glm::vec3(playerPos.x, objPos.y + objSize.y, playerPos.z));
-		player.SetVelocityY(0.0f);
-	}
-	else if (collisionResult == 2)
-	{
-		GLfloat xPos = objPos.x - playerSize.x / 2.0f - player.GetCollisionBoxBottom().size.x / 2.0f - player.GetCollisionBoxRight().size.x;
-		player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
-		player.SetVelocityX(0.0f);
-	}
-	else if (collisionResult == 3)
-	{
-		GLfloat xPos = objPos.x + objSize.x - playerSize.x / 2.0f + player.GetCollisionBoxBottom().size.x / 2.0f + player.GetCollisionBoxLeft().size.x;
-		player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
-		player.SetVelocityX(0.0f);
-	}
-	else if (collisionResult == 4)
-	{
-		GLfloat yPos = objPos.y - player.GetCollisionBoxBottom().size.y - player.GetCollisionBoxLeft().size.y - player.GetCollisionBoxTop().size.y;
-		player.SetPosition(glm::vec3(playerPos.x, yPos, playerPos.z));
-		if (!player.GetIsOnGround())
-			player.SetVelocityY(playerVelocity.y - 2 * playerVelocity.y);
+		glm::vec3 playerPos = player.GetPosition();
+		glm::vec3 playerPrevPos = player.GetPreviousPosition();
+		glm::vec2 playerSize = player.GetSize();
+		glm::vec2 playerVelocity = player.GetVelocity();
+
+		glm::vec2 objPos = obj.GetCollisionBox().position;
+		glm::vec2 objSize = obj.GetCollisionBox().size;
+
+		// ignore objs that are far from the player
+		if (abs(objPos.x - playerPos.x) >= 500.0f || abs(objPos.y - playerPos.y) >= 500.0f)
+			return;
+
+		GLint collisionResult = player.AdvancedCollisionCheck(obj);
+
+		if (collisionResult == 1)
+		{
+			player.SetIsOnGround(true);
+			player.SetPosition(glm::vec3(playerPos.x, objPos.y + objSize.y, playerPos.z));
+			player.SetVelocityY(0.0f);
+
+			if (obj.GetType() == Type::PLATFORM)
+			{
+				player.SetIsOnMovingSurface(true);
+
+				if (player.GetState() == PlayerState::IDLE || player.GetState() == PlayerState::ATTACK)
+				{
+					player.SetSpeed(obj.GetSpeed());
+					player.SetVelocityX(obj.GetVelocity().x);
+				}
+				else if (player.GetState() == PlayerState::RUN)
+				{
+					if (player.GetOrientation() == PlayerOrientation::LEFT && obj.GetVelocity().x < 0.0f)
+						player.SetSpeed(200.0f + obj.GetSpeed());
+					else if (player.GetOrientation() == PlayerOrientation::RIGHT && obj.GetVelocity().x > 0.0f)
+						player.SetSpeed(200.0f + obj.GetSpeed());
+				}
+			}
+		}
+		else if (collisionResult == 2)
+		{
+			GLfloat xPos = objPos.x - playerSize.x / 2.0f - player.GetCollisionBoxBottom().size.x / 2.0f - player.GetCollisionBoxRight().size.x;
+			player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
+			player.SetVelocityX(0.0f);
+		}
+		else if (collisionResult == 3)
+		{
+			GLfloat xPos = objPos.x + objSize.x - playerSize.x / 2.0f + player.GetCollisionBoxBottom().size.x / 2.0f + player.GetCollisionBoxLeft().size.x;
+			player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
+			player.SetVelocityX(0.0f);
+		}
+		else if (collisionResult == 4)
+		{
+			GLfloat yPos = objPos.y - player.GetCollisionBoxBottom().size.y - player.GetCollisionBoxLeft().size.y - player.GetCollisionBoxTop().size.y;
+			player.SetPosition(glm::vec3(playerPos.x, yPos, playerPos.z));
+			if (!player.GetIsOnGround())
+				player.SetVelocityY(playerVelocity.y - 2 * playerVelocity.y);
+		}
 	}
 }
 
@@ -468,44 +527,66 @@ void Level::ProcessEnemyCollisions(Enemy& enemy, GameObject& obj)
 	if (enemy.GetIsDead())
 		return;
 
-	glm::vec3 enemyPos = enemy.GetPosition();
-	glm::vec3 enemyPrevPos = enemy.GetPreviousPosition();
-	glm::vec2 enemySize = enemy.GetSize();
-	glm::vec2 enemyVelocity = enemy.GetVelocity();
-
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
-	// ignore objs that are far from the enemy
-	if (abs(objPos.x - enemyPos.x) >= 500.0f || abs(objPos.y - enemyPos.y) >= 500.0f)
-		return;
-
-	GLint collisionResult = enemy.AdvancedCollisionCheck(obj);
-
-	if (collisionResult == 1)
+	if (obj.isCollisionEnabled())
 	{
-		enemy.SetIsOnGround(true);
-		enemy.SetPosition(glm::vec3(enemyPos.x, objPos.y + objSize.y, enemyPos.z));
-		enemy.SetVelocityY(0.0f);
+		glm::vec3 enemyPos = enemy.GetPosition();
+		glm::vec3 enemyPrevPos = enemy.GetPreviousPosition();
+		glm::vec2 enemySize = enemy.GetSize();
+		glm::vec2 enemyVelocity = enemy.GetVelocity();
+
+		glm::vec2 objPos = obj.GetCollisionBox().position;
+		glm::vec2 objSize = obj.GetCollisionBox().size;
+
+		// ignore objs that are far from the enemy
+		if (abs(objPos.x - enemyPos.x) >= 500.0f || abs(objPos.y - enemyPos.y) >= 500.0f)
+			return;
+
+		GLint collisionResult = enemy.AdvancedCollisionCheck(obj);
+
+		if (collisionResult == 1)
+		{
+			enemy.SetIsOnGround(true);
+			enemy.SetPosition(glm::vec3(enemyPos.x, objPos.y + objSize.y, enemyPos.z));
+			enemy.SetVelocityY(0.0f);
+		}
+		else if (collisionResult == 2)
+		{
+			GLfloat xPos = objPos.x - enemySize.x / 2.0f - enemy.GetCollisionBoxBottom().size.x / 2.0f - enemy.GetCollisionBoxRight().size.x - 5.0f;
+			enemy.SetPosition(glm::vec3(xPos, enemyPos.y, enemyPos.z));
+			enemy.SetVelocityX(0.0f);
+		}
+		else if (collisionResult == 3)
+		{
+			GLfloat xPos = objPos.x + objSize.x - enemySize.x / 2.0f + enemy.GetCollisionBoxBottom().size.x / 2.0f + enemy.GetCollisionBoxLeft().size.x;
+			enemy.SetPosition(glm::vec3(xPos, enemyPos.y, enemyPos.z));
+			enemy.SetVelocityX(0.0f);
+		}
+		else if (collisionResult == 4)
+		{
+			GLfloat yPos = objPos.y - enemy.GetCollisionBoxBottom().size.y - enemy.GetCollisionBoxLeft().size.y - enemy.GetCollisionBoxTop().size.y;
+			enemy.SetPosition(glm::vec3(enemyPos.x, yPos, enemyPos.z));
+			if (!enemy.GetIsOnGround())
+				enemy.SetVelocityY(enemyVelocity.y - 2 * enemyVelocity.y);
+		}
 	}
-	else if (collisionResult == 2)
+}
+
+void Level::ProcessGameObjectCollisions(GameObject& object, GameObject& otherObject)
+{
+	if (object.isCollisionEnabled() && otherObject.isCollisionEnabled())
 	{
-		GLfloat xPos = objPos.x - enemySize.x / 2.0f - enemy.GetCollisionBoxBottom().size.x / 2.0f - enemy.GetCollisionBoxRight().size.x - 5.0f;
-		enemy.SetPosition(glm::vec3(xPos, enemyPos.y, enemyPos.z));
-		enemy.SetVelocityX(0.0f);
-	}
-	else if (collisionResult == 3)
-	{
-		GLfloat xPos = objPos.x + objSize.x - enemySize.x / 2.0f + enemy.GetCollisionBoxBottom().size.x / 2.0f + enemy.GetCollisionBoxLeft().size.x;
-		enemy.SetPosition(glm::vec3(xPos, enemyPos.y, enemyPos.z));
-		enemy.SetVelocityX(0.0f);
-	}
-	else if (collisionResult == 4)
-	{
-		GLfloat yPos = objPos.y - enemy.GetCollisionBoxBottom().size.y - enemy.GetCollisionBoxLeft().size.y - enemy.GetCollisionBoxTop().size.y;
-		enemy.SetPosition(glm::vec3(enemyPos.x, yPos, enemyPos.z));
-		if (!enemy.GetIsOnGround())
-			enemy.SetVelocityY(enemyVelocity.y - 2 * enemyVelocity.y);
+		glm::vec2 objectPos = object.GetPosition();
+		glm::vec2 objectPrevPos = object.GetPreviousPosition();
+		glm::vec2 objectSize = object.GetSize();
+		glm::vec2 objectVelocity = object.GetVelocity();
+
+		glm::vec2 otherObjectPos = otherObject.GetCollisionBox().position;
+		glm::vec2 otherObjectSize = otherObject.GetCollisionBox().size;
+
+		if (object.SimpleCollisionCheck(otherObject))
+		{
+			object.SetPosition(objectPrevPos);
+		}
 	}
 }
 
@@ -513,6 +594,8 @@ void Level::Update(float deltaTime)
 {
 	for (auto& obj : assets)
 	{
+		obj->Update(deltaTime);
+
 		switch (obj->GetType())
 		{
 			case Type::SPIKETRAP:
@@ -547,6 +630,16 @@ void Level::Update(float deltaTime)
 						}
 					}
 				}
+				break;
+			}
+			case Type::PLATFORM:
+			{
+				for (auto& block : blocks)
+				{
+					if (obj->SimpleCollisionCheck(*block))
+						obj->ReverseVelocityX();
+				}
+
 				break;
 			}
 		}
