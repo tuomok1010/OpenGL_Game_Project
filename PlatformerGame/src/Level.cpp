@@ -469,6 +469,7 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 
 		glm::vec2 objPos = obj.GetCollisionBox().position;
 		glm::vec2 objSize = obj.GetCollisionBox().size;
+		Type objType = obj.GetType();
 
 		// ignore objs that are far from the player
 		if (abs(objPos.x - playerPos.x) >= 500.0f || abs(objPos.y - playerPos.y) >= 500.0f)
@@ -482,7 +483,7 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 			player.SetPosition(glm::vec3(playerPos.x, objPos.y + objSize.y, playerPos.z));
 			player.SetVelocityY(0.0f);
 
-			if (obj.GetType() == Type::PLATFORM)
+			if (objType == Type::PLATFORM)
 			{
 				player.SetIsOnMovingSurface(true);
 
@@ -500,13 +501,13 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 				}
 			}
 		}
-		else if (collisionResult == 2)
+		else if (collisionResult == 2 && objType != Type::PLATFORM)
 		{
 			GLfloat xPos = objPos.x - playerSize.x / 2.0f - player.GetCollisionBoxBottom().size.x / 2.0f - player.GetCollisionBoxRight().size.x;
 			player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
 			player.SetVelocityX(0.0f);
 		}
-		else if (collisionResult == 3)
+		else if (collisionResult == 3 && objType != Type::PLATFORM)
 		{
 			GLfloat xPos = objPos.x + objSize.x - playerSize.x / 2.0f + player.GetCollisionBoxBottom().size.x / 2.0f + player.GetCollisionBoxLeft().size.x;
 			player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
