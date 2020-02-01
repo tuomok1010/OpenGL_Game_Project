@@ -185,10 +185,6 @@ void Game::ProcessInput(Level& level)
 
 void Game::Update(Level& level)
 {
-	level.Update(deltaTime);
-
-	level.RunEnemyBehaviour(deltaTime);
-
 	if (player.GetIsDead())
 	{
 		player.SetState(PlayerState::DEATH);
@@ -197,7 +193,10 @@ void Game::Update(Level& level)
 			player.SetVelocityY(0.0f);
 	}
 
+	level.RunEnemyBehaviour(deltaTime);
 	player.Update(deltaTime);
+	level.Update(deltaTime);
+
 
 	if (level.levelComplete)
 	{
