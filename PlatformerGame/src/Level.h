@@ -24,18 +24,20 @@ public:
 	void Load(const std::string& filePath, const std::string& backGroundPath = "");
 	void ProcessLevelData();
 	void Draw(Window& window, float deltaTime);
-	void Update(float deltaTime);
 	GLboolean IsPlayerSpottedByEnemies();
 	void RunEnemyBehaviour(float deltaTime);
 	void RunSpearmanBehaviour(Spearman& enemy, float deltaTime);
 	void RunTargetBehaviour(Target& target, float deltaTime);
+	void RunSpikeTrapBehaviour(SpikeTrap& spikeTrap);
+	void RunPlatformBehaviour(GameObject& platform, GameObject& block);
+	void RunCoinBehaviour(Coin& coin);
 	void SetAnimationToAllAliveEnemies(EnemyState newState);
 	void InitObjectives();
 	void InitLevel0Objectives();
 	void InitLevel1Objectives();
 	GLboolean CheckObjectives();	// returns true if all primary objecives are complete
 
-	void ProcessCollisions();
+	void Update(GLfloat deltaTime);
 	void ProcessPlayerCollisions(GameObject& obj);
 	void ProcessEnemyCollisions(Enemy& enemy, GameObject& obj);
 	void ProcessGameObjectCollisions(GameObject& object, GameObject& otherObject);

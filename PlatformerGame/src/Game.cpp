@@ -185,10 +185,8 @@ void Game::ProcessInput(Level& level)
 
 void Game::Update(Level& level)
 {
-	// checks if player is colliding with any objects in game such as traps and if so, damages the player if necessary
 	level.Update(deltaTime);
 
-	// handles enemy related stuff such as damage to player
 	level.RunEnemyBehaviour(deltaTime);
 
 	if (player.GetIsDead())
@@ -200,8 +198,6 @@ void Game::Update(Level& level)
 	}
 
 	player.Update(deltaTime);
-
-	level.ProcessCollisions();
 
 	if (level.levelComplete)
 	{

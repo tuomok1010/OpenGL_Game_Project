@@ -372,7 +372,7 @@ void Level::Draw(Window& window, float deltaTime)
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
 	{
-		assets.at(i)->Draw(renderer, primitiveRenderer, true);
+		assets.at(i)->Draw(renderer, primitiveRenderer);
 	}
 
 	for (unsigned int i = 0; i < coins.size(); ++i)
@@ -424,13 +424,13 @@ void Level::Draw(Window& window, float deltaTime)
 	}
 }
 
-void Level::ProcessCollisions()
+void Level::Update(GLfloat deltaTime)
 {
 	player.SetIsOnGround(false);
 	player.SetIsOnMovingSurface(false);
 	player.ResetSpeed();
 
-	// process collisions with blocks
+	// update blocks
 	for (auto& block : blocks)
 	{
 		ProcessPlayerCollisions(*block);
@@ -439,23 +439,39 @@ void Level::ProcessCollisions()
 			ProcessEnemyCollisions(*enemy, *block);
 	}
 
-	// process collisions with assets
+	// update assets
 	for (auto& asset : assets)
 	{
+		asset->Update(deltaTime);
+
 		ProcessPlayerCollisions(*asset);
 
 		for (auto& enemy : enemies)
 			ProcessEnemyCollisions(*enemy, *asset);
-	}
 
-	for (auto& asset : assets)
-	{
 		if (asset->GetType() == Type::PLATFORM)
 		{
 			for (auto& block : blocks)
+			{
+				RunPlatformBehaviour(*asset, *block);
 				ProcessGameObjectCollisions(*asset, *block);
+			}
+
+		}
+		else if (asset->GetType() == Type::SPIKETRAP)
+		{
+			SpikeTrap* spikeTrap = dynamic_cast<SpikeTrap*>(asset);
+			RunSpikeTrapBehaviour(*spikeTrap);
 		}
 	}
+
+	// update coins
+	for (auto& coin : coins)
+	{
+		RunCoinBehaviour(*coin);
+	}
+
+	levelComplete = CheckObjectives();
 }
 
 void Level::ProcessPlayerCollisions(GameObject& obj)
@@ -472,7 +488,7 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 		Type objType = obj.GetType();
 
 		// ignore objs that are far from the player
-		if (abs(objPos.x - playerPos.x) >= 500.0f || abs(objPos.y - playerPos.y) >= 500.0f)
+		if (abs(objPos.x - playerPos.x) >= 250.0f || abs(objPos.y - playerPos.y) >= 250.0f)
 			return;
 
 		GLint collisionResult = player.AdvancedCollisionCheck(obj);
@@ -539,7 +555,7 @@ void Level::ProcessEnemyCollisions(Enemy& enemy, GameObject& obj)
 		glm::vec2 objSize = obj.GetCollisionBox().size;
 
 		// ignore objs that are far from the enemy
-		if (abs(objPos.x - enemyPos.x) >= 500.0f || abs(objPos.y - enemyPos.y) >= 500.0f)
+		if (abs(objPos.x - enemyPos.x) >= 250.0f || abs(objPos.y - enemyPos.y) >= 250.0f)
 			return;
 
 		GLint collisionResult = enemy.AdvancedCollisionCheck(obj);
@@ -584,96 +600,15 @@ void Level::ProcessGameObjectCollisions(GameObject& object, GameObject& otherObj
 		glm::vec2 otherObjectPos = otherObject.GetCollisionBox().position;
 		glm::vec2 otherObjectSize = otherObject.GetCollisionBox().size;
 
+		// ignore objs that are far from the enemy
+		if (abs(objectPos.x - otherObjectPos.x) >= 250.0f || abs(objectPos.y - otherObjectPos.y) >= 250.0f)
+			return;
+
 		if (object.SimpleCollisionCheck(otherObject))
 		{
 			object.SetPosition(objectPrevPos);
 		}
 	}
-}
-
-void Level::Update(float deltaTime)
-{
-	for (auto& obj : assets)
-	{
-		obj->Update(deltaTime);
-
-		switch (obj->GetType())
-		{
-			case Type::SPIKETRAP:
-			{
-				SpikeTrap* spikeTrap = dynamic_cast<SpikeTrap*>(obj);
-
-				if (player.SimpleCollisionCheck(*obj))
-				{					
-					spikeTrap->DamagePlayer(player);
-					if (!player.GetIsDead())
-						player.SetShouldBleed(true);
-					if (player.GetHealth() <= 0.0f)
-						player.SetIsDead(true);
-				}
-				for (auto& enemy : enemies)
-				{
-					if (enemy->SimpleCollisionCheck(*obj))
-					{
-						Spearman* spearman = dynamic_cast<Spearman*>(enemy);
-						spikeTrap->DamageEnemy(*spearman);
-						std::cout << "Spiketrap damaging enemy" << std::endl;
-						if (!spearman->GetIsDead())
-						{
-							spearman->SetShouldBleed(true);
-							std::cout << "setting should bleed to true" << std::endl;
-						}
-
-						if (spearman->GetHealth() <= 0.0f)
-						{
-							std::cout << "setting is dead to true" << std::endl;
-							spearman->SetIsDead(true);
-						}
-					}
-				}
-				break;
-			}
-			case Type::PLATFORM:
-			{
-				for (auto& block : blocks)
-				{
-					if (obj->SimpleCollisionCheck(*block))
-						obj->ReverseVelocityX();
-				}
-
-				break;
-			}
-		}
-	}
-
-	for (auto& coin : coins)
-	{
-		if (player.SimpleCollisionCheck(*coin))
-		{
-			if (!coin->GetIsCollected())
-			{
-				player.IncrementScore(coin->GetValue());
-				GLint newScore = player.GetScore();
-
-				if (newScore >= 100)
-				{
-					player.SetLives(player.GetLives() + 1);
-					GLint scoreLeftover = newScore - 100;
-					player.SetScore(scoreLeftover);
-
-					// let the player know he received a new life for 100 coins he collected
-				}
-
-				std::cout << "player score increased by " << coin->GetValue() << "! New score: " << player.GetScore() << std::endl;
-			}
-			coin->SetIsCollected(true);
-		}
-	}
-
-	// if all primary objectives in the level are complete, the level is finished. TODO draw some kind of "level complete" menu (maybe in UI class) 
-	// that shows how the player did
-
-	levelComplete = CheckObjectives();
 }
 
 GLboolean Level::IsPlayerSpottedByEnemies()
@@ -771,6 +706,70 @@ void Level::RunTargetBehaviour(Target& target, float deltaTime)
 				target.TakeDamage(player.GetDamage());
 			}
 		}
+	}
+}
+
+void Level::RunSpikeTrapBehaviour(SpikeTrap& spikeTrap)
+{
+	if (player.SimpleCollisionCheck(spikeTrap))
+	{
+		spikeTrap.DamagePlayer(player);
+		if (!player.GetIsDead())
+			player.SetShouldBleed(true);
+		if (player.GetHealth() <= 0.0f)
+			player.SetIsDead(true);
+	}
+	for (auto& enemy : enemies)
+	{
+		if (enemy->SimpleCollisionCheck(spikeTrap))
+		{
+			Spearman* spearman = dynamic_cast<Spearman*>(enemy);
+			spikeTrap.DamageEnemy(*spearman);
+			std::cout << "Spiketrap damaging enemy" << std::endl;
+			if (!spearman->GetIsDead())
+			{
+				spearman->SetShouldBleed(true);
+				std::cout << "setting should bleed to true" << std::endl;
+			}
+
+			if (spearman->GetHealth() <= 0.0f)
+			{
+				std::cout << "setting is dead to true" << std::endl;
+				spearman->SetIsDead(true);
+			}
+		}
+	}
+}
+
+void Level::RunPlatformBehaviour(GameObject& platform, GameObject& block)
+{
+	if (platform.SimpleCollisionCheck(block))
+	{
+		platform.ReverseVelocityX();
+	}
+}
+
+void Level::RunCoinBehaviour(Coin& coin)
+{
+	if (player.SimpleCollisionCheck(coin))
+	{
+		if (!coin.GetIsCollected())
+		{
+			player.IncrementScore(coin.GetValue());
+			GLint newScore = player.GetScore();
+
+			if (newScore >= 100)
+			{
+				player.SetLives(player.GetLives() + 1);
+				GLint scoreLeftover = newScore - 100;
+				player.SetScore(scoreLeftover);
+
+				// let the player know he received a new life for 100 coins he collected
+			}
+
+			std::cout << "player score increased by " << coin.GetValue() << "! New score: " << player.GetScore() << std::endl;
+		}
+		coin.SetIsCollected(true);
 	}
 }
 
