@@ -16,21 +16,20 @@ Enemy::Enemy()
 {
 	// Initialise collision boxes
 	colBoxOffsetSimple.x = size.x / 2.0f - collisionBoxHorizontalLength / 2.0f;
-	collisionBoxSimple = CollisionBox(glm::vec2(position.x + colBoxOffsetSimple.x, position.y), glm::vec2(collisionBoxHorizontalLength, collisionBoxVerticalLength), glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
+	collisionBoxSimple = CollisionBox(glm::vec2(position.x + colBoxOffsetSimple.x + 200, position.y), glm::vec2(collisionBoxHorizontalLength, collisionBoxVerticalLength), glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
 
-	colBoxOffsetBottom.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f;
-	colBoxOffsetBottom.y = collisionBoxThickness;
-	collisionBottom = CollisionBox(glm::vec2(position.x + colBoxOffsetBottom.x, position.y - colBoxOffsetBottom.y), glm::vec2(collisionBoxSimple.size.x, collisionBoxThickness), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	colBoxOffsetBottom.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f + collisionBoxThickness;
+	collisionBottom = CollisionBox(glm::vec2(position.x + colBoxOffsetBottom.x, position.y), glm::vec2(collisionBoxSimple.size.x - 2 * collisionBoxThickness, collisionBoxThickness), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 
-	colBoxOffsetTop.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f;
-	colBoxOffsetTop.y = collisionBoxSimple.size.y;
-	collisionTop = CollisionBox(glm::vec2(position.x + colBoxOffsetTop.x, position.y + colBoxOffsetTop.y), glm::vec2(collisionBoxSimple.size.x, collisionBoxThickness), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	colBoxOffsetTop.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f + collisionBoxThickness;
+	colBoxOffsetTop.y = collisionBoxSimple.size.y - collisionBoxThickness + 1.0f;
+	collisionTop = CollisionBox(glm::vec2(position.x + colBoxOffsetTop.x, position.y + colBoxOffsetTop.y), glm::vec2(collisionBoxSimple.size.x - 2 * collisionBoxThickness, collisionBoxThickness), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 
-	colBoxOffsetLeft.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f - collisionBoxThickness;
-	collisionLeft = CollisionBox(glm::vec2(position.x + colBoxOffsetLeft.x, collisionBoxSimple.position.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	colBoxOffsetLeft.x = size.x / 2.0f - collisionBoxSimple.size.x / 2.0f - 1.0f;
+	collisionLeft = CollisionBox(glm::vec2(position.x + colBoxOffsetLeft.x, collisionBoxSimple.position.y + collisionBottom.size.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y - collisionBoxThickness * 2), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 
-	colBoxOffsetRight.x = size.x / 2.0f + collisionBoxSimple.size.x / 2.0f;
-	collisionRight = CollisionBox(glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
+	colBoxOffsetRight.x = size.x / 2.0f + collisionBoxSimple.size.x / 2.0f - collisionBoxThickness + 1.0f;
+	collisionRight = CollisionBox(glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y + collisionBottom.size.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y - collisionBoxThickness * 2), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 }
 
 Enemy::~Enemy()
@@ -165,10 +164,10 @@ void Enemy::Update(GLfloat deltaTime)
 
 	// Update collision box positions
 	collisionBoxSimple.position = glm::vec2(position.x + colBoxOffsetSimple.x, position.y);
-	collisionBottom.position = glm::vec2(position.x + colBoxOffsetBottom.x, position.y - colBoxOffsetBottom.y);
+	collisionBottom.position = glm::vec2(position.x + colBoxOffsetBottom.x, position.y - 1.0f);
 	collisionTop.position = glm::vec2(position.x + colBoxOffsetTop.x, position.y + colBoxOffsetTop.y);
-	collisionRight.position = glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y);
-	collisionLeft.position = glm::vec2(position.x + colBoxOffsetLeft.x, collisionBoxSimple.position.y);
+	collisionRight.position = glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y + collisionBottom.size.y);
+	collisionLeft.position = glm::vec2(position.x + colBoxOffsetLeft.x, collisionBoxSimple.position.y + collisionBottom.size.y);
 }
 
 // TODO perhaps add a sneak functionality to the player that allows player to sneak up behind enemy without him hearing the player
@@ -271,7 +270,6 @@ void Enemy::MoveTowardsNextPatrolPoint(float deltaTime)
 			orientation = EnemyOrientation::RIGHT;
 			if ((nextPoint.x - position.x) <= threshold)
 			{
-				std::cout << "Enemy has reached a patrol point" << std::endl;
 				previousPatrolPointIndex = nextPatrolPointIndex;
 				++nextPatrolPointIndex;
 				SetVelocityX(0.0f);
@@ -283,7 +281,6 @@ void Enemy::MoveTowardsNextPatrolPoint(float deltaTime)
 			orientation = EnemyOrientation::LEFT;
 			if (position.x - nextPoint.x <= threshold)
 			{
-				std::cout << "Enemy has reached a patrol point" << std::endl;
 				previousPatrolPointIndex = nextPatrolPointIndex;
 				++nextPatrolPointIndex;
 				SetVelocityX(0.0f);
