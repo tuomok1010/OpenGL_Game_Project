@@ -7,6 +7,7 @@ class Spearman : public Enemy
 {
 public:
 	Spearman();
+	Spearman(const Spearman& src);
 	~Spearman();
 
 	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false) override;

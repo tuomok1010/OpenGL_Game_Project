@@ -59,6 +59,11 @@ Player::Player()
 	collisionRight = CollisionBox(glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y + collisionBottom.size.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y - collisionBoxThickness * 2), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 }
 
+Player::Player(const Player& src)
+	: Player()
+{
+}
+
 Player::~Player()
 {
 	for (unsigned int i = 0; i < texturesIdle.size(); ++i)

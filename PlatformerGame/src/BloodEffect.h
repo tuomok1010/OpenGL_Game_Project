@@ -12,6 +12,7 @@ class BloodEffect : public Effect
 {
 public:
 	BloodEffect();
+	BloodEffect(const BloodEffect& src);
 	~BloodEffect();
 
 	void Draw(SpriteRenderer& renderer) override;

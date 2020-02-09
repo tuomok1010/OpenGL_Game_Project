@@ -22,6 +22,11 @@ UI::UI(Window& window, SpriteRenderer& spriteRenderer, TextRenderer& textRendere
 	textures.emplace_back(new Texture2D("../textures/Game icon Pack1/400px/cancel.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_CANCEL_ICON
 }
 
+UI::UI(const UI& src)
+	: UI(src.window, src.spriteRenderer, src.textRenderer, src.primitiveRenderer, src.player, src.level)
+{
+}
+
 UI::~UI()
 {
 	for (auto& texture : textures)
@@ -93,52 +98,52 @@ void UI::DrawObjectivesMenu()
 	posText.x = player.GetCameraPos().x + 30.0f;
 	posText.y = player.GetCameraPos().y + window.GetWindowHeight() - 100.0f;
 
-	if (!level.GetPrimaryObjectives().empty())
+	if (!level.GetObjectivesList().GetPrimaryObjectives().empty())
 	{
 		textRenderer.RenderText("Primary objectives: ", posText.x, posText.y, 0.75f, glm::vec3(0.75f, 0.2f, 0.0f));
 		posText.y -= 30.0f;
 
-		for (unsigned int i = 0; i < level.GetPrimaryObjectives().size(); ++i)
+		for (unsigned int i = 0; i < level.GetObjectivesList().GetPrimaryObjectives().size(); ++i)
 		{
-			if (level.GetPrimaryObjectives().at(i).GetState() == ObjectiveState::COMPLETED)
+			if (level.GetObjectivesList().GetPrimaryObjectives().at(i).GetState() == ObjectiveState::COMPLETED)
 			{
 				spriteRenderer.Draw(*textures.at(TEXTURE_OK_ICON), 0, glm::vec3(1.0f), glm::vec2(posText.x - 30.0f, posText.y), glm::vec2(20.0f), 0.0f);
 			}
-			else if (level.GetPrimaryObjectives().at(i).GetState() == ObjectiveState::IN_PROGRESS)
+			else if (level.GetObjectivesList().GetPrimaryObjectives().at(i).GetState() == ObjectiveState::IN_PROGRESS)
 			{
 				spriteRenderer.Draw(*textures.at(TEXTURE_INFO_ICON), 0, glm::vec3(1.0f), glm::vec2(posText.x - 30.0f, posText.y), glm::vec2(20.0f), 0.0f);
 			}
-			else if (level.GetPrimaryObjectives().at(i).GetState() == ObjectiveState::FAILED)
+			else if (level.GetObjectivesList().GetPrimaryObjectives().at(i).GetState() == ObjectiveState::FAILED)
 			{
 				spriteRenderer.Draw(*textures.at(TEXTURE_CANCEL_ICON), 0, glm::vec3(1.0f), glm::vec2(posText.x - 30.0f, posText.y), glm::vec2(20.0f), 0.0f);
 			}
-			textRenderer.RenderText(std::to_string(i + 1) + ". " + level.GetPrimaryObjectives().at(i).GetName(), posText.x, posText.y, 0.6f);
+			textRenderer.RenderText(std::to_string(i + 1) + ". " + level.GetObjectivesList().GetPrimaryObjectives().at(i).GetName(), posText.x, posText.y, 0.6f);
 			posText.y -= 25.0f;
 		}
 	}
 
 	// Draw secondary objectives
-	if (!level.GetSecondaryObjectives().empty())
+	if (!level.GetObjectivesList().GetSecondaryObjectives().empty())
 	{
 		posText.y -= 30.0f;
 		textRenderer.RenderText("Secondary objectives: ", posText.x, posText.y, 0.75f, glm::vec3(0.75f, 0.2f, 0.0f));
 		posText.y -= 30.0f;
-		for (unsigned int i = 0; i < level.GetSecondaryObjectives().size(); ++i)
+		for (unsigned int i = 0; i < level.GetObjectivesList().GetSecondaryObjectives().size(); ++i)
 		{
-			if (level.GetSecondaryObjectives().at(i).GetState() == ObjectiveState::COMPLETED)
+			if (level.GetObjectivesList().GetSecondaryObjectives().at(i).GetState() == ObjectiveState::COMPLETED)
 			{
 				spriteRenderer.Draw(*textures.at(TEXTURE_OK_ICON), 0, glm::vec3(1.0f), glm::vec2(posText.x - 30.0f, posText.y), glm::vec2(20.0f), 0.0f);
 			}
-			else if (level.GetSecondaryObjectives().at(i).GetState() == ObjectiveState::IN_PROGRESS)
+			else if (level.GetObjectivesList().GetSecondaryObjectives().at(i).GetState() == ObjectiveState::IN_PROGRESS)
 			{
 				spriteRenderer.Draw(*textures.at(TEXTURE_INFO_ICON), 0, glm::vec3(1.0f), glm::vec2(posText.x - 30.0f, posText.y), glm::vec2(20.0f), 0.0f);
 			}
-			else if (level.GetSecondaryObjectives().at(i).GetState() == ObjectiveState::FAILED)
+			else if (level.GetObjectivesList().GetSecondaryObjectives().at(i).GetState() == ObjectiveState::FAILED)
 			{
 				spriteRenderer.Draw(*textures.at(TEXTURE_CANCEL_ICON), 0, glm::vec3(1.0f), glm::vec2(posText.x - 30.0f, posText.y), glm::vec2(20.0f), 0.0f);
 			}
 
-			textRenderer.RenderText(std::to_string(i + 1) + ". " + level.GetSecondaryObjectives().at(i).GetName(), posText.x, posText.y, 0.6f);
+			textRenderer.RenderText(std::to_string(i + 1) + ". " + level.GetObjectivesList().GetSecondaryObjectives().at(i).GetName(), posText.x, posText.y, 0.6f);
 			posText.y -= 25.0f;
 		}
 	}

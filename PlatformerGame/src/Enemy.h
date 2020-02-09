@@ -37,6 +37,7 @@ class Enemy
 {
 public:
 	Enemy();
+	Enemy(const Enemy& src);
 	virtual ~Enemy();
 
 	virtual void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false);
@@ -98,8 +99,8 @@ protected:
 	std::vector<Texture2D*> texturesMeleeAttack{};
 	Texture2D* textureFall{};
 
-	glm::vec2 textureOffset{};
-	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions. TODO consider renaming it to textureScale
+	glm::vec2 textureOffset;
+	glm::vec2 textureScale; // the "textureZoom" variable in the renderer draw functions. TODO consider renaming it to textureScale
 
 	EnemyState state{};
 	EnemyOrientation orientation{};
@@ -111,13 +112,13 @@ protected:
 	unsigned int meleeAttackIterator{};
 
 	glm::vec3 previousPosition{};
-	glm::vec3 position{};
+	glm::vec3 position;
 	glm::vec2 size{};
-	glm::vec3 color{};
-	GLfloat rotation{};
-	glm::vec2 velocity{};
-	GLfloat speed{};
-	GLfloat gravity{};
+	glm::vec3 color;
+	GLfloat rotation;
+	glm::vec2 velocity;
+	GLfloat speed;
+	GLfloat gravity;
 	GLboolean isOnGround{ true };
 
 	GLfloat health{};
@@ -131,7 +132,7 @@ protected:
 	GLuint nextPatrolPointIndex{};
 	glm::vec3 initialPosition{};	// the position the enemy spawns in
 
-	GLfloat lineOfSightX{};
+	GLfloat lineOfSightX;
 	GLboolean isInRange{ false };
 	GLboolean hasSpottedPlayer{ false };
 	GLfloat meleeRange{};

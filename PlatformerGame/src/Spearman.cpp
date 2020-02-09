@@ -49,6 +49,11 @@ Spearman::Spearman()
 	collisionRight = CollisionBox(glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y + collisionBottom.size.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y - collisionBoxThickness * 2), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 }
 
+Spearman::Spearman(const Spearman& src)
+	: Spearman()
+{
+}
+
 Spearman::~Spearman()
 {
 }

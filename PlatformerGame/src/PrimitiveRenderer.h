@@ -16,6 +16,7 @@ class PrimitiveRenderer
 {
 public:
 	PrimitiveRenderer(Shader& shader);
+	PrimitiveRenderer(PrimitiveRenderer& src);
 	~PrimitiveRenderer();
 
 	void Draw(Shape shape, glm::vec4 color, glm::vec2 position, glm::vec2 sizeInPixels, GLfloat rotationInDegrees, glm::vec3 rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f));

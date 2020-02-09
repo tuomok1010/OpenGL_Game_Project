@@ -12,7 +12,7 @@
 #include "Window.h"
 #include "Spearman.h"
 #include "Coin.h"
-#include "Objective.h"
+#include "ObjectivesList.h"
 #include "Target.h"
 
 class Level
@@ -35,15 +35,13 @@ public:
 	void InitObjectives();
 	void InitLevel0Objectives();
 	void InitLevel1Objectives();
-	GLboolean CheckObjectives();	// returns true if all primary objecives are complete
 
 	void Update(GLfloat deltaTime);
 	void ProcessPlayerCollisions(GameObject& obj);
 	void ProcessEnemyCollisions(Enemy& enemy, GameObject& obj);
 	void ProcessGameObjectCollisions(GameObject& object, GameObject& otherObject);
 
-	const std::vector<Objective>& GetPrimaryObjectives()const { return objectivesPrimary; }
-	const std::vector<Objective>& GetSecondaryObjectives()const { return objectivesSecondary; }
+	const ObjectivesList& GetObjectivesList()const { return objectivesList; }
 
 	GLboolean levelComplete{ false };
 	GLboolean quitGame{ false };
@@ -78,7 +76,6 @@ private:
 	SpriteRenderer& renderer;
 	PrimitiveRenderer& primitiveRenderer;
 	Player& player;
-
-	std::vector<Objective> objectivesPrimary;
-	std::vector<Objective> objectivesSecondary;
+	
+	ObjectivesList objectivesList;
 };

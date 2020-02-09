@@ -34,6 +34,7 @@ Level::Level(SpriteRenderer& renderer, PrimitiveRenderer& primitiveRenderer, Pla
 	player(player),
 	rng(rd()),
 	hasClouds(false),
+	backGround(nullptr),
 	levelNumber(0)
 {
 	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground0.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_00
@@ -486,7 +487,7 @@ void Level::Update(GLfloat deltaTime)
 		RunCoinBehaviour(*coin);
 	}
 
-	levelComplete = CheckObjectives();
+	levelComplete = objectivesList.CheckObjectives();
 }
 
 void Level::ProcessPlayerCollisions(GameObject& obj)
@@ -773,15 +774,6 @@ void Level::RunPlatformBehaviour(GameObject& platform, GameObject& block)
 		if (platform.SimpleCollisionCheck(block, platform.GetPosition(), glm::vec2(platform.GetSize().x, platform.GetSize().y + player.GetSize().y)))
 			platform.ReverseVelocityY();
 	}
-
-	// old code
-	//if (platform.SimpleCollisionCheck(block))
-	//{
-	//	if (platform.GetType() == Type::PLATFORM_HORIZONTAL)
-	//		platform.ReverseVelocityX();
-	//	else
-	//		platform.ReverseVelocityY();
-	//}
 }
 
 void Level::RunCoinBehaviour(Coin& coin)
@@ -843,7 +835,7 @@ void Level::InitLevel0Objectives()
 			objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
 		objective1.SetName("Move to the start sign to begin");
 	}
-	objectivesPrimary.emplace_back(objective1);
+	objectivesList.AddObjective(objective1, ObjectivePriority::PRIMARY);
 
 	Objective objective2 = Objective(player, ObjectiveType::KILL_TARGET, ObjectivePriority::SECONDARY);
 	for (auto& target : enemies)
@@ -852,7 +844,7 @@ void Level::InitLevel0Objectives()
 			objective2.AddTargetToKill(target);
 		objective2.SetName("Destroy the target");
 	}
-	objectivesSecondary.emplace_back(objective2);
+	objectivesList.AddObjective(objective2, ObjectivePriority::SECONDARY);
 }
 
 void Level::InitLevel1Objectives()
@@ -864,7 +856,7 @@ void Level::InitLevel1Objectives()
 			objective1.AddLocationToMoveTo(glm::vec2(asset->GetPosition().x + asset->GetSize().x / 2.0f, asset->GetPosition().y));
 		objective1.SetName("Find the treasure chest!");
 	}
-	objectivesPrimary.emplace_back(objective1);
+	objectivesList.AddObjective(objective1, ObjectivePriority::PRIMARY);
 
 	Objective objective2 = Objective(player, ObjectiveType::COLLECT_COIN, ObjectivePriority::SECONDARY);
 	for (auto& coin : coins)
@@ -872,40 +864,5 @@ void Level::InitLevel1Objectives()
 		objective2.AddCoin(coin);
 		objective2.SetName("Collect all the coins in the level");
 	}
-	objectivesSecondary.emplace_back(objective2);
-}
-
-GLboolean Level::CheckObjectives()
-{
-	GLboolean allPrimaryObjectivesComplete{ true };
-
-	if (!objectivesPrimary.empty())
-	{
-		for (auto& objective : objectivesPrimary)
-		{
-			objective.Update();
-			if (objective.GetState() != ObjectiveState::COMPLETED)
-			{
-				allPrimaryObjectivesComplete = false;
-			}
-		}
-	}
-	else
-	{
-		return false;
-	}
-
-	if (!objectivesSecondary.empty())
-	{
-		for (auto& objective : objectivesSecondary)
-		{
-			objective.Update();
-			if (objective.GetState() != ObjectiveState::COMPLETED)
-			{
-				// if the player has not finished all secondary objectives at the end of the level, do not give him full score for the level
-			}
-		}
-	}
-
-	return allPrimaryObjectivesComplete;
+	objectivesList.AddObjective(objective2, ObjectivePriority::SECONDARY);
 }

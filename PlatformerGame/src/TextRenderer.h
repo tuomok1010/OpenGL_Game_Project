@@ -22,6 +22,7 @@ class TextRenderer
 {
 public:
 	TextRenderer(Shader& shader);
+	TextRenderer(const TextRenderer& src);
 	~TextRenderer();
 
 	void Load(std::string font, GLuint fontSize);

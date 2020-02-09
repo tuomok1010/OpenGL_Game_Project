@@ -33,6 +33,7 @@ class Player
 {
 public:
 	Player();
+	Player(const Player& src);
 	~Player();
 
 	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false);

@@ -4,7 +4,7 @@ static constexpr int SCRN_WIDTH{ 800 };
 static constexpr int SCRN_HEIGHT{ 600 };
 
 /*
-	There is a crash at the end of the program. Probably due to shallow copying somewhere. TODO find and fix!!!
+	There is a crash at the end of the program when player chooses to quit game through the menu. TODO find and fix!!!
 */
 
 int main()

@@ -8,6 +8,11 @@ TextRenderer::TextRenderer(Shader& shader)
 	VAO->SetVertexLayout(0, 4, GL_FLOAT, 4 * sizeof(float), 0, GL_FALSE);
 }
 
+TextRenderer::TextRenderer(const TextRenderer& src)
+	: TextRenderer(src.shader)
+{
+}
+
 TextRenderer::~TextRenderer()
 {
 	delete VAO;

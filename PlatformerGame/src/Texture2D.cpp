@@ -7,6 +7,15 @@
 Texture2D::Texture2D
 	(const std::string& filePath, GLint internalFormat, GLenum format, GLenum dataType,
 	GLint wrapModeS, GLint wrapModeT, GLint filterMin, GLint filterMag)
+	: 
+	filePath(filePath),
+	internalFormat(internalFormat),
+	format(format),
+	dataType(dataType),
+	wrapModeS(wrapModeS),
+	wrapModeT(wrapModeT),
+	filterMin(filterMin),
+	filterMag(filterMag)
 {
 	glGenTextures(1, &ID);
 	glBindTexture(GL_TEXTURE_2D, ID);
@@ -32,6 +41,11 @@ Texture2D::Texture2D
 	}
 
 	stbi_image_free(data);
+}
+
+Texture2D::Texture2D(const Texture2D& src)
+	: Texture2D(src.filePath, src.internalFormat, src.format, src.dataType, src.wrapModeS, src.wrapModeT, src.filterMin, src.filterMag)
+{
 }
 
 Texture2D::~Texture2D()

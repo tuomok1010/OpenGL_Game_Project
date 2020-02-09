@@ -4,6 +4,11 @@ Effect::Effect()
 {
 }
 
+Effect::Effect(const Effect& src)
+	: Effect()
+{
+}
+
 Effect::~Effect()
 {
 }

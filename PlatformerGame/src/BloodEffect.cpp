@@ -12,6 +12,11 @@ BloodEffect::BloodEffect()
 	AddTexture(new Texture2D("../textures/blood/all.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 }
 
+BloodEffect::BloodEffect(const BloodEffect& src)
+	: BloodEffect()
+{
+}
+
 BloodEffect::~BloodEffect()
 {
 	for (auto& texture : textures)

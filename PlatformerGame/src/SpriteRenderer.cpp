@@ -7,6 +7,11 @@ SpriteRenderer::SpriteRenderer(Shader& shader)
 	InitMeshData();
 }
 
+SpriteRenderer::SpriteRenderer(const SpriteRenderer& src)
+	: SpriteRenderer(src.shader)
+{
+}
+
 SpriteRenderer::~SpriteRenderer()
 {
 	mesh->Clear();

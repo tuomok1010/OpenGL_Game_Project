@@ -10,6 +10,7 @@ public:
 	Texture2D
 		(const std::string& filePath, GLint internalFormat, GLenum format, GLenum dataType, 
 		GLint wrapModeS = GL_REPEAT, GLint wrapModeT = GL_REPEAT, GLint filterMin = GL_LINEAR, GLint filterMag = GL_LINEAR);
+	Texture2D(const Texture2D& src);
 
 	~Texture2D();
 
@@ -22,6 +23,14 @@ public:
 	GLboolean loadFailed{ false };
 
 private:
+	std::string filePath;
+	GLint internalFormat;
+	GLenum format;
+	GLenum dataType;
+	GLint wrapModeS;
+	GLint wrapModeT;
+	GLint filterMin;
+	GLint filterMag;
 	GLuint ID{};
 	GLsizei width{};
 	GLsizei height{};

@@ -13,6 +13,11 @@ Target::Target()
 	collisionBoxSimple.position = position;
 }
 
+Target::Target(const Target& src)
+	: Target()
+{
+}
+
 Target::~Target()
 {
 }

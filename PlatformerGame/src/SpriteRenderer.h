@@ -11,6 +11,7 @@ class SpriteRenderer
 {
 public:
 	SpriteRenderer(Shader& shader);
+	SpriteRenderer(const SpriteRenderer& src);
 	~SpriteRenderer();
 
 	void Draw(Texture2D& texture, GLuint textureUnit, glm::vec3 color, glm::vec2 position, glm::vec2 sizeInPixels, GLfloat rotationInDegrees, 

@@ -1,4 +1,5 @@
 #include "Objective.h"
+#include <iostream>
 
 Objective::Objective(Player& player, ObjectiveType type, ObjectivePriority priority)
 	:

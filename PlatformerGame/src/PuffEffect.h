@@ -12,6 +12,7 @@ class PuffEffect : public Effect
 {
 public:
 	PuffEffect();
+	PuffEffect(PuffEffect& src);
 	~PuffEffect();
 
 	void Draw(SpriteRenderer& renderer) override;

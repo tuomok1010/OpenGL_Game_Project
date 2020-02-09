@@ -8,6 +8,11 @@ SpikeTrap::SpikeTrap(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm
 	type = Type::SPIKETRAP;
 }
 
+SpikeTrap::SpikeTrap(const SpikeTrap& src)
+	: SpikeTrap(src.position, src.size, src.texture, src.color, src.speed, src.textureOffset, src.textureScale)
+{
+}
+
 SpikeTrap::~SpikeTrap()
 {
 }

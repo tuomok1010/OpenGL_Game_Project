@@ -11,6 +11,7 @@ class UI
 {
 public:
 	UI(Window& window, SpriteRenderer& spriteRenderer, TextRenderer& textRenderer, PrimitiveRenderer& primitiveRenderer, Player& player, Level& level);
+	UI(const UI& src);
 	~UI();
 
 	void Draw();

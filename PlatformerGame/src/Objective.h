@@ -53,16 +53,15 @@ public:
 private:
 	Player& player;
 
-	ObjectiveState state{};
+	ObjectiveState state;
 	std::string name{};
 
-	std::vector<Coin*> coinsToCollect{};
-	std::vector<GameObject*> objectsToCollect{};
-	std::vector<Enemy*> targetsToKill{};
+	std::vector<Coin*> coinsToCollect;
+	std::vector<GameObject*> objectsToCollect;
+	std::vector<Enemy*> targetsToKill;
 	glm::vec2 locationToMoveTo{};
-	CollisionBox locationToMoveToTriggerBox{};
+	CollisionBox locationToMoveToTriggerBox;
 
-	ObjectiveType type{};
-	ObjectivePriority priority{};
-	GLboolean initialized{ false };
+	ObjectiveType type;
+	ObjectivePriority priority;
 };

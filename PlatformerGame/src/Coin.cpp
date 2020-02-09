@@ -41,6 +41,11 @@ Coin::Coin(CoinType type, glm::vec3 position)
 	sparkleEffect.SetPosition(position);
 }
 
+Coin::Coin(const Coin& src)
+	: Coin(src.coinType, src.position)
+{
+}
+
 Coin::~Coin()
 {
 	for (auto& texture : texturesCoin)

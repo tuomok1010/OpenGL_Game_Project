@@ -15,6 +15,11 @@ PuffEffect::PuffEffect()
 	AddTexture(new Texture2D("../textures/PuffEffect/Poof.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 }
 
+PuffEffect::PuffEffect(PuffEffect& src)
+	: PuffEffect()
+{
+}
+
 PuffEffect::~PuffEffect()
 {
 	for (auto& texture : textures)

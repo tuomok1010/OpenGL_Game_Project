@@ -9,6 +9,11 @@ Window::Window(int width, int height, std::string name)
 	Init();
 }
 
+Window::Window(const Window& src)
+	: Window(src.width, src.height, src.name)
+{
+}
+
 Window::~Window()
 {
 	glfwDestroyWindow(window);

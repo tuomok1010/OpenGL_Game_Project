@@ -6,6 +6,11 @@ PrimitiveRenderer::PrimitiveRenderer(Shader& shader)
 {
 }
 
+PrimitiveRenderer::PrimitiveRenderer(PrimitiveRenderer& src)
+	: PrimitiveRenderer(src.shader)
+{
+}
+
 PrimitiveRenderer::~PrimitiveRenderer()
 {
 	if(mesh != nullptr)

@@ -20,6 +20,7 @@ class Coin
 public:
 public:
 	Coin(CoinType type, glm::vec3 position = glm::vec3(0.0f));
+	Coin(const Coin& src);
 	~Coin();
 
 	void Draw(SpriteRenderer& renderer);
@@ -37,16 +38,16 @@ public:
 
 private:
 	std::vector<Texture2D*> texturesCoin{};
-	glm::vec2 textureOffset{};
-	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions
+	glm::vec2 textureOffset;
+	glm::vec2 textureScale; // the "textureZoom" variable in the renderer draw functions
 	GLuint texIterator{};
 
-	glm::vec3 position{};
-	glm::vec2 size{};
-	glm::vec3 color{};
-	GLfloat rotation{};
+	glm::vec3 position;
+	glm::vec2 size;
+	glm::vec3 color;
+	GLfloat rotation;
 
-	CoinType coinType{};
+	CoinType coinType;
 	GLuint value{};
 
 	FireSparkleEffect sparkleEffect;

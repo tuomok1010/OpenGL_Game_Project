@@ -11,6 +11,7 @@ class Effect
 {
 public:
 	Effect();
+	Effect(const Effect& src);
 	virtual ~Effect();
 
 	virtual void Draw(SpriteRenderer& renderer) = 0;

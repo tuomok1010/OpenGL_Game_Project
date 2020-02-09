@@ -32,6 +32,11 @@ Enemy::Enemy()
 	collisionRight = CollisionBox(glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y + collisionBottom.size.y), glm::vec2(collisionBoxThickness, collisionBoxSimple.size.y - collisionBoxThickness * 2), glm::vec4(0.0f, 1.0f, 0.0f, 0.5f));
 }
 
+Enemy::Enemy(const Enemy& src)
+	: Enemy()
+{
+}
+
 Enemy::~Enemy()
 {
 	for (unsigned int i = 0; i < texturesIdle.size(); ++i)

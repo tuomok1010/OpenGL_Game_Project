@@ -11,6 +11,7 @@ class Window
 // public functions
 public:
 	Window(int width = 800, int height = 600, std::string name = "Game");
+	Window(const Window& src);
 	~Window();
 
 	int Init();

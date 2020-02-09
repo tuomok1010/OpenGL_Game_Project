@@ -20,6 +20,11 @@ GameObject::GameObject(Type type, glm::vec2 position, glm::vec2 size, Texture2D&
 	collisionBoxSimple = CollisionBox(this->position, this->size, glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
 }
 
+GameObject::GameObject(const GameObject& src)
+	: GameObject(src.type, src.position, src.size, src.texture, src.color, src.speed, src.textureOffset, src.textureScale)
+{
+}
+
 GameObject::~GameObject()
 {
 }

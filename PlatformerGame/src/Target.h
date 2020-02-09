@@ -6,6 +6,7 @@ class Target : public Enemy
 {
 public:
 	Target();
+	Target(const Target& src);
 	~Target();
 
 	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false) override;

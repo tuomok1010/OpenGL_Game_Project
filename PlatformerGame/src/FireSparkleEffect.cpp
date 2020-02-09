@@ -15,6 +15,11 @@ FireSparkleEffect::FireSparkleEffect()
 		AddTexture(new Texture2D("../assets/sparkling_fire_effect/particles_fireball/effect" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 }
 
+FireSparkleEffect::FireSparkleEffect(const FireSparkleEffect& src)
+	: FireSparkleEffect()
+{
+}
+
 FireSparkleEffect::~FireSparkleEffect()
 {
 	for (auto& texture : textures)
