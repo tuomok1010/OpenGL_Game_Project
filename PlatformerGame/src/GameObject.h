@@ -11,21 +11,29 @@ enum class Type
 	SIGNSTART,		// this is only used in the "menu" level. Will start the game if the player moves to it
 	SIGNQUIT,		// this is only used in the "menu" level. Will quit the game if the player moves to it
 	CHEST,
-	PLATFORM
+	PLATFORM_HORIZONTAL,
+	PLATFORM_VERTICAL
 };
 
 class GameObject
 {
 public:
-	GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color = glm::vec3(1.0f), GLfloat speed = 100.0f, 
+	GameObject(Type type, glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color = glm::vec3(1.0f), GLfloat speed = 100.0f, 
 		glm::vec2 textureOffset = glm::vec2(0.0f), glm::vec2 textureScale = glm::vec2(1.0f));
 	virtual ~GameObject();
 
 	virtual void Draw(SpriteRenderer& renderer, PrimitiveRenderer& colBoxRenderer, GLboolean renderCollisionBox = false, GLuint textureUnit = 0);
 	void Update(GLfloat deltaTime);
 	void Rotate(GLfloat degrees, glm::vec3 rotationAxis);
+
+	// uses the object's collision box to detect collision
 	GLboolean SimpleCollisionCheck(GameObject& obj);
+
+	// creates a collision box on the fly in the given pos and uses it to check collision with the other object's collisionbox
+	GLboolean SimpleCollisionCheck(GameObject& obj, glm::vec2 pos, glm::vec2 size);
+
 	void ReverseVelocityX();
+	void ReverseVelocityY();
 
 	glm::vec2 GetSize() const { return size; }
 	glm::vec2 GetPosition()const { return position; }
@@ -43,22 +51,22 @@ public:
 	void SetVelocity(glm::vec2 newVelocity) { velocity = newVelocity; }
 
 protected:
-	glm::vec2 previousPosition{};
-	glm::vec2 position{};
-	glm::vec2 size{};
-	GLfloat speed{};
-	glm::vec3 color{};
-	GLfloat rotation{};
-	glm::vec3 rotationAxis{};
-	glm::vec2 velocity{};
-	GLfloat gravity{};
+	glm::vec2 previousPosition;
+	glm::vec2 position;
+	glm::vec2 size;
+	GLfloat speed;
+	glm::vec3 color;
+	GLfloat rotation;
+	glm::vec3 rotationAxis;
+	glm::vec2 velocity;
+	GLfloat gravity;
 
 	Texture2D& texture;
-	glm::vec2 textureScale{};
-	glm::vec2 textureOffset{};
+	glm::vec2 textureScale;
+	glm::vec2 textureOffset;
 
 	Type type;
 
-	GLboolean collisionEnabled{};
+	GLboolean collisionEnabled;
 	CollisionBox collisionBoxSimple;
 };

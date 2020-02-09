@@ -48,20 +48,21 @@ public:
 	GLboolean levelComplete{ false };
 	GLboolean quitGame{ false };
 
-	GLuint levelNumber{};
+	GLuint levelNumber;
 
 private:
 	std::vector<std::vector<GLchar>> levelData;
 	std::vector<GameObject*> blocks;
 	std::vector<GameObject*> assets;
-	std::vector<Texture2D*> assetTextures{};
-	std::vector<Enemy*> enemies{};
-	std::vector<Coin*> coins{};
+	std::vector<GameObject*> checkPoints;
+	std::vector<Texture2D*> assetTextures;
+	std::vector<Enemy*> enemies;
+	std::vector<Coin*> coins;
 
-	Texture2D* backGround{};
-	GLboolean hasClouds{ false };
-	std::vector<Texture2D*> cloudTextures{};
-	std::vector<glm::vec2> cloudPositions{};
+	Texture2D* backGround;
+	GLboolean hasClouds;
+	std::vector<Texture2D*> cloudTextures;
+	std::vector<glm::vec2> cloudPositions;
 	std::random_device rd;
 	std::mt19937 rng;
 
@@ -72,12 +73,12 @@ private:
 		glm::vec2 position;
 	};
 
-	std::vector<Cloud*> clouds{};
+	std::vector<Cloud*> clouds;
 
 	SpriteRenderer& renderer;
 	PrimitiveRenderer& primitiveRenderer;
 	Player& player;
 
-	std::vector<Objective> objectivesPrimary{};
-	std::vector<Objective> objectivesSecondary{};
+	std::vector<Objective> objectivesPrimary;
+	std::vector<Objective> objectivesSecondary;
 };

@@ -2,7 +2,7 @@
 
 SpikeTrap::SpikeTrap(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color, GLfloat speed, glm::vec2 textureOffset, glm::vec2 textureZoom)
 	: 
-	GameObject(position, size, texture, color, speed, textureOffset, textureZoom),
+	GameObject(Type::SPIKETRAP, position, size, texture, color, speed, textureOffset, textureZoom),
 	damage(100.0f)
 {
 	type = Type::SPIKETRAP;

@@ -14,7 +14,13 @@ Player::Player()
 	gravity(5.0f),
 	health(100),
 	damage(50.0f),
-	lives(3)
+	score(0),
+	lives(3),
+	colBoxOffsetBottom(glm::vec2(0.0f)),
+	colBoxOffsetTop(glm::vec2(0.0f)),
+	colBoxOffsetRight(glm::vec2(0.0f)),
+	colBoxOffsetLeft(glm::vec2(0.0f)),
+	colBoxOffsetSimple(glm::vec2(0.0f))
 {
 	for (unsigned int i = 0; i < 12; ++i)
 		texturesIdle.emplace_back(new Texture2D("../player/The Black Thief Slim Version/Animations/Idle/idle_" + std::to_string(i) + ".png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
@@ -222,32 +228,31 @@ void Player::DrawPuffEffect(SpriteRenderer& renderer)
 // retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
 GLint Player::AdvancedCollisionCheck(GameObject& obj)
 {
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
+	CollisionBox objColBox = obj.GetCollisionBox();
 
-	GLboolean collisionX = collisionBottom.position.x + collisionBottom.size.x > objPos.x && objPos.x + objSize.x > collisionBottom.position.x;
-	GLboolean collisionY = collisionBottom.position.y + collisionBottom.size.y > objPos.y && objPos.y + objSize.y > collisionBottom.position.y;
+	GLboolean collisionX = collisionBottom.position.x + collisionBottom.size.x > objColBox.position.x && objColBox.position.x + objColBox.size.x > collisionBottom.position.x;
+	GLboolean collisionY = collisionBottom.position.y + collisionBottom.size.y > objColBox.position.y && objColBox.position.y + objColBox.size.y > collisionBottom.position.y;
 	if (collisionX && collisionY && velocity.y < 0.0f)
 	{
 		return 1;
 	}
 
-	collisionX = collisionRight.position.x + collisionRight.size.x > objPos.x&& objPos.x + objSize.x > collisionRight.position.x;
-	collisionY = collisionRight.position.y + collisionRight.size.y > objPos.y&& objPos.y + objSize.y > collisionRight.position.y;
+	collisionX = collisionRight.position.x + collisionRight.size.x > objColBox.position.x&& objColBox.position.x + objColBox.size.x > collisionRight.position.x;
+	collisionY = collisionRight.position.y + collisionRight.size.y > objColBox.position.y&& objColBox.position.y + objColBox.size.y > collisionRight.position.y;
 	if (collisionX && collisionY && velocity.x > 0.0f)
 	{
 		return 2;
 	}
 
-	collisionX = collisionLeft.position.x + collisionLeft.size.x > objPos.x&& objPos.x + objSize.x > collisionLeft.position.x;
-	collisionY = collisionLeft.position.y + collisionLeft.size.y > objPos.y&& objPos.y + objSize.y > collisionLeft.position.y;
+	collisionX = collisionLeft.position.x + collisionLeft.size.x > objColBox.position.x&& objColBox.position.x + objColBox.size.x > collisionLeft.position.x;
+	collisionY = collisionLeft.position.y + collisionLeft.size.y > objColBox.position.y&& objColBox.position.y + objColBox.size.y > collisionLeft.position.y;
 	if (collisionX && collisionY && velocity.x < 0.0f)
 	{
 		return 3;
 	}
 
-	collisionX = collisionTop.position.x + collisionTop.size.x > objPos.x&& objPos.x + objSize.x > collisionTop.position.x;
-	collisionY = collisionTop.position.y + collisionTop.size.y > objPos.y&& objPos.y + objSize.y > collisionTop.position.y;
+	collisionX = collisionTop.position.x + collisionTop.size.x > objColBox.position.x&& objColBox.position.x + objColBox.size.x > collisionTop.position.x;
+	collisionY = collisionTop.position.y + collisionTop.size.y > objColBox.position.y&& objColBox.position.y + objColBox.size.y > collisionTop.position.y;
 	if (collisionX && collisionY && velocity.y > 0.0f)
 	{
 		return 4;
@@ -258,11 +263,10 @@ GLint Player::AdvancedCollisionCheck(GameObject& obj)
 
 GLboolean Player::SimpleCollisionCheck(GameObject& obj)
 {
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
+	CollisionBox objColBox = obj.GetCollisionBox();
 
-	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > objPos.x && objPos.x + objSize.x > collisionBoxSimple.position.x;
-	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > objPos.y && objPos.y + objSize.y > collisionBoxSimple.position.y;
+	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > objColBox.position.x && objColBox.position.x + objColBox.size.x > collisionBoxSimple.position.x;
+	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > objColBox.position.y && objColBox.position.y + objColBox.size.y > collisionBoxSimple.position.y;
 	return collisionX && collisionY;
 
 	return false;

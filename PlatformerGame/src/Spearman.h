@@ -20,7 +20,7 @@ public:
 	GLboolean IsInPlayerMeleeRange(Player& player);
 
 private:
-	GLint meleeDamage{};
+	GLint meleeDamage;
 	BloodEffect bloodEffect;
 	GLboolean shouldBleed{ false };
 };

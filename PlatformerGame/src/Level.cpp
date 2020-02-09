@@ -32,7 +32,9 @@ Level::Level(SpriteRenderer& renderer, PrimitiveRenderer& primitiveRenderer, Pla
 	renderer(renderer),
 	primitiveRenderer(primitiveRenderer),
 	player(player),
-	rng(rd())
+	rng(rd()),
+	hasClouds(false),
+	levelNumber(0)
 {
 	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground0.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_00
 	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground1.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_01
@@ -215,107 +217,115 @@ void Level::ProcessLevelData()
 				}
 				case 'S':
 				{
-					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_START));
+					GameObject* sign = new GameObject(Type::SIGNSTART, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_START));
 					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
-					sign->SetType(Type::SIGNSTART);
 					sign->SetIsCollisionEnabled(false);
 					assets.emplace_back(sign);
 					break;
 				}
 				case 'Q':
 				{
-					GameObject* sign = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_QUIT));
+					GameObject* sign = new GameObject(Type::SIGNQUIT, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_MENU_SIGN_QUIT));
 					sign->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
-					sign->SetType(Type::SIGNQUIT);
 					sign->SetIsCollisionEnabled(false);
 					assets.emplace_back(sign);
 					break;
 				}
 				case 'T':
 				{
-					GameObject* chest = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_CHEST_GOLD));
+					GameObject* chest = new GameObject(Type::CHEST, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_CHEST_GOLD));
 					chest->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
-					chest->SetType(Type::CHEST);
 					chest->SetIsCollisionEnabled(false);
 					assets.emplace_back(chest);
 					break;
 				}
-				case 'p':
+				case 'h':
 				{
-					GameObject* platform = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_PLATOFORM_01));
+					GameObject* platform = new GameObject(Type::PLATFORM_HORIZONTAL, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_PLATOFORM_01));
 					platform->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
-					platform->SetType(Type::PLATFORM);
 					platform->SetCollisionBoxSize(glm::vec2(platform->GetSize().x, platform->GetSize().y / 4.0f));
 					platform->SetVelocity(glm::vec2(-1.0f, 0.0f));
 					assets.emplace_back(platform);
 					break;
 				}
+				case 'v':
+				{
+					GameObject* platform = new GameObject(Type::PLATFORM_VERTICAL, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_PLATOFORM_01));
+					platform->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+
+					// add 100.0f to the collision box size Y. This value(100) is the same as the player's size Y. This is to prevent the player from
+					// colliding with any obstacles above the vertical platform as it moves up. (the platform changes velocity everytime it collides)
+					platform->SetCollisionBoxSize(glm::vec2(platform->GetSize().x, platform->GetSize().y / 4.0f));
+					platform->SetVelocity(glm::vec2(0.0f, -1.0f));
+					assets.emplace_back(platform);
+					break;
+				}
 				case '0':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_00));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_00));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '1':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_01));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_01));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '2':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_02));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_02));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '3':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_03));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_03));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '4':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_04));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_04));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '5':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_05));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_05));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '6':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_06));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_06));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '7':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_07));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_07));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '8':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_08));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_08));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
 				}
 				case '9':
 				{
-					GameObject* block = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_09));
+					GameObject* block = new GameObject(Type::BLOCK, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE), *assetTextures.at(TEXTURE_BLOCK_09));
 					block->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
 					blocks.emplace_back(block);
 					break;
@@ -367,12 +377,17 @@ void Level::Draw(Window& window, float deltaTime)
 
 	// render all blocks
 	for (unsigned int i = 0; i < blocks.size(); ++i)
+	{
 		blocks.at(i)->Draw(renderer, primitiveRenderer);
+	}
 
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
 	{
-		assets.at(i)->Draw(renderer, primitiveRenderer);
+		if (assets.at(i)->GetType() == Type::PLATFORM_HORIZONTAL || assets.at(i)->GetType() == Type::PLATFORM_VERTICAL)
+			assets.at(i)->Draw(renderer, primitiveRenderer, true);
+		else
+			assets.at(i)->Draw(renderer, primitiveRenderer);
 	}
 
 	for (unsigned int i = 0; i < coins.size(); ++i)
@@ -417,7 +432,7 @@ void Level::Draw(Window& window, float deltaTime)
 	{
 		Texture2D* menuTexture = new Texture2D("../textures/playerControls.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 		glm::vec2 menuPos = glm::vec2(player.GetPosition().x, player.GetPosition().y + player.GetSize().y);
-		GameObject* controlsMenu = new GameObject(menuPos, glm::vec2(200.0f), *menuTexture);
+		GameObject* controlsMenu = new GameObject(Type::BLOCK, menuPos, glm::vec2(200.0f), *menuTexture);
 		controlsMenu->Draw(renderer, primitiveRenderer);
 		delete menuTexture;
 		delete controlsMenu;
@@ -449,7 +464,7 @@ void Level::Update(GLfloat deltaTime)
 		for (auto& enemy : enemies)
 			ProcessEnemyCollisions(*enemy, *asset);
 
-		if (asset->GetType() == Type::PLATFORM)
+		if (asset->GetType() == Type::PLATFORM_HORIZONTAL || asset->GetType() == Type::PLATFORM_VERTICAL)
 		{
 			for (auto& block : blocks)
 			{
@@ -499,7 +514,7 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 			player.SetPosition(glm::vec3(playerPos.x, objPos.y + objSize.y, playerPos.z));
 			player.SetVelocityY(0.0f);
 
-			if (objType == Type::PLATFORM)
+			if (objType == Type::PLATFORM_HORIZONTAL)
 			{
 				player.SetIsOnMovingSurface(true);
 
@@ -516,14 +531,19 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 						player.SetSpeed(200.0f + obj.GetSpeed());
 				}
 			}
+			else if (objType == Type::PLATFORM_VERTICAL)
+			{
+				if(obj.GetVelocity().y < 0.0f)
+					player.SetVelocityY(obj.GetVelocity().y);
+			}
 		}
-		else if (collisionResult == 2 && objType != Type::PLATFORM)
+		else if (collisionResult == 2 && objType != Type::PLATFORM_HORIZONTAL && objType != Type::PLATFORM_VERTICAL)
 		{
 			GLfloat xPos = objPos.x - playerSize.x / 2.0f - player.GetCollisionBoxBottom().size.x / 2.0f - player.GetCollisionBoxRight().size.x;
 			player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
 			player.SetVelocityX(0.0f);
 		}
-		else if (collisionResult == 3 && objType != Type::PLATFORM)
+		else if (collisionResult == 3 && objType != Type::PLATFORM_HORIZONTAL && objType != Type::PLATFORM_VERTICAL)
 		{
 			GLfloat xPos = objPos.x + objSize.x - playerSize.x / 2.0f + player.GetCollisionBoxBottom().size.x / 2.0f + player.GetCollisionBoxLeft().size.x;
 			player.SetPosition(glm::vec3(xPos, playerPos.y, playerPos.z));
@@ -743,10 +763,25 @@ void Level::RunSpikeTrapBehaviour(SpikeTrap& spikeTrap)
 
 void Level::RunPlatformBehaviour(GameObject& platform, GameObject& block)
 {
-	if (platform.SimpleCollisionCheck(block))
+	if (platform.GetType() == Type::PLATFORM_HORIZONTAL)
 	{
-		platform.ReverseVelocityX();
+		if(platform.SimpleCollisionCheck(block))
+			platform.ReverseVelocityX();
 	}
+	else if (platform.GetType() == Type::PLATFORM_VERTICAL)
+	{
+		if (platform.SimpleCollisionCheck(block, platform.GetPosition(), glm::vec2(platform.GetSize().x, platform.GetSize().y + player.GetSize().y)))
+			platform.ReverseVelocityY();
+	}
+
+	// old code
+	//if (platform.SimpleCollisionCheck(block))
+	//{
+	//	if (platform.GetType() == Type::PLATFORM_HORIZONTAL)
+	//		platform.ReverseVelocityX();
+	//	else
+	//		platform.ReverseVelocityY();
+	//}
 }
 
 void Level::RunCoinBehaviour(Coin& coin)

@@ -107,10 +107,10 @@ private:
 	std::vector<Texture2D*> texturesMeleeAttack{};
 	Texture2D* textureFall{};
 
-	glm::vec2 textureOffset{};
-	glm::vec2 textureScale{}; // the "textureZoom" variable in the renderer draw functions
+	glm::vec2 textureOffset;
+	glm::vec2 textureScale; // the "textureZoom" variable in the renderer draw functions
 
-	PlayerState state{};
+	PlayerState state;
 	PlayerOrientation orientation{};
 
 	GLuint idleTexIterator{};
@@ -121,18 +121,18 @@ private:
 
 	glm::vec3 previousPosition{};
 
-	glm::vec3 position{};
-	glm::vec2 size{};
-	glm::vec3 color{};
-	GLfloat rotation{};
-	glm::vec2 velocity{};
-	GLfloat speed{};
-	GLfloat gravity{};
+	glm::vec3 position;
+	glm::vec2 size;
+	glm::vec3 color;
+	GLfloat rotation;
+	glm::vec2 velocity;
+	GLfloat speed;
+	GLfloat gravity;
 	GLboolean isOnGround{ true };
 
-	GLint health{};
+	GLint health;
 	GLboolean isDead{ false };
-	GLfloat damage{};
+	GLfloat damage;
 	GLboolean shouldBleed{ false };
 
 	BloodEffect bloodEffect;
@@ -149,8 +149,8 @@ private:
 	GLboolean isInMeleeRange{ false };
 	GLboolean isAttacking{ false };
 
-	GLuint score{};
-	GLuint lives{};
+	GLuint score;
+	GLuint lives;
 
 	CollisionBox collisionBottom;
 	CollisionBox collisionTop;
@@ -162,11 +162,11 @@ private:
 	const GLfloat collisionBoxHorizontalLength = 30.0f;
 	const GLfloat collisionBoxVerticalLength = 80.0f;
 	
-	glm::vec2 colBoxOffsetBottom{};
-	glm::vec2 colBoxOffsetTop{};
-	glm::vec2 colBoxOffsetRight{};
-	glm::vec2 colBoxOffsetLeft{};
-	glm::vec2 colBoxOffsetSimple{};
+	glm::vec2 colBoxOffsetBottom;
+	glm::vec2 colBoxOffsetTop;
+	glm::vec2 colBoxOffsetRight;
+	glm::vec2 colBoxOffsetLeft;
+	glm::vec2 colBoxOffsetSimple;
 
 	GLboolean isOnMovingSurface{ false };
 };

@@ -1,8 +1,9 @@
 #include "GameObject.h"
 
-GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color, GLfloat speed, glm::vec2 textureOffset, glm::vec2 textureScale)
+GameObject::GameObject(Type type, glm::vec2 position, glm::vec2 size, Texture2D& texture, glm::vec3 color, GLfloat speed, glm::vec2 textureOffset, glm::vec2 textureScale)
 	:
 	position(position),
+	previousPosition(position),
 	size(size),
 	speed(speed),
 	texture(texture),
@@ -13,7 +14,7 @@ GameObject::GameObject(glm::vec2 position, glm::vec2 size, Texture2D& texture, g
 	gravity(0.0f),
 	textureScale(textureScale),
 	textureOffset(textureOffset),
-	type(Type::BLOCK),
+	type(type),
 	collisionEnabled(true)
 {
 	collisionBoxSimple = CollisionBox(this->position, this->size, glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
@@ -50,14 +51,21 @@ void GameObject::Rotate(GLfloat degrees, glm::vec3 rotationAxis)
 
 GLboolean GameObject::SimpleCollisionCheck(GameObject& obj)
 {
-	glm::vec2 objPos = obj.GetPosition();
-	glm::vec2 objSize = obj.GetSize();
-
 	CollisionBox otherObjectColBox = obj.GetCollisionBox();
 
 	GLboolean collisionX = collisionBoxSimple.position.x + collisionBoxSimple.size.x > otherObjectColBox.position.x && otherObjectColBox.position.x + otherObjectColBox.size.x > collisionBoxSimple.position.x;
 	GLboolean collisionY = collisionBoxSimple.position.y + collisionBoxSimple.size.y > otherObjectColBox.position.y && otherObjectColBox.position.y + otherObjectColBox.size.y > collisionBoxSimple.position.y;
 
+	return collisionX && collisionY;
+}
+
+GLboolean GameObject::SimpleCollisionCheck(GameObject& obj, glm::vec2 pos, glm::vec2 size)
+{
+	CollisionBox colBox = CollisionBox(pos, size);
+	CollisionBox otherObjectColBox = obj.GetCollisionBox();
+
+	GLboolean collisionX = colBox.position.x + colBox.size.x > otherObjectColBox.position.x&& otherObjectColBox.position.x + otherObjectColBox.size.x > colBox.position.x;
+	GLboolean collisionY = colBox.position.y + colBox.size.y > otherObjectColBox.position.y&& otherObjectColBox.position.y + otherObjectColBox.size.y > colBox.position.y;
 
 	return collisionX && collisionY;
 }
@@ -75,6 +83,22 @@ void GameObject::ReverseVelocityX()
 	else
 	{
 		velocity.x = 0.0f;
+	}
+}
+
+void GameObject::ReverseVelocityY()
+{
+	if (velocity.y < 0.0f)
+	{
+		velocity.y = abs(velocity.y);
+	}
+	else if (velocity.y > 0.0f)
+	{
+		velocity.y -= velocity.y * 2;
+	}
+	else
+	{
+		velocity.y = 0.0f;
 	}
 }
 

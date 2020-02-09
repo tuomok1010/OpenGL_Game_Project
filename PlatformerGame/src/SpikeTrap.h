@@ -15,5 +15,5 @@ public:
 	void DamageEnemy(Enemy& enemy);
 
 private:
-	GLfloat damage{};
+	GLfloat damage;
 };
