@@ -12,7 +12,8 @@ enum class Type
 	SIGNQUIT,		// this is only used in the "menu" level. Will quit the game if the player moves to it
 	CHEST,
 	PLATFORM_HORIZONTAL,
-	PLATFORM_VERTICAL
+	PLATFORM_VERTICAL,
+	CHECKPOINT
 };
 
 class GameObject

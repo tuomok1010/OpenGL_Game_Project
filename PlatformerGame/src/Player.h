@@ -43,6 +43,7 @@ public:
 
 	void DrawBloodEffect(SpriteRenderer& renderer);
 	void ResetBloodAnimation();
+	void ResetPuffAnimation();
 	void DrawPuffEffect(SpriteRenderer& renderer);
 	void IncrementScore(GLint amountToAdd) { score += amountToAdd; }
 	void ResetSpeed() { speed = 200.0f; }
@@ -61,6 +62,7 @@ public:
 	void SetHasCollided(GLboolean hasCollided);
 	void SetHealth(GLint newHealth);
 	void SetIsDead(GLboolean isDead);
+	void SetIsPermaDead(GLboolean newVal) { isPermaDead = newVal; }
 	void SetIsInMeleeRange(GLboolean newVal) { isInMeleeRange = newVal; }
 	void SetShouldBleed(GLboolean newVal) { shouldBleed = newVal; }
 	void SetVelocityX(GLfloat val) { velocity.x = val; }
@@ -72,6 +74,7 @@ public:
 	void SetLives(GLuint amount) { lives = amount; }
 	void SetIsOnMovingSurface(GLboolean newVal) { isOnMovingSurface = newVal; }
 	void SetSpeed(GLfloat newSpeed) { speed = newSpeed; }
+	void SetShouldDespawn(GLboolean newVal) { readyToDespawn = false; }
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -132,7 +135,8 @@ private:
 	GLboolean isOnGround{ true };
 
 	GLint health;
-	GLboolean isDead{ false };
+	GLboolean isDead{ false };			// if player's current life goes to 0 this gets set to true
+	GLboolean isPermaDead{ false };		// if player's current life goes to 0 AND he has no extra lives left this gets set to true
 	GLfloat damage;
 	GLboolean shouldBleed{ false };
 

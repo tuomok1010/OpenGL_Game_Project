@@ -220,6 +220,12 @@ void Player::ResetBloodAnimation()
 	bloodEffect.ResetAnimation();
 }
 
+void Player::ResetPuffAnimation()
+{
+	puffEffect.ResetAnimation();
+	puffEffect.SetShouldStop(false);
+}
+
 void Player::DrawPuffEffect(SpriteRenderer& renderer)
 {
 	GLfloat yOffset = 50.0f;
@@ -303,6 +309,13 @@ void Player::SetPosition(glm::vec3 newPosition)
 	previousPosition = position;
 	position = newPosition;
 	camera.SetPosition(position + cameraOffset);
+
+	// Update collision box positions
+	collisionBoxSimple.position = glm::vec2(position.x + colBoxOffsetSimple.x, position.y);
+	collisionBottom.position = glm::vec2(position.x + colBoxOffsetBottom.x, position.y - 1.0f);
+	collisionTop.position = glm::vec2(position.x + colBoxOffsetTop.x, position.y + colBoxOffsetTop.y);
+	collisionRight.position = glm::vec2(position.x + colBoxOffsetRight.x, collisionBoxSimple.position.y + collisionBottom.size.y);
+	collisionLeft.position = glm::vec2(position.x + colBoxOffsetLeft.x, collisionBoxSimple.position.y + collisionBottom.size.y);
 }
 
 void Player::SetOrientation(PlayerOrientation newOrientation)

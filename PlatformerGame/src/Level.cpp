@@ -18,10 +18,12 @@
 #define TEXTURE_TRAP_01			10
 #define TEXTURE_MENU_SIGN_START	11
 #define TEXTURE_MENU_SIGN_QUIT	12
-#define TEXTURE_CHEST_GOLD		13
-#define TEXTURE_PLATOFORM_01	14
+#define TEXTURE_SIGN_02			13
+#define TEXTURE_CHEST_GOLD		14
+#define TEXTURE_PLATOFORM_01	15
+#define TEXTURE_IRON_LAMP		16
 
-//************
+//************c
 
 #define BLOCK_SIZE 50
 
@@ -33,43 +35,62 @@ Level::Level(SpriteRenderer& renderer, PrimitiveRenderer& primitiveRenderer, Pla
 	primitiveRenderer(primitiveRenderer),
 	player(player),
 	rng(rd()),
+	activeCheckPoint(nullptr),
+	playerStartLocation(glm::vec3(0.0f)),
+	playerRespawnTimer(5.0f),
 	hasClouds(false),
 	backGround(nullptr),
 	levelNumber(0)
 {
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground0.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_00
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground1.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_01
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground2.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_02
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground3.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_03
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground4.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_04
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground5.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_05
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground6.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_06
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground7.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_07
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground8.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_08
-	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground9.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));	// TEXTURE_BLOCK_09
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground0.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_00
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground1.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_01
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground2.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_02
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground3.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_03
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground4.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_04
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground5.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_05
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground6.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_06
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground7.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_07
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground8.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_08
+	assetTextures.emplace_back(new Texture2D("../assets/2DPlatformStoneTiles/Ground&Stone/Stone/ground9.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));		// TEXTURE_BLOCK_09
 
-	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/spike.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_TRAP_01
-	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignstart.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_START
-	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignquit.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));				// TEXTURE_MENU_SIGN_QUIT
-	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/chest3.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_CHEST_GOLD
-	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/shelf.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));						// TEXTURE_PLATOFORM_01
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/spike.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));							// TEXTURE_TRAP_01
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignstart.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));					// TEXTURE_MENU_SIGN_START
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/menusignquit.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));					// TEXTURE_MENU_SIGN_QUIT
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/sign2.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));							// TEXTURE_SIGN_02
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/chest3.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));							// TEXTURE_CHEST_GOLD
+	assetTextures.emplace_back(new Texture2D("../assets/accessories/accessories/shelf.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));							// TEXTURE_PLATOFORM_01
+	assetTextures.emplace_back(new Texture2D("../assets/iron_lamp/LampStand.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE));	// TEXTURE_IRON_LAMP
 
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0380_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 	cloudTextures.emplace_back(new Texture2D("../textures/TexturesCom_Skies0370_3_masked_S.png", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
 
 	levelNumber = levelNumCounter;
 	levelNumCounter += 1;
+
+	checkPointFireEffect = new FireEffect();
 }
 
 Level::~Level()
 {
+	// delete textures // TODO consider moving the textures to the asset classes instead
 	for (unsigned int i = 0; i < assetTextures.size(); ++i)
 	{
 		if(assetTextures.at(i) != nullptr)
 			delete assetTextures.at(i);
 	}
 
+	for (unsigned int i = 0; i < cloudTextures.size(); ++i)
+	{
+		if (cloudTextures.at(i) != nullptr)
+			delete cloudTextures.at(i);
+	}
 
+	if (backGround != nullptr)
+		delete backGround;
+	// ============================================0
+
+
+	// delete assets / enemies
 	for (unsigned int i = 0; i < blocks.size(); ++i)
 	{
 		if(blocks.at(i) != nullptr)
@@ -80,12 +101,6 @@ Level::~Level()
 	{
 		if(assets.at(i) != nullptr)
 			delete assets.at(i);
-	}
-
-	for (unsigned int i = 0; i < cloudTextures.size(); ++i)
-	{
-		if(cloudTextures.at(i) != nullptr)
-			delete cloudTextures.at(i);
 	}
 
 	for (unsigned int i = 0; i < enemies.size(); ++i)
@@ -99,6 +114,9 @@ Level::~Level()
 		if(coins.at(i) != nullptr)
 			delete coins.at(i);
 	}
+	// ================================================
+
+	delete checkPointFireEffect;
 }
 
 void Level::Load(const std::string& filePath, const std::string& backGroundPath)
@@ -160,6 +178,19 @@ void Level::ProcessLevelData()
 			GLchar symbol{ levelData.at(i).at(j) };
 			switch (symbol)
 			{
+				case '@':
+				{
+					GameObject* checkPoint = new GameObject
+					(
+						Type::CHECKPOINT, glm::vec2(0.0f, 0.0f), glm::vec2(BLOCK_SIZE, BLOCK_SIZE * 2), *assetTextures.at(TEXTURE_IRON_LAMP), 
+						glm::vec3(1.0f), 100.0f, glm::vec2(0.15f, 0.1f), glm::vec2(0.75f, 1.0f)
+					);
+
+					checkPoint->SetPosition(glm::vec2(j * BLOCK_SIZE, i * BLOCK_SIZE));
+					checkPoint->SetIsCollisionEnabled(false);
+					assets.emplace_back(checkPoint);
+					break;
+				}
 				case '!':
 				{
 					Spearman* spearman = new Spearman();
@@ -206,6 +237,7 @@ void Level::ProcessLevelData()
 				case 'P':
 				{
 					player.SetPosition(glm::vec3(j * BLOCK_SIZE - (player.GetSize().x / 2.0f), i * BLOCK_SIZE + 1.05f, 0.0f));
+					playerStartLocation = player.GetPosition();
 					break;
 				}
 				case '^':
@@ -382,13 +414,13 @@ void Level::Draw(Window& window, float deltaTime)
 		blocks.at(i)->Draw(renderer, primitiveRenderer);
 	}
 
+	if (activeCheckPoint != nullptr)
+		checkPointFireEffect->Draw(renderer);
+
 	// render all assets(chests, traps, ladders etc)
 	for (unsigned int i = 0; i < assets.size(); ++i)
 	{
-		if (assets.at(i)->GetType() == Type::PLATFORM_HORIZONTAL || assets.at(i)->GetType() == Type::PLATFORM_VERTICAL)
-			assets.at(i)->Draw(renderer, primitiveRenderer, true);
-		else
-			assets.at(i)->Draw(renderer, primitiveRenderer);
+		assets.at(i)->Draw(renderer, primitiveRenderer);
 	}
 
 	for (unsigned int i = 0; i < coins.size(); ++i)
@@ -402,7 +434,7 @@ void Level::Draw(Window& window, float deltaTime)
 	{
 		if (!enemies.at(i)->GetShouldDespawn())
 		{
-			enemies.at(i)->Draw(renderer, primitiveRenderer, true);
+			enemies.at(i)->Draw(renderer, primitiveRenderer);
 		}
 		else
 		{
@@ -413,7 +445,7 @@ void Level::Draw(Window& window, float deltaTime)
 	// render player
 	if (!player.GetShouldDespawn())
 	{
-		player.Draw(renderer, primitiveRenderer, true);
+		player.Draw(renderer, primitiveRenderer);
 		player.DrawBloodEffect(renderer);
 	}
 	else
@@ -446,7 +478,9 @@ void Level::Update(GLfloat deltaTime)
 	player.SetIsOnMovingSurface(false);
 	player.ResetSpeed();
 
-	// update blocks
+	if (shouldPlayerRespawn)
+		RespawnPlayer(deltaTime);
+
 	for (auto& block : blocks)
 	{
 		ProcessPlayerCollisions(*block);
@@ -477,7 +511,11 @@ void Level::Update(GLfloat deltaTime)
 		else if (asset->GetType() == Type::SPIKETRAP)
 		{
 			SpikeTrap* spikeTrap = dynamic_cast<SpikeTrap*>(asset);
-			RunSpikeTrapBehaviour(*spikeTrap);
+			RunSpikeTrapBehaviour(*spikeTrap, deltaTime);
+		}
+		else if (asset->GetType() == Type::CHECKPOINT)
+		{
+			RunCheckPointBehaviour(*asset);
 		}
 	}
 
@@ -632,6 +670,29 @@ void Level::ProcessGameObjectCollisions(GameObject& object, GameObject& otherObj
 	}
 }
 
+void Level::RespawnPlayer(GLfloat deltaTime)
+{
+	glm::vec2 locationToSpawnAt = activeCheckPoint == nullptr ? glm::vec2(playerStartLocation.x, playerStartLocation.y) : activeCheckPoint->GetPosition();
+
+	if (playerRespawnTimer <= 0.0f)
+	{
+		std::cout << "player respawned to checkpoint" << std::endl;
+		player.SetPosition(glm::vec3(locationToSpawnAt.x, locationToSpawnAt.y, player.GetPosition().z));
+		player.SetHealth(100.0f);
+		player.SetIsDead(false);
+		shouldPlayerRespawn = false;
+		player.SetShouldDespawn(false);
+		player.SetState(PlayerState::IDLE);
+		player.ResetPuffAnimation();
+		player.ResetBloodAnimation();
+		player.ResetAnimation(PlayerState::DEATH);
+		playerRespawnTimer = 5.0f;
+	}
+
+	if(player.GetShouldDespawn())
+		playerRespawnTimer -= deltaTime;
+}
+
 GLboolean Level::IsPlayerSpottedByEnemies()
 {
 	GLboolean hasBeenSpotted{ false };
@@ -680,7 +741,7 @@ void Level::RunSpearmanBehaviour(Spearman& enemy, float deltaTime)
 
 		if (!enemy.CheckIfHasSeenPlayer(player))
 			enemy.MoveTowardsNextPatrolPoint(deltaTime);
-		else
+		else if(!player.GetIsDead())
 		{
 			if (enemy.MoveTowardsPlayer(player, deltaTime)) // MoveTowardsPlayer returns true when enemy is in melee range
 			{
@@ -693,13 +754,15 @@ void Level::RunSpearmanBehaviour(Spearman& enemy, float deltaTime)
 
 					if (player.GetHealth() <= 0.0f)
 					{
+						player.SetIsDead(true);
 						player.SetLives(player.GetLives() - 1);
 						if (player.GetLives() > 0)
-							player.SetHealth(100.0f);
+							shouldPlayerRespawn = true;
 					}
 				}
 				if (player.GetLives() == 0 && player.GetHealth() <= 0)
-					player.SetIsDead(true);
+					player.SetIsPermaDead(true);
+
 			}
 		}
 		if (enemy.IsInPlayerMeleeRange(player))
@@ -730,15 +793,23 @@ void Level::RunTargetBehaviour(Target& target, float deltaTime)
 	}
 }
 
-void Level::RunSpikeTrapBehaviour(SpikeTrap& spikeTrap)
+void Level::RunSpikeTrapBehaviour(SpikeTrap& spikeTrap, GLfloat deltaTime)
 {
-	if (player.SimpleCollisionCheck(spikeTrap))
+	if (player.SimpleCollisionCheck(spikeTrap) && !player.GetIsDead())
 	{
 		spikeTrap.DamagePlayer(player);
 		if (!player.GetIsDead())
 			player.SetShouldBleed(true);
-		if (player.GetHealth() <= 0.0f)
+		if (player.GetHealth() <= 0.0f && player.GetLives() == 0)
+			player.SetIsPermaDead(true);
+		else if (player.GetHealth() <= 0.0f)
+		{
 			player.SetIsDead(true);
+			player.SetLives(player.GetLives() - 1);
+			if (player.GetLives() > 0)
+				shouldPlayerRespawn = true;
+		}
+
 	}
 	for (auto& enemy : enemies)
 	{
@@ -797,6 +868,15 @@ void Level::RunCoinBehaviour(Coin& coin)
 			std::cout << "player score increased by " << coin.GetValue() << "! New score: " << player.GetScore() << std::endl;
 		}
 		coin.SetIsCollected(true);
+	}
+}
+
+void Level::RunCheckPointBehaviour(GameObject& checkPoint)
+{
+	if (player.SimpleCollisionCheck(checkPoint))
+	{
+		activeCheckPoint = &checkPoint;
+		checkPointFireEffect->SetPosition(glm::vec2(activeCheckPoint->GetPosition().x, activeCheckPoint->GetPosition().y + 60.0f));
 	}
 }
 

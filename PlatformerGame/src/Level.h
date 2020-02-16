@@ -14,6 +14,7 @@
 #include "Coin.h"
 #include "ObjectivesList.h"
 #include "Target.h"
+#include "FireEffect.h"
 
 class Level
 {
@@ -28,10 +29,13 @@ public:
 	void RunEnemyBehaviour(float deltaTime);
 	void RunSpearmanBehaviour(Spearman& enemy, float deltaTime);
 	void RunTargetBehaviour(Target& target, float deltaTime);
-	void RunSpikeTrapBehaviour(SpikeTrap& spikeTrap);
+	void RunSpikeTrapBehaviour(SpikeTrap& spikeTrap, GLfloat deltaTime);
 	void RunPlatformBehaviour(GameObject& platform, GameObject& block);
 	void RunCoinBehaviour(Coin& coin);
+	void RunCheckPointBehaviour(GameObject& checkPoint);
+
 	void SetAnimationToAllAliveEnemies(EnemyState newState);
+
 	void InitObjectives();
 	void InitLevel0Objectives();
 	void InitLevel1Objectives();
@@ -40,6 +44,7 @@ public:
 	void ProcessPlayerCollisions(GameObject& obj);
 	void ProcessEnemyCollisions(Enemy& enemy, GameObject& obj);
 	void ProcessGameObjectCollisions(GameObject& object, GameObject& otherObject);
+	void RespawnPlayer(GLfloat deltaTime);
 
 	const ObjectivesList& GetObjectivesList()const { return objectivesList; }
 
@@ -52,10 +57,15 @@ private:
 	std::vector<std::vector<GLchar>> levelData;
 	std::vector<GameObject*> blocks;
 	std::vector<GameObject*> assets;
-	std::vector<GameObject*> checkPoints;
 	std::vector<Texture2D*> assetTextures;
 	std::vector<Enemy*> enemies;
 	std::vector<Coin*> coins;
+
+	GameObject* activeCheckPoint;
+	FireEffect* checkPointFireEffect;
+	glm::vec3 playerStartLocation;
+	GLfloat playerRespawnTimer;
+	GLboolean shouldPlayerRespawn;
 
 	Texture2D* backGround;
 	GLboolean hasClouds;

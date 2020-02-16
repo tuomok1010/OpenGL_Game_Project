@@ -21,7 +21,8 @@ public:
 
 	GLboolean GetShouldStop()const { return shouldStop; }
 
-	void SetPosition(glm::vec3 newPos) { position = newPos; }
+	void SetPosition(glm::vec2 newPos) { position = newPos; }
+	void SetShouldStop(GLboolean newVal) { shouldStop = newVal; }
 
 	glm::vec2 GetSize()const { return size; }
 
@@ -32,7 +33,7 @@ protected:
 	glm::vec2 textureScale{};
 	GLuint texIterator{};
 
-	glm::vec3 position{};
+	glm::vec2 position{};
 	glm::vec2 size{};
 	glm::vec3 color{};
 	GLfloat rotation{};
