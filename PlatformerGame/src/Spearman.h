@@ -10,6 +10,8 @@ public:
 	Spearman(const Spearman& src);
 	~Spearman();
 
+	Spearman& operator=(const Spearman& src);
+
 	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false) override;
 
 	GLboolean MeleeAttack();

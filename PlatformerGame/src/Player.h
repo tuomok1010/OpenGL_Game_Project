@@ -47,6 +47,7 @@ public:
 	void DrawPuffEffect(SpriteRenderer& renderer);
 	void IncrementScore(GLint amountToAdd) { score += amountToAdd; }
 	void ResetSpeed() { speed = 200.0f; }
+	void Respawn(GLfloat deltaTime, glm::vec2 locationToSpawnAt);
 
 	// retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
 	GLint AdvancedCollisionCheck(GameObject& obj);
@@ -74,7 +75,8 @@ public:
 	void SetLives(GLuint amount) { lives = amount; }
 	void SetIsOnMovingSurface(GLboolean newVal) { isOnMovingSurface = newVal; }
 	void SetSpeed(GLfloat newSpeed) { speed = newSpeed; }
-	void SetShouldDespawn(GLboolean newVal) { readyToDespawn = false; }
+	void SetShouldDespawn(GLboolean newVal) { readyToDespawn = newVal; }
+	void SetShouldRespawn(GLboolean newVal) { shouldRespawn = newVal; }
 
 	void ResetAnimation(PlayerState animationToReset);
 
@@ -97,6 +99,7 @@ public:
 	GLuint GetLives()const { return lives; }
 	glm::vec2 GetVelocity()const { return velocity; }
 	GLboolean GetIsOnMovingSurface()const { return isOnMovingSurface; }
+	GLboolean GetShouldRespawn()const { return shouldRespawn; }
 
 	CollisionBox GetCollisionBoxBottom()const { return collisionBottom; }
 	CollisionBox GetCollisionBoxTop()const { return collisionTop; }
@@ -143,6 +146,8 @@ private:
 	BloodEffect bloodEffect;
 	PuffEffect puffEffect;
 	GLboolean readyToDespawn{ false };
+	GLfloat respawnTimer{ 5.0f };
+	GLboolean shouldRespawn{ false };
 
 	// TODO consider removing as it is not used anywhere(i think...)
 	GLboolean hasCollided{ false };

@@ -23,6 +23,8 @@ public:
 	Coin(const Coin& src);
 	~Coin();
 
+	Coin& operator=(const Coin& src);
+
 	void Draw(SpriteRenderer& renderer);
 	void ResetAnimation();
 

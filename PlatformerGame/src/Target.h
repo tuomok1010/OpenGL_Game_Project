@@ -9,6 +9,8 @@ public:
 	Target(const Target& src);
 	~Target();
 
+	Target& operator=(const Target& src);
+
 	void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false) override;
 	void DrawPuffEffect(SpriteRenderer& renderer) override;
 

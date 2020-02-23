@@ -6,13 +6,13 @@ VertexArray::VertexArray(GLfloat* vertices, GLuint* indices, GLsizei vertexValue
 	IBO = new IndexBuffer(indices, indexCount, usage);
 
 	glGenVertexArrays(1, &ID);
-	shouldCleanMemory = true;
 }
 
-VertexArray::VertexArray(VertexBuffer& VBO, IndexBuffer& IBO)
-	: VBO(&VBO), IBO(&IBO)
+VertexArray::VertexArray(const VertexArray& src)
 {
-	glGenVertexArrays(1, &ID);
+	VBO = new VertexBuffer(*src.VBO);
+	IBO = new IndexBuffer(*src.IBO);
+	ID = src.ID;
 }
 
 VertexArray::~VertexArray()
@@ -22,11 +22,10 @@ VertexArray::~VertexArray()
 	glBindVertexArray(0);
 	Clear();
 
-	if (shouldCleanMemory)
-	{
+	if(VBO != nullptr)
 		delete VBO;
+	if(IBO != nullptr)
 		delete IBO;
-	}
 }
 
 void VertexArray::Bind() const

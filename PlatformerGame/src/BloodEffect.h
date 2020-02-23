@@ -14,6 +14,7 @@ public:
 	BloodEffect();
 	BloodEffect(const BloodEffect& src);
 	~BloodEffect();
+	BloodEffect& operator=(const BloodEffect& src);
 
 	void Draw(SpriteRenderer& renderer) override;
 };

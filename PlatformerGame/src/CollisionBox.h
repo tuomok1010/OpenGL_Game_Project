@@ -12,6 +12,8 @@ public:
 	CollisionBox(const CollisionBox& src);
 	~CollisionBox();
 
+	CollisionBox& operator=(const CollisionBox& src);
+
 	void Draw(PrimitiveRenderer& renderer);
 
 	glm::vec2 position;

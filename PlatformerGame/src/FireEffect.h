@@ -14,6 +14,7 @@ public:
 	FireEffect();
 	FireEffect(const FireEffect& src);
 	~FireEffect();
+	FireEffect& operator=(const FireEffect& src);
 
 	void Draw(SpriteRenderer& renderer) override;
 };

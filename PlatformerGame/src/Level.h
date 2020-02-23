@@ -44,7 +44,6 @@ public:
 	void ProcessPlayerCollisions(GameObject& obj);
 	void ProcessEnemyCollisions(Enemy& enemy, GameObject& obj);
 	void ProcessGameObjectCollisions(GameObject& object, GameObject& otherObject);
-	void RespawnPlayer(GLfloat deltaTime);
 
 	const ObjectivesList& GetObjectivesList()const { return objectivesList; }
 
@@ -64,8 +63,6 @@ private:
 	GameObject* activeCheckPoint;
 	FireEffect* checkPointFireEffect;
 	glm::vec3 playerStartLocation;
-	GLfloat playerRespawnTimer;
-	GLboolean shouldPlayerRespawn;
 
 	Texture2D* backGround;
 	GLboolean hasClouds;

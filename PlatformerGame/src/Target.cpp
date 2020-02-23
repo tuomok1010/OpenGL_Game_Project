@@ -14,12 +14,24 @@ Target::Target()
 }
 
 Target::Target(const Target& src)
-	: Target()
+	: Enemy(src)
 {
+	health = src.health;
 }
 
 Target::~Target()
 {
+}
+
+Target& Target::operator=(const Target& src)
+{
+	if (this == &src)
+		return *this;
+
+	Enemy::operator=(src);
+	health = src.health;
+
+	return *this;
 }
 
 void Target::Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes)

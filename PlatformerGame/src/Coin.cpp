@@ -42,17 +42,62 @@ Coin::Coin(CoinType type, glm::vec3 position)
 }
 
 Coin::Coin(const Coin& src)
-	: Coin(src.coinType, src.position)
 {
+	textureOffset = src.textureOffset;
+	textureScale = src.textureScale;
+	texIterator = src.texIterator;
+
+	position = src.position;
+	size = src.size;
+	color = src.color;
+	rotation = src.rotation;
+
+	coinType = src.coinType;
+	value = src.value;
+
+	sparkleEffect = src.sparkleEffect;
+	isCollected = src.isCollected;
+
+	for (const auto& texture : src.texturesCoin)
+		texturesCoin.emplace_back(new Texture2D(*texture));
 }
 
 Coin::~Coin()
 {
 	for (auto& texture : texturesCoin)
 	{
-		texture->Unbind();
-		delete texture;
+		if (texture != nullptr)
+		{
+			texture->Unbind();
+			delete texture;
+		}
 	}
+}
+
+Coin& Coin::operator=(const Coin& src)
+{
+	if (this == &src)
+		return *this;
+
+	textureOffset = src.textureOffset;
+	textureScale = src.textureScale;
+	texIterator = src.texIterator;
+
+	position = src.position;
+	size = src.size;
+	color = src.color;
+	rotation = src.rotation;
+
+	coinType = src.coinType;
+	value = src.value;
+
+	sparkleEffect = src.sparkleEffect;
+	isCollected = src.isCollected;
+
+	for (const auto& texture : src.texturesCoin)
+		texturesCoin.emplace_back(new Texture2D(*texture));
+
+	return *this;
 }
 
 void Coin::Draw(SpriteRenderer& renderer)

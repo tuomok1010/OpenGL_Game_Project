@@ -13,13 +13,13 @@ BloodEffect::BloodEffect()
 }
 
 BloodEffect::BloodEffect(const BloodEffect& src)
-	: BloodEffect()
+	: Effect(src)
 {
 }
 
 BloodEffect::~BloodEffect()
 {
-	for (auto& texture : textures)
+	for (auto texture : textures)
 	{
 		if (texture != nullptr)
 		{
@@ -27,6 +27,15 @@ BloodEffect::~BloodEffect()
 			delete texture;
 		}
 	}
+}
+
+BloodEffect& BloodEffect::operator=(const BloodEffect& src)
+{
+	if (this == &src)
+		return *this;
+
+	Effect::operator=(src);
+	return *this;
 }
 
 void BloodEffect::Draw(SpriteRenderer& renderer)

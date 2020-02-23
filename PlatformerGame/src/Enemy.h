@@ -40,6 +40,8 @@ public:
 	Enemy(const Enemy& src);
 	virtual ~Enemy();
 
+	Enemy& operator=(const Enemy& src);
+
 	virtual void Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes = false);
 	virtual void DrawPuffEffect(SpriteRenderer& renderer);
 
@@ -147,9 +149,9 @@ protected:
 	CollisionBox collisionRight;
 	CollisionBox collisionBoxSimple;
 
-	const GLfloat collisionBoxThickness = 10.0f;
-	const GLfloat collisionBoxHorizontalLength = 30.0f;
-	const GLfloat collisionBoxVerticalLength = 80.0f;
+	GLfloat collisionBoxThickness = 10.0f;
+	GLfloat collisionBoxHorizontalLength = 30.0f;
+	GLfloat collisionBoxVerticalLength = 80.0f;
 
 	glm::vec2 colBoxOffsetBottom{};
 	glm::vec2 colBoxOffsetTop{};

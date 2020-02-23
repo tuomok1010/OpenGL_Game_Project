@@ -19,12 +19,32 @@ CollisionBox::CollisionBox(glm::vec2 position, glm::vec2 size, glm::vec4 color, 
 }
 
 CollisionBox::CollisionBox(const CollisionBox& src)
-	: CollisionBox(src.position, src.size, src.color, src.rotation, src.rotationAxis)
 {
+	position = src.position;
+	size = src.size;
+	color = src.color;
+	rotation = src.rotation;
+	rotationAxis = src.rotationAxis;
+	shape = src.shape;
 }
 
 CollisionBox::~CollisionBox()
 {
+}
+
+CollisionBox& CollisionBox::operator=(const CollisionBox& src)
+{
+	if (this == &src)
+		return *this;
+
+	position = src.position;
+	size = src.size;
+	color = src.color;
+	rotation = src.rotation;
+	rotationAxis = src.rotationAxis;
+	shape = src.shape;
+
+	return *this;
 }
 
 void CollisionBox::Draw(PrimitiveRenderer& renderer)

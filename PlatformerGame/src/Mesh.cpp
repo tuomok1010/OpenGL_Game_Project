@@ -3,25 +3,18 @@
 Mesh::Mesh(GLfloat* vertices, GLuint* indices, GLsizei vertexValueCount, GLsizei indexCount, GLenum usage)
 {
 	VAO = new VertexArray(vertices, indices, vertexValueCount, indexCount, usage);
-	shouldCleanMemory = true;
 }
 
-Mesh::Mesh(VertexBuffer& VBO, IndexBuffer& IBO)
+Mesh::Mesh(const Mesh& src)
 {
-	VAO = new VertexArray(VBO, IBO);
-	shouldCleanMemory = true;
-}
-
-Mesh::Mesh(VertexArray& VAO)
-	: VAO(&VAO)
-{
+	VAO = new VertexArray(*src.VAO);
 }
 
 Mesh::~Mesh()
 {
 	Clear();
 
-	if (shouldCleanMemory)
+	if(VAO != nullptr)
 		delete VAO;
 }
 

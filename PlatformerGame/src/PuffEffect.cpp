@@ -16,13 +16,13 @@ PuffEffect::PuffEffect()
 }
 
 PuffEffect::PuffEffect(PuffEffect& src)
-	: PuffEffect()
+	: Effect(src)
 {
 }
 
 PuffEffect::~PuffEffect()
 {
-	for (auto& texture : textures)
+	for (auto texture : textures)
 	{
 		if (texture != nullptr)
 		{
@@ -30,6 +30,15 @@ PuffEffect::~PuffEffect()
 			delete texture;
 		}
 	}
+}
+
+PuffEffect& PuffEffect::operator=(const PuffEffect& src)
+{
+	if (this == &src)
+		return *this;
+
+	Effect::operator=(src);
+	return *this;
 }
 
 void PuffEffect::Draw(SpriteRenderer& renderer)

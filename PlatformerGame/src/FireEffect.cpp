@@ -22,13 +22,13 @@ FireEffect::FireEffect()
 }
 
 FireEffect::FireEffect(const FireEffect& src)
-	: FireEffect()
+	: Effect(src)
 {
 }
 
 FireEffect::~FireEffect()
 {
-	for (auto& texture : textures)
+	for (auto texture : textures)
 	{
 		if (texture != nullptr)
 		{
@@ -36,6 +36,15 @@ FireEffect::~FireEffect()
 			delete texture;
 		}
 	}
+}
+
+FireEffect& FireEffect::operator=(const FireEffect& src)
+{
+	if (this == &src)
+		return *this;
+
+	Effect::operator=(src);
+	return *this;
 }
 
 void FireEffect::Draw(SpriteRenderer& renderer)

@@ -14,6 +14,7 @@ public:
 	FireSparkleEffect();
 	FireSparkleEffect(const FireSparkleEffect& src);
 	~FireSparkleEffect();
+	FireSparkleEffect& operator=(const FireSparkleEffect& src);
 
 	void Draw(SpriteRenderer& renderer) override;
 };

@@ -37,7 +37,6 @@ Level::Level(SpriteRenderer& renderer, PrimitiveRenderer& primitiveRenderer, Pla
 	rng(rd()),
 	activeCheckPoint(nullptr),
 	playerStartLocation(glm::vec3(0.0f)),
-	playerRespawnTimer(5.0f),
 	hasClouds(false),
 	backGround(nullptr),
 	levelNumber(0)
@@ -114,9 +113,10 @@ Level::~Level()
 		if(coins.at(i) != nullptr)
 			delete coins.at(i);
 	}
-	// ================================================
+	 //================================================
 
-	delete checkPointFireEffect;
+	if(checkPointFireEffect != nullptr)
+		delete checkPointFireEffect;
 }
 
 void Level::Load(const std::string& filePath, const std::string& backGroundPath)
@@ -478,8 +478,6 @@ void Level::Update(GLfloat deltaTime)
 	player.SetIsOnMovingSurface(false);
 	player.ResetSpeed();
 
-	if (shouldPlayerRespawn)
-		RespawnPlayer(deltaTime);
 
 	for (auto& block : blocks)
 	{
@@ -525,6 +523,12 @@ void Level::Update(GLfloat deltaTime)
 		RunCoinBehaviour(*coin);
 	}
 
+	if (player.GetShouldRespawn())
+	{
+		glm::vec2 locationToSpawnAt = activeCheckPoint == nullptr ? glm::vec2(playerStartLocation.x, playerStartLocation.y) : activeCheckPoint->GetPosition();
+		player.Respawn(deltaTime, locationToSpawnAt);
+	}
+
 	levelComplete = objectivesList.CheckObjectives();
 }
 
@@ -552,6 +556,7 @@ void Level::ProcessPlayerCollisions(GameObject& obj)
 			player.SetIsOnGround(true);
 			player.SetPosition(glm::vec3(playerPos.x, objPos.y + objSize.y, playerPos.z));
 			player.SetVelocityY(0.0f);
+			player.ResetAnimation(PlayerState::JUMP);
 
 			if (objType == Type::PLATFORM_HORIZONTAL)
 			{
@@ -670,29 +675,6 @@ void Level::ProcessGameObjectCollisions(GameObject& object, GameObject& otherObj
 	}
 }
 
-void Level::RespawnPlayer(GLfloat deltaTime)
-{
-	glm::vec2 locationToSpawnAt = activeCheckPoint == nullptr ? glm::vec2(playerStartLocation.x, playerStartLocation.y) : activeCheckPoint->GetPosition();
-
-	if (playerRespawnTimer <= 0.0f)
-	{
-		std::cout << "player respawned to checkpoint" << std::endl;
-		player.SetPosition(glm::vec3(locationToSpawnAt.x, locationToSpawnAt.y, player.GetPosition().z));
-		player.SetHealth(100.0f);
-		player.SetIsDead(false);
-		shouldPlayerRespawn = false;
-		player.SetShouldDespawn(false);
-		player.SetState(PlayerState::IDLE);
-		player.ResetPuffAnimation();
-		player.ResetBloodAnimation();
-		player.ResetAnimation(PlayerState::DEATH);
-		playerRespawnTimer = 5.0f;
-	}
-
-	if(player.GetShouldDespawn())
-		playerRespawnTimer -= deltaTime;
-}
-
 GLboolean Level::IsPlayerSpottedByEnemies()
 {
 	GLboolean hasBeenSpotted{ false };
@@ -757,7 +739,7 @@ void Level::RunSpearmanBehaviour(Spearman& enemy, float deltaTime)
 						player.SetIsDead(true);
 						player.SetLives(player.GetLives() - 1);
 						if (player.GetLives() > 0)
-							shouldPlayerRespawn = true;
+							player.SetShouldRespawn(true);
 					}
 				}
 				if (player.GetLives() == 0 && player.GetHealth() <= 0)
@@ -807,7 +789,7 @@ void Level::RunSpikeTrapBehaviour(SpikeTrap& spikeTrap, GLfloat deltaTime)
 			player.SetIsDead(true);
 			player.SetLives(player.GetLives() - 1);
 			if (player.GetLives() > 0)
-				shouldPlayerRespawn = true;
+				player.SetShouldRespawn(true);
 		}
 
 	}

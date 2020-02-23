@@ -16,13 +16,13 @@ FireSparkleEffect::FireSparkleEffect()
 }
 
 FireSparkleEffect::FireSparkleEffect(const FireSparkleEffect& src)
-	: FireSparkleEffect()
+	: Effect(src)
 {
 }
 
 FireSparkleEffect::~FireSparkleEffect()
 {
-	for (auto& texture : textures)
+	for (auto texture : textures)
 	{
 		if (texture != nullptr)
 		{
@@ -30,6 +30,15 @@ FireSparkleEffect::~FireSparkleEffect()
 			delete texture;
 		}
 	}
+}
+
+FireSparkleEffect& FireSparkleEffect::operator=(const FireSparkleEffect& src)
+{
+	if (this == &src)
+		return *this;
+
+	Effect::operator=(src);
+	return *this;
 }
 
 void FireSparkleEffect::Draw(SpriteRenderer& renderer)

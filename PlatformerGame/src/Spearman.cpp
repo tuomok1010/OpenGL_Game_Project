@@ -50,12 +50,29 @@ Spearman::Spearman()
 }
 
 Spearman::Spearman(const Spearman& src)
-	: Spearman()
+	: Enemy(src)
 {
+	meleeDamage = src.meleeDamage;
+	bloodEffect = src.bloodEffect;
+	shouldBleed = src.shouldBleed;
 }
 
 Spearman::~Spearman()
 {
+}
+
+Spearman& Spearman::operator=(const Spearman& src)
+{
+	if (this == &src)
+		return *this;
+
+	Enemy::operator=(src);
+
+	meleeDamage = src.meleeDamage;
+	bloodEffect = src.bloodEffect;
+	shouldBleed = src.shouldBleed;
+
+	return *this;
 }
 
 void Spearman::Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes)

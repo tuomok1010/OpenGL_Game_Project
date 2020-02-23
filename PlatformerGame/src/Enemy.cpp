@@ -35,36 +35,208 @@ Enemy::Enemy()
 Enemy::Enemy(const Enemy& src)
 	: Enemy()
 {
+	textureOffset = src.textureOffset;
+	textureScale = src.textureScale;
+
+	state = src.state;
+	orientation = src.orientation;
+
+	idleTexIterator = src.idleTexIterator;
+	runTexIterator = src.runTexIterator;
+	jumpTexIterator = src.jumpTexIterator;
+	deathTexIterator = src.deathTexIterator;
+	meleeAttackIterator = src.meleeAttackIterator;
+
+	previousPosition = src.previousPosition;
+	position = src.position;
+	size = src.size;
+	color = src.color;
+	rotation = src.rotation;
+	velocity = src.velocity;
+	speed = src.speed;
+	gravity = src.gravity;
+	isOnGround = src.isOnGround;
+
+	health = src.health;
+	isDead = src.isDead;
+	readyToDespawn = src.readyToDespawn;
+
+	hasCollided = src.hasCollided;
+
+	patrolPoints = src.patrolPoints;
+	previousPatrolPointIndex = src.previousPatrolPointIndex;
+	nextPatrolPointIndex = src.nextPatrolPointIndex;
+	initialPosition = src.initialPosition;
+
+	lineOfSightX = src.lineOfSightX;
+	isInRange = src.isInRange;
+	hasSpottedPlayer = src.hasSpottedPlayer;
+	meleeRange = src.meleeRange;
+
+	enemyType = src.enemyType;
+
+	puffEffect = src.puffEffect;
+
+	collisionBottom = src.collisionBottom;
+	collisionTop = src.collisionTop;
+	collisionLeft = src.collisionLeft;
+	collisionRight = src.collisionRight;
+	collisionBoxSimple = src.collisionBoxSimple;
+
+	collisionBoxThickness = src.collisionBoxThickness;
+	collisionBoxHorizontalLength = src.collisionBoxHorizontalLength;
+	collisionBoxVerticalLength = src.collisionBoxVerticalLength;
+
+	colBoxOffsetBottom = src.colBoxOffsetBottom;
+	colBoxOffsetTop = src.colBoxOffsetTop;
+	colBoxOffsetRight = src.colBoxOffsetRight;
+	colBoxOffsetLeft = src.colBoxOffsetLeft;
+	colBoxOffsetSimple = src.colBoxOffsetSimple;
+
+	for (const auto& texture : src.texturesIdle)
+		texturesIdle.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesRun)
+		texturesRun.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesJump)
+		texturesJump.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesDeath)
+		texturesDeath.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesMeleeAttack)
+		texturesMeleeAttack.emplace_back(new Texture2D(*texture));
+
+	textureFall = new Texture2D(*src.textureFall);
 }
 
 Enemy::~Enemy()
 {
 	for (unsigned int i = 0; i < texturesIdle.size(); ++i)
 	{
-		texturesIdle.at(i)->Unbind();
-		delete texturesIdle.at(i);
+		if (texturesIdle.at(i) != nullptr)
+		{
+			texturesIdle.at(i)->Unbind();
+			delete texturesIdle.at(i);
+		}
 	}
 
 	for (unsigned int i = 0; i < texturesRun.size(); ++i)
 	{
-		texturesRun.at(i)->Unbind();
-		delete texturesRun.at(i);
+		if (texturesRun.at(i) != nullptr)
+		{
+			texturesRun.at(i)->Unbind();
+			delete texturesRun.at(i);
+		}
 	}
 
 	for (unsigned int i = 0; i < texturesJump.size(); ++i)
 	{
-		texturesJump.at(i)->Unbind();
-		delete texturesJump.at(i);
+		if (texturesJump.at(i) != nullptr)
+		{
+			texturesJump.at(i)->Unbind();
+			delete texturesJump.at(i);
+		}
 	}
 
 	for (unsigned int i = 0; i < texturesDeath.size(); ++i)
 	{
-		texturesDeath.at(i)->Unbind();
-		delete texturesDeath.at(i);
+		if (texturesDeath.at(i) != nullptr)
+		{
+			texturesDeath.at(i)->Unbind();
+			delete texturesDeath.at(i);
+		}
 	}
 
-	textureFall->Unbind();
-	delete textureFall;
+	if (textureFall != nullptr)
+	{
+		textureFall->Unbind();
+		delete textureFall;
+	}
+}
+
+Enemy& Enemy::operator=(const Enemy& src)
+{
+	if (this == &src)
+		return *this;
+
+	textureOffset = src.textureOffset;
+	textureScale = src.textureScale;
+
+	state = src.state;
+	orientation = src.orientation;
+
+	idleTexIterator = src.idleTexIterator;
+	runTexIterator = src.runTexIterator;
+	jumpTexIterator = src.jumpTexIterator;
+	deathTexIterator = src.deathTexIterator;
+	meleeAttackIterator = src.meleeAttackIterator;
+
+	previousPosition = src.previousPosition;
+	position = src.position;
+	size = src.size;
+	color = src.color;
+	rotation = src.rotation;
+	velocity = src.velocity;
+	speed = src.speed;
+	gravity = src.gravity;
+	isOnGround = src.isOnGround;
+
+	health = src.health;
+	isDead = src.isDead;
+	readyToDespawn = src.readyToDespawn;
+
+	hasCollided = src.hasCollided;
+
+	patrolPoints = src.patrolPoints;
+	previousPatrolPointIndex = src.previousPatrolPointIndex;
+	nextPatrolPointIndex = src.nextPatrolPointIndex;
+	initialPosition = src.initialPosition;
+
+	lineOfSightX = src.lineOfSightX;
+	isInRange = src.isInRange;
+	hasSpottedPlayer = src.hasSpottedPlayer;
+	meleeRange = src.meleeRange;
+
+	enemyType = src.enemyType;
+
+	puffEffect = src.puffEffect;
+
+	collisionBottom = src.collisionBottom;
+	collisionTop = src.collisionTop;
+	collisionLeft = src.collisionLeft;
+	collisionRight = src.collisionRight;
+	collisionBoxSimple = src.collisionBoxSimple;
+
+	collisionBoxThickness = src.collisionBoxThickness;
+	collisionBoxHorizontalLength = src.collisionBoxHorizontalLength;
+	collisionBoxVerticalLength = src.collisionBoxVerticalLength;
+
+	colBoxOffsetBottom = src.colBoxOffsetBottom;
+	colBoxOffsetTop = src.colBoxOffsetTop;
+	colBoxOffsetRight = src.colBoxOffsetRight;
+	colBoxOffsetLeft = src.colBoxOffsetLeft;
+	colBoxOffsetSimple = src.colBoxOffsetSimple;
+
+	for (const auto& texture : src.texturesIdle)
+		texturesIdle.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesRun)
+		texturesRun.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesJump)
+		texturesJump.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesDeath)
+		texturesDeath.emplace_back(new Texture2D(*texture));
+
+	for (const auto& texture : src.texturesMeleeAttack)
+		texturesMeleeAttack.emplace_back(new Texture2D(*texture));
+
+	textureFall = new Texture2D(*src.textureFall);
+
+	return *this;
 }
 
 void Enemy::Draw(SpriteRenderer& renderer, PrimitiveRenderer& collisionBoxRenderer, GLboolean drawCollisionBoxes)

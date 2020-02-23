@@ -14,6 +14,8 @@ public:
 	Effect(const Effect& src);
 	virtual ~Effect();
 
+	Effect& operator=(const Effect& src);
+
 	virtual void Draw(SpriteRenderer& renderer) = 0;
 	void ResetAnimation();
 	void AddTexture(Texture2D* textureToAdd);

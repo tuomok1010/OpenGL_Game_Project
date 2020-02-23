@@ -14,6 +14,7 @@ public:
 	PuffEffect();
 	PuffEffect(PuffEffect& src);
 	~PuffEffect();
+	PuffEffect& operator=(const PuffEffect& src);
 
 	void Draw(SpriteRenderer& renderer) override;
 };

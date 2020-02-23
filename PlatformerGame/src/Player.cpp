@@ -236,6 +236,26 @@ void Player::DrawPuffEffect(SpriteRenderer& renderer)
 		puffEffect.Draw(renderer);
 }
 
+void Player::Respawn(GLfloat deltaTime, glm::vec2 locationToSpawnAt)
+{
+	if (respawnTimer <= 0.0f)
+	{
+		position = glm::vec3(locationToSpawnAt.x, locationToSpawnAt.y, position.z);
+		health = 100;
+		isDead = false;
+		shouldRespawn = false;
+		readyToDespawn = false;
+		state = PlayerState::IDLE;
+		ResetPuffAnimation();
+		ResetBloodAnimation();
+		ResetAnimation(PlayerState::DEATH);
+		respawnTimer = 5.0f;
+	}
+
+	if (readyToDespawn)
+		respawnTimer -= deltaTime;
+}
+
 // retuns an int based on which collision box is colliding. 0 = no collision, 1 = bottom, 2 = right, 3 = left, 4 = top
 GLint Player::AdvancedCollisionCheck(GameObject& obj)
 {
